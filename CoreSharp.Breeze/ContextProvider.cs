@@ -79,7 +79,7 @@ namespace CoreSharp.Breeze
                 else if (transactionSettings.TransactionType == TransactionType.DbTransaction)
                 {
                     this.OpenDbConnection();
-                    using (IDbTransaction tran = BeginTransaction(transactionSettings.IsolationLevelAs))
+                    using (var tran = BeginTransaction(transactionSettings.IsolationLevelAs))
                     {
                         try
                         {
@@ -331,7 +331,7 @@ namespace CoreSharp.Breeze
         protected JsonSerializer JsonSerializer { get; private set; }
 
 
-        private object _metadataLock = new object();
+        private readonly object _metadataLock = new object();
         private string _jsonMetadata;
 
         protected ContextProvider(IBreezeConfig breezeConfig)

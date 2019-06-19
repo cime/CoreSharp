@@ -36,18 +36,18 @@ namespace CoreSharp.Breeze.Query {
 
     public static BasePredicate PredicateFromMap(IDictionary<string, object> sourceMap) {
       if (sourceMap == null) return null;
-      List<BasePredicate> preds = PredicatesFromMap(sourceMap);
+      var preds = PredicatesFromMap(sourceMap);
       return CreateCompoundPredicate(preds);
     }
 
-    private static BasePredicate PredicateFromKeyValue(String key, Object value) {
-      Operator op = Operator.FromString(key);
+    private static BasePredicate PredicateFromKeyValue(string key, object value) {
+      var op = Operator.FromString(key);
       if (op != null) {
         if (op.OpType == OperatorType.AndOr) {
           var preds2 = PredicatesFromObject(value);
           return new AndOrPredicate(op, preds2);
         } else if (op.OpType == OperatorType.Unary) {
-          BasePredicate pred = PredicateFromObject(value);
+          var pred = PredicateFromObject(value);
           return new UnaryPredicate(op, pred);
         } else {
           throw new Exception("Invalid operator in context: " + key);
@@ -70,12 +70,12 @@ namespace CoreSharp.Breeze.Query {
 
       foreach (var subKey in map.Keys) {
 
-        Operator subOp = Operator.FromString(subKey);
-        Object subVal = map[subKey];
+        var subOp = Operator.FromString(subKey);
+        var subVal = map[subKey];
         BasePredicate pred;
         if (subOp != null) {
           if (subOp.OpType == OperatorType.AnyAll) {
-            BasePredicate subPred = PredicateFromObject(subVal);
+            var subPred = PredicateFromObject(subVal);
             pred = new AnyAllPredicate(subOp, key, subPred);
           } else if (subOp.OpType == OperatorType.Binary) {
             pred = new BinaryPredicate(subOp, key, subVal);
@@ -94,7 +94,7 @@ namespace CoreSharp.Breeze.Query {
     }
 
 
-    private static BasePredicate PredicateFromObject(Object source) {
+    private static BasePredicate PredicateFromObject(object source) {
       var preds = PredicatesFromObject(source);
       return CreateCompoundPredicate(preds);
       //		if (preds.size() > 1) {
@@ -104,12 +104,12 @@ namespace CoreSharp.Breeze.Query {
       //		}
     }
 
-    private static List<BasePredicate> PredicatesFromObject(Object source) {
+    private static List<BasePredicate> PredicatesFromObject(object source) {
       var preds = new List<BasePredicate>();
-      if (source is IDictionary<string, Object>) {
-        preds = PredicatesFromMap((IDictionary<string, Object>)source);
+      if (source is IDictionary<string, object>) {
+        preds = PredicatesFromMap((IDictionary<string, object>)source);
       } else if (source is IList) {
-        foreach (Object item in (IList)source) {
+        foreach (var item in (IList)source) {
           var pred = PredicateFromObject(item);
           preds.Add(pred);
         }

@@ -5,12 +5,12 @@ using System.Linq.Expressions;
 
 namespace CoreSharp.Breeze.Query {
   public class FnBlock : BaseBlock {
-    public String FnName { get; private set; }
+    public string FnName { get; private set; }
     private List<BaseBlock> _exprs;
 
     // first DataType in the list is the return type the rest are argument
     // types;
-    private static Dictionary<String, DataType[]> _fnMap = new Dictionary<String, DataType[]>();
+    private static Dictionary<string, DataType[]> _fnMap = new Dictionary<string, DataType[]>();
     static FnBlock() {
       RegisterFn("toupper", DataType.String, DataType.String);
       RegisterFn("tolower", DataType.String, DataType.String);
@@ -41,12 +41,12 @@ namespace CoreSharp.Breeze.Query {
               DataType.String);
     }
 
-    public FnBlock(String fnName, List<BaseBlock> exprs) {
+    public FnBlock(string fnName, List<BaseBlock> exprs) {
       FnName = fnName;
       _exprs = exprs;
     }
 
-    public static FnBlock CreateFrom(String source, Type entityType) {
+    public static FnBlock CreateFrom(string source, Type entityType) {
       return FnBlockToken.ToExpression(source, entityType);
     }
 
@@ -60,17 +60,17 @@ namespace CoreSharp.Breeze.Query {
       }
     }
 
-    public static void RegisterFn(String name, params DataType[] dataTypes) {
+    public static void RegisterFn(string name, params DataType[] dataTypes) {
       _fnMap[name.ToLowerInvariant()] = dataTypes;
     }
 
-    public static DataType GetReturnType(String fnName) {
-      DataType[] dataTypes = _fnMap[fnName.ToLowerInvariant()];
+    public static DataType GetReturnType(string fnName) {
+      var dataTypes = _fnMap[fnName.ToLowerInvariant()];
       return (dataTypes != null) ? dataTypes[0] : null;
     }
 
-    public static List<DataType> GetArgTypes(String fnName) {
-      DataType[] dataTypes = _fnMap[fnName.ToLowerInvariant()];
+    public static List<DataType> GetArgTypes(string fnName) {
+      var dataTypes = _fnMap[fnName.ToLowerInvariant()];
       if (dataTypes == null) {
         throw new Exception("Unable to recognize a function named: "
                 + fnName);
@@ -83,29 +83,29 @@ namespace CoreSharp.Breeze.Query {
       var expr = exprs[0];
       // TODO: add the rest ...
       if (FnName == "toupper") {
-        var mi = TypeFns.GetMethodByExample((String s) => s.ToUpper());
+        var mi = TypeFns.GetMethodByExample((string s) => s.ToUpper());
         return Expression.Call(expr, mi);
       } else if (FnName == "tolower") {
-        var mi = TypeFns.GetMethodByExample((String s) => s.ToLower());
+        var mi = TypeFns.GetMethodByExample((string s) => s.ToLower());
         return Expression.Call(expr, mi);
       } else if (FnName == "trim") {
-        var mi = TypeFns.GetMethodByExample((String s) => s.Trim());
+        var mi = TypeFns.GetMethodByExample((string s) => s.Trim());
         return Expression.Call(expr, mi);
       } else if (FnName == "length") {
         return GetPropertyExpression(expr, "Length", typeof(int));
       } else if (FnName == "indexof") {
-        var mi = TypeFns.GetMethodByExample((String s) => s.IndexOf("xxx"));
+        var mi = TypeFns.GetMethodByExample((string s) => s.IndexOf("xxx"));
         return Expression.Call(exprs[0], mi, exprs[1]);
       } else if (FnName == "concat") {
         // TODO: check if this works...
-        var mi = TypeFns.GetMethodByExample((String s) => String.Concat(s, "xxx"));
+        var mi = TypeFns.GetMethodByExample((string s) => string.Concat(s, "xxx"));
         return Expression.Call(mi, exprs[0], exprs[1]);
       } else if (FnName == "substring") {
-        var mi = TypeFns.GetMethodByExample((String s) => s.Substring(1, 5));
+        var mi = TypeFns.GetMethodByExample((string s) => s.Substring(1, 5));
         return Expression.Call(exprs[0], mi, exprs.Skip(1));
       } else if (FnName == "replace") {
         // TODO: check if this works...
-        var mi = TypeFns.GetMethodByExample((String s) => s.Replace("aaa", "bbb"));
+        var mi = TypeFns.GetMethodByExample((string s) => s.Replace("aaa", "bbb"));
         return Expression.Call(exprs[0], mi, exprs[1], exprs[2]);
       } else if (FnName == "year") {
         return GetPropertyExpression(expr, "Year", typeof(int));
@@ -121,22 +121,22 @@ namespace CoreSharp.Breeze.Query {
         return GetPropertyExpression(expr, "Second", typeof(int));
       } else if (FnName == "round") {
           // TODO: confirm that this works - is using static method.
-          var mi = TypeFns.GetMethodByExample((Double d) => Math.Round(d));
+          var mi = TypeFns.GetMethodByExample((double d) => Math.Round(d));
           return Expression.Call(mi, expr);
       } else if (FnName == "ceiling") {
-        var mi = TypeFns.GetMethodByExample((Double d) => Math.Ceiling(d));
+        var mi = TypeFns.GetMethodByExample((double d) => Math.Ceiling(d));
         return Expression.Call(mi, expr);
       } else if (FnName == "floor") {
-        var mi = TypeFns.GetMethodByExample((Double d) => Math.Floor(d));
+        var mi = TypeFns.GetMethodByExample((double d) => Math.Floor(d));
         return Expression.Call(mi, expr);
       } else if (FnName == "startswith") {
-        var mi = TypeFns.GetMethodByExample((String s) => s.StartsWith("xxx"));
+        var mi = TypeFns.GetMethodByExample((string s) => s.StartsWith("xxx"));
         return Expression.Call(exprs[0], mi, exprs[1]);
       } else if (FnName == "endsWith") {
-        var mi = TypeFns.GetMethodByExample((String s) => s.EndsWith("xxx"));
+        var mi = TypeFns.GetMethodByExample((string s) => s.EndsWith("xxx"));
         return Expression.Call(exprs[0], mi, exprs[1]);
       } else if (FnName == "substringof") {
-        var mi = TypeFns.GetMethodByExample((String s) => s.Contains("xxx"));
+        var mi = TypeFns.GetMethodByExample((string s) => s.Contains("xxx"));
         return Expression.Call(exprs[0], mi, exprs[1]);
       } else {
         throw new Exception("Unable to locate Fn: " + FnName);

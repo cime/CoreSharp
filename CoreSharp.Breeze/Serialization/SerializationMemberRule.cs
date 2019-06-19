@@ -3,7 +3,8 @@ using System.Reflection;
 
 namespace CoreSharp.Breeze.Serialization
 {
-    public class SerializationMemberRule<TModel, TType> : SerializationMemberRule, ISerializationMemberRule<TModel, TType>
+    public class SerializationMemberRule<TModel, TType> : SerializationMemberRule,
+        ISerializationMemberRule<TModel, TType>
     {
         public SerializationMemberRule(MemberInfo memberInfo) : base(memberInfo)
         {
@@ -18,37 +19,55 @@ namespace CoreSharp.Breeze.Serialization
         public ISerializationMemberRule<TModel, TType> Serialize(Func<TModel, TType> serializeFun = null)
         {
             if (serializeFun != null)
-                SerializeFunc = (modelVal, memberInfo, memberVal) => serializeFun((TModel)modelVal);
+            {
+                SerializeFunc = (modelVal, memberInfo, memberVal) => serializeFun((TModel) modelVal);
+            }
+
             return this;
         }
 
         public ISerializationMemberRule<TModel, TType> Serialize(Func<TModel, TType, TType> serializeFun = null)
         {
             if (serializeFun != null)
-                SerializeFunc = (modelVal, memberInfo, memberVal) => serializeFun((TModel)modelVal, (TType)memberVal);
+            {
+                SerializeFunc = (modelVal, memberInfo, memberVal) => serializeFun((TModel) modelVal, (TType) memberVal);
+            }
+
             return this;
         }
 
         public ISerializationMemberRule<TModel, TType> Deserialize(Func<TModel, TType> deserializeFun = null)
         {
             if (deserializeFun != null)
-                DeserializeFunc = (modelVal, memberInfo, memberVal) => deserializeFun((TModel)modelVal);
+            {
+                DeserializeFunc = (modelVal, memberInfo, memberVal) => deserializeFun((TModel) modelVal);
+            }
+
             return this;
         }
 
         public ISerializationMemberRule<TModel, TType> Deserialize(Func<TModel, TType, TType> deserializeFun = null)
         {
             if (deserializeFun != null)
-                DeserializeFunc = (modelVal, memberInfo, memberVal) => deserializeFun((TModel)modelVal, (TType)memberVal);
+            {
+                DeserializeFunc = (modelVal, memberInfo, memberVal) =>
+                    deserializeFun((TModel) modelVal, (TType) memberVal);
+            }
+
             return this;
         }
 
         public ISerializationMemberRule<TModel, TType> ShouldSerialize(Func<TModel, bool> conditionFunc)
         {
             if (conditionFunc != null)
+            {
                 ShouldSerializePredicate = model => conditionFunc((TModel) model);
+            }
             else
+            {
                 ShouldSerializePredicate = null;
+            }
+
             return this;
         }
     }

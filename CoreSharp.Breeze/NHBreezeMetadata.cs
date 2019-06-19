@@ -139,7 +139,7 @@ namespace CoreSharp.Breeze
             var propNames = meta.PropertyNames;
             var propTypes = meta.PropertyTypes;
             var propNull = meta.PropertyNullability;
-            for (int i = 0; i < propNames.Length; i++)
+            for (var i = 0; i < propNames.Length; i++)
             {
                 var propName = propNames[i];
                 var pClassProp = pClass.GetProperty(propName);
@@ -192,7 +192,7 @@ namespace CoreSharp.Breeze
                 // composite key is a ComponentType
                 var compType = (ComponentType)meta.IdentifierType;
                 var compNames = compType.PropertyNames;
-                for (int i = 0; i < compNames.Length; i++)
+                for (var i = 0; i < compNames.Length; i++)
                 {
                     var compName = compNames[i];
 
@@ -215,7 +215,7 @@ namespace CoreSharp.Breeze
             }
 
             // We do the association properties after the data properties, so we can do the foreign key lookups
-            for (int i = 0; i < propNames.Length; i++)
+            for (var i = 0; i < propNames.Length; i++)
             {
                 var propName = propNames[i];
                 if (!hasOwnProperty(pClass, propName)) continue;  // skip property defined on superclass 
@@ -275,7 +275,7 @@ namespace CoreSharp.Breeze
             var propNull = compType.PropertyNullability;
 
             var colIndex = 0;
-            for (int i = 0; i < propNames.Length; i++)
+            for (var i = 0; i < propNames.Length; i++)
             {
                 var propType = propTypes[i];
                 var propName = propNames[i];

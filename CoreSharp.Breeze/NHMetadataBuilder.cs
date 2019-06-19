@@ -171,13 +171,13 @@ namespace CoreSharp.Breeze
             var metaModel = persister.EntityMetamodel;
             var type = metaModel.Type;
 
-            HashSet<String> inheritedProperties = GetSuperProperties(persister);
+            var inheritedProperties = GetSuperProperties(persister);
 
             var propNames = meta.PropertyNames;
             var propTypes = meta.PropertyTypes;
             var propNull = meta.PropertyNullability;
             var properties = metaModel.Properties;
-            for (int i = 0; i < propNames.Length; i++)
+            for (var i = 0; i < propNames.Length; i++)
             {
                 var propName = propNames[i];
                 var memberConfiguration = GetMemberConfiguration(type, propName);
@@ -218,7 +218,7 @@ namespace CoreSharp.Breeze
                     if (types.Length > 0)
                     {
                         var realType = types[0];
-                        string[] enumNames = Enum.GetNames(realType);
+                        var enumNames = Enum.GetNames(realType);
                         var p = new Dictionary<string, object>();
                         p.Add("shortName", realType.Name);
                         p.Add("namespace", realType.Namespace);
@@ -249,7 +249,7 @@ namespace CoreSharp.Breeze
                 {
                     var compNull = compType.PropertyNullability;
                     var compNames = compType.PropertyNames;
-                    for (int i = 0; i < compNames.Length; i++)
+                    for (var i = 0; i < compNames.Length; i++)
                     {
                         var compName = compNames[i];
 
@@ -320,15 +320,15 @@ namespace CoreSharp.Breeze
         /// <returns>set of property names.  Empty if the persister doesn't have a superclass.</returns>
         HashSet<string> GetSuperProperties(AbstractEntityPersister persister)
         {
-            HashSet<string> set = new HashSet<String>();
+            var set = new HashSet<string>();
             if (!persister.IsInherited) return set;
-            string superClassName = persister.MappedSuperclass;
+            var superClassName = persister.MappedSuperclass;
             if (superClassName == null) return set;
 
-            IClassMetadata superMeta = _sessionFactory.GetClassMetadata(superClassName);
+            var superMeta = _sessionFactory.GetClassMetadata(superClassName);
             if (superMeta == null) return set;
 
-            string[] superProps = superMeta.PropertyNames;
+            var superProps = superMeta.PropertyNames;
             set = new HashSet<string>(superProps);
             set.Add(superMeta.IdentifierPropertyName);
             return set;
@@ -369,7 +369,7 @@ namespace CoreSharp.Breeze
             var propNull = compType.PropertyNullability;
 
             var colIndex = 0;
-            for (int i = 0; i < propNames.Length; i++)
+            for (var i = 0; i < propNames.Length; i++)
             {
                 var propType = propTypes[i];
                 var propName = propNames[i];
@@ -686,7 +686,7 @@ namespace CoreSharp.Breeze
         {
             var propNames = persister.PropertyNames;
             var propTypes = persister.PropertyTypes;
-            for (int i = 0; i < propNames.Length; i++)
+            for (var i = 0; i < propNames.Length; i++)
             {
                 var propName = propNames[i];
                 var propType = propTypes[i];
@@ -721,7 +721,7 @@ namespace CoreSharp.Breeze
                 // TODO: maybe this should split columnNames into all possible combinations of ordered subsets, and try those
                 var propList = new List<string>();
                 var prop = new string[1];
-                for (int i = 0; i < columnNames.Length; i++)
+                for (var i = 0; i < columnNames.Length; i++)
                 {
                     prop[0] = columnNames[i];
                     var names = GetPropertyNamesForColumns(persister, prop);  // recursive call
@@ -753,7 +753,7 @@ namespace CoreSharp.Breeze
         static bool NamesEqual(string[] a, string[] b)
         {
             if (a.Length != b.Length) return false;
-            for (int i=0; i<a.Length; i++)
+            for (var i=0; i<a.Length; i++)
             {
                 if (UnBracket(a[i]).ToLower() != UnBracket(b[i]).ToLower()) return false;
             }
@@ -781,7 +781,7 @@ namespace CoreSharp.Breeze
         static string[] UnBracket(string[] names)
         {
             var u = new string[names.Length];
-            for (int i = 0; i < names.Length; i++)
+            for (var i = 0; i < names.Length; i++)
             {
                 u[i] = UnBracket(names[i]);
             }

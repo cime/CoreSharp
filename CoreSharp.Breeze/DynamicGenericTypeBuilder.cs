@@ -84,9 +84,9 @@ namespace CoreSharp.Breeze {
         throw new ArgumentNullException("info");
       }
 
-      AssemblyBuilder asmBuilder = BuildAssembly(info);
-      ModuleBuilder modBuilder = BuildModule(info, asmBuilder);
-      TypeBuilder typBuilder = BuildType(info, modBuilder);
+      var asmBuilder = BuildAssembly(info);
+      var modBuilder = BuildModule(info, asmBuilder);
+      var typBuilder = BuildType(info, modBuilder);
       var parameterBuilders = BuildGenericParameters(info, typBuilder);
 
       // Build the fields
@@ -166,14 +166,14 @@ namespace CoreSharp.Breeze {
 
     private static Type[] BuildGenericParameters(DynamicTypeInfo info, TypeBuilder typBuilder) {
       // generates the names T0, T1, T2 ...
-      String[] parameterNames = Enumerable.Range(0, info.PropertyNames.Count).Select(i => "T" + i.ToString()).ToArray();
+      var parameterNames = Enumerable.Range(0, info.PropertyNames.Count).Select(i => "T" + i.ToString()).ToArray();
       var parameterBuilders = typBuilder.DefineGenericParameters(parameterNames);
       return parameterBuilders.Select(pb => pb.AsType()).ToArray();
     }
 
     private static void BuildCtor(DynamicTypeInfo info, TypeBuilder typBuilder,
       List<FieldBuilder> fieldBuilders, Type[] parameterBuilders) {
-      Type[] ctorParams = parameterBuilders;
+      var ctorParams = parameterBuilders;
       var ctorBuilder = typBuilder.DefineConstructor(
         MethodAttributes.Public |
         MethodAttributes.SpecialName |
@@ -181,7 +181,7 @@ namespace CoreSharp.Breeze {
         CallingConventions.Standard,
         ctorParams);
 
-      ILGenerator ctorIL = ctorBuilder.GetILGenerator();
+      var ctorIL = ctorBuilder.GetILGenerator();
       ctorIL.Emit(OpCodes.Ldarg_0);
       // var baseCtorInfo = typeof(Object).GetConstructor(new Type[0]);
       var baseCtorInfo = typeof(DynamicTypeBase).GetTypeInfo().GetConstructor(new Type[0]);
@@ -214,14 +214,14 @@ namespace CoreSharp.Breeze {
 
       var generator = ctorBuilder.GetILGenerator();
       generator.Emit(OpCodes.Ldarg_0);
-      var baseCtorInfo = typeof(Object).GetTypeInfo().GetConstructor(new Type[0]);
+      var baseCtorInfo = typeof(object).GetTypeInfo().GetConstructor(new Type[0]);
       generator.Emit(OpCodes.Call, baseCtorInfo);
       generator.Emit(OpCodes.Ret);
     }
 
     private static void BuildProperties(DynamicTypeInfo info, TypeBuilder typBuilder,
       List<FieldBuilder> fieldBuilders, Type[] parameterBuilders) {
-      for (int i = 0; i < info.PropertyNames.Count; i++) {
+      for (var i = 0; i < info.PropertyNames.Count; i++) {
         //var propBuilder = typBuilder.DefineProperty(
         //  info.PropertyNames[i], PropertyAttributes.None, parameterBuilders[i], Type.EmptyTypes);
         var propBuilder = typBuilder.DefineProperty(
@@ -319,7 +319,7 @@ namespace CoreSharp.Breeze {
     private static IEnumerable<FieldBuilder> BuildFields(DynamicTypeInfo info,
       TypeBuilder typBuilder, Type[] parameterBuilders) {
       var propertyCount = info.PropertyNames.Count;
-      for (int i = 0; i < propertyCount; i++) {
+      for (var i = 0; i < propertyCount; i++) {
         yield return typBuilder.DefineField("_" + info.PropertyNames[i], parameterBuilders[i],
           FieldAttributes.Private | FieldAttributes.InitOnly);
       }

@@ -38,7 +38,7 @@ namespace CoreSharp.Breeze.Extensions
             switch (member.MemberType)
             {
                 case MemberTypes.Field:
-                    FieldInfo fieldInfo = (FieldInfo)member;
+                    var fieldInfo = (FieldInfo)member;
 
                     if (nonPublic)
                         return true;
@@ -46,7 +46,7 @@ namespace CoreSharp.Breeze.Extensions
                         return true;
                     return false;
                 case MemberTypes.Property:
-                    PropertyInfo propertyInfo = (PropertyInfo)member;
+                    var propertyInfo = (PropertyInfo)member;
 
                     if (!propertyInfo.CanRead)
                         return false;
@@ -72,7 +72,7 @@ namespace CoreSharp.Breeze.Extensions
             switch (member.MemberType)
             {
                 case MemberTypes.Field:
-                    FieldInfo fieldInfo = (FieldInfo)member;
+                    var fieldInfo = (FieldInfo)member;
 
                     if (fieldInfo.IsInitOnly && !canSetReadOnly)
                         return false;
@@ -82,7 +82,7 @@ namespace CoreSharp.Breeze.Extensions
                         return true;
                     return false;
                 case MemberTypes.Property:
-                    PropertyInfo propertyInfo = (PropertyInfo)member;
+                    var propertyInfo = (PropertyInfo)member;
 
                     if (!propertyInfo.CanWrite)
                         return false;

@@ -63,7 +63,7 @@ namespace CoreSharp.Breeze {
     /// <returns>true if entity is valid, false if invalid.</returns>
     public bool ValidateEntity(EntityInfo entityInfo, List<EntityError> entityErrors) {
       if (entityInfo.EntityState == EntityState.Deleted) return true;
-      bool isValid = true;
+      var isValid = true;
       var entity = entityInfo.Entity;
       var entityType = entity.GetType();
       var entityTypeName = entityType.FullName;
@@ -172,7 +172,7 @@ namespace CoreSharp.Breeze {
           return "A value is required.";
         }
         var s = value as string;
-        if (s != null && String.IsNullOrWhiteSpace(s)) {
+        if (s != null && string.IsNullOrWhiteSpace(s)) {
             return "A value is required.";
         }
         return null;

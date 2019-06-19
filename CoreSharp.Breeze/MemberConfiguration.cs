@@ -177,7 +177,7 @@ namespace CoreSharp.Breeze
             MemberType = memberType;
             DeclaringType = declaringType;
             if (serializedName != null)
-                MemberInfo = FindMemeberInfo(serializedName);
+                MemberInfo = FindMemberInfo(serializedName);
         }
 
         public MemberConfiguration(MemberInfo memberInfo = null)
@@ -186,7 +186,7 @@ namespace CoreSharp.Breeze
             MemberInfo = memberInfo;
         }
 
-        public Dictionary<string, object> Data { get; } 
+        public Dictionary<string, object> Data { get; }
 
         public MemberInfo MemberInfo { get; set; }
 
@@ -228,7 +228,7 @@ namespace CoreSharp.Breeze
 
         public bool IsCustom => MemberInfo == null;
 
-        private MemberInfo FindMemeberInfo(string name)
+        private MemberInfo FindMemberInfo(string name)
         {
             return
                 DeclaringType.GetMember(name,
@@ -249,6 +249,7 @@ namespace CoreSharp.Breeze
             {
                 return false;
             }
+
             return ReferenceEquals(memberRule, this) || (MemberInfo != null && ReferenceEquals(memberRule.MemberInfo, MemberInfo));
         }
     }

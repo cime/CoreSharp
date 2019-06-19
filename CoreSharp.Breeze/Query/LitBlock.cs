@@ -4,18 +4,18 @@ using System.Linq.Expressions;
 namespace CoreSharp.Breeze.Query {
   public class LitBlock : BaseBlock {
 
-    private Object _initialValue;
-    private Object _coercedValue;
+    private object _initialValue;
+    private object _coercedValue;
     private DataType _dataType;
 
     // TODO: doesn't yet handle case where value is an array - i.e. rhs of in clause.
-    public LitBlock(Object value, DataType dataType) {
+    public LitBlock(object value, DataType dataType) {
       _initialValue = value;
       _dataType = dataType;
       _coercedValue = DataType.CoerceData(value, dataType);
     }
 
-    public Object GetValue() {
+    public object GetValue() {
       return _coercedValue;
     }
 

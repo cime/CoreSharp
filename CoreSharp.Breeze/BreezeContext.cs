@@ -10,9 +10,7 @@ using CoreSharp.Common.Events;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NHibernate;
-using NHibernate.Intercept;
 using NHibernate.Metadata;
-using NHibernate.Proxy;
 using NHibernate.Type;
 using IsolationLevel = System.Data.IsolationLevel;
 
@@ -26,19 +24,21 @@ namespace CoreSharp.Breeze
 
         private static readonly object MetadataLock = new object();
         private static readonly object BuildMetadataLock = new object();
-        protected readonly IBreezeConfigurator BreezeConfigurator;
+        private readonly IBreezeConfigurator _breezeConfigurator;
         private readonly IEventPublisher _eventPublisher;
 
         /// <summary>
         ///     Create a new context for the given session.
         ///     Each thread should have its own NHContext and Session.
         /// </summary>
+        /// <param name="breezeConfig">Used for breeze config</param>
         /// <param name="session">Used for queries and updates</param>
         /// <param name="breezeConfigurator">Used for get configurations</param>
+        /// <param name="eventPublisher">Used for publishing events</param>
         public BreezeContext(IBreezeConfig breezeConfig, ISession session, IBreezeConfigurator breezeConfigurator, IEventPublisher eventPublisher) : base(breezeConfig)
         {
             Session = session;
-            BreezeConfigurator = breezeConfigurator;
+            _breezeConfigurator = breezeConfigurator;
             _eventPublisher = eventPublisher;
         }
 
@@ -46,11 +46,12 @@ namespace CoreSharp.Breeze
         ///     Creates a new context using the session and metadata from the sourceContext
         /// </summary>
         /// <param name="sourceContext">source of the Session and metadata used by this new context.</param>
+        /// <param name="eventPublisher">Used for publishing events</param>
         public BreezeContext(BreezeContext sourceContext, IEventPublisher eventPublisher) : base(sourceContext._breezeConfig)
         {
             _eventPublisher = eventPublisher;
             Session = sourceContext.Session;
-            BreezeConfigurator = sourceContext.BreezeConfigurator;
+            _breezeConfigurator = sourceContext._breezeConfigurator;
             _metadata = sourceContext.GetMetadata();
         }
 
@@ -154,7 +155,10 @@ namespace CoreSharp.Breeze
         /// </summary>
         public virtual void Close()
         {
-            if (Session != null && Session.IsOpen) Session.Close();
+            if (Session != null && Session.IsOpen)
+            {
+                Session.Close();
+            }
         }
 
         /// <returns>The connection from the session.</returns>
@@ -176,7 +180,7 @@ namespace CoreSharp.Breeze
             if (Session != null && Session.IsOpen)
             {
                 var dbc = Session.Close();
-                if (dbc != null) dbc.Close();
+                dbc?.Close();
             }
         }
 
@@ -196,8 +200,13 @@ namespace CoreSharp.Breeze
         {
             var entityType = Session.GetProxyRealType(entity);
             var classMeta = Session.SessionFactory.GetClassMetadata(entityType);
-            if (classMeta == null) throw new ArgumentException("Metadata not found for type " + entity.GetType());
+            if (classMeta == null)
+            {
+                throw new ArgumentException("Metadata not found for type " + entity.GetType());
+            }
+
             var keyValues = GetIdentifierAsArray(entity, classMeta);
+
             return keyValues;
         }
 
@@ -264,8 +273,16 @@ namespace CoreSharp.Breeze
         /// <returns>true if the entity should be saved, false if not</returns>
         internal override bool BeforeSaveEntity(EntityInfo entityInfo)
         {
-            if (!base.BeforeSaveEntity(entityInfo)) return false;
-            if (TypeFilter == null) return true;
+            if (!base.BeforeSaveEntity(entityInfo))
+            {
+                return false;
+            }
+
+            if (TypeFilter == null)
+            {
+                return true;
+            }
+
             return TypeFilter(entityInfo.Entity.GetType());
         }
 
@@ -302,7 +319,10 @@ namespace CoreSharp.Breeze
                 metadata = GetMetadata();
             }
 
-            if (!isBuilt) _eventPublisher.Publish(new BreezeMetadataBuiltEvent(metadata, Session.SessionFactory));
+            if (!isBuilt)
+            {
+                _eventPublisher.Publish(new BreezeMetadataBuiltEvent(metadata, Session.SessionFactory));
+            }
 
             return JsonConvert.SerializeObject(metadata, Formatting.Indented);
         }
@@ -324,7 +344,7 @@ namespace CoreSharp.Breeze
                     if (!FactoryMetadata.TryGetValue(Session.SessionFactory, out _metadata))
                     {
                         //var builder = new NHBreezeMetadata(session.SessionFactory, configuration);
-                        var builder = new NHMetadataBuilder(Session.SessionFactory, BreezeConfigurator);
+                        var builder = new NHMetadataBuilder(Session.SessionFactory, _breezeConfigurator);
                         _metadata = builder.BuildMetadata(TypeFilter);
                         FactoryMetadata.Add(Session.SessionFactory, _metadata);
                         OnMetadataBuilt(_metadata);
@@ -358,7 +378,12 @@ namespace CoreSharp.Breeze
             Session.FlushMode = FlushMode.Manual;
             var tx = Session.Transaction;
             var hasExistingTransaction = tx.IsActive;
-            if (!hasExistingTransaction) tx.Begin(_breezeConfig.GetTransactionSettings().IsolationLevelAs);
+
+            if (!hasExistingTransaction)
+            {
+                tx.Begin(_breezeConfig.GetTransactionSettings().IsolationLevelAs);
+            }
+
             try
             {
                 // Relate entities in the saveMap to other NH entities, so NH can save the FK values.
@@ -374,7 +399,10 @@ namespace CoreSharp.Breeze
                 Session.FlushMode = flushMode;
                 AfterFlush(saveOrder);
                 RefreshFromSession(saveMap);
-                if (!hasExistingTransaction) tx.Commit();
+                if (!hasExistingTransaction)
+                {
+                    tx.Commit();
+                }
                 fixer.RemoveRelationships();
             }
             catch (PropertyValueException pve)
@@ -393,12 +421,18 @@ namespace CoreSharp.Breeze
             }
             catch (Exception)
             {
-                if (!hasExistingTransaction) tx.Rollback();
+                if (!hasExistingTransaction)
+                {
+                    tx.Rollback();
+                }
                 throw;
             }
             finally
             {
-                if (!hasExistingTransaction) tx.Dispose();
+                if (!hasExistingTransaction)
+                {
+                    tx.Dispose();
+                }
             }
 
             saveWorkState.KeyMappings = UpdateAutoGeneratedKeys(saveWorkState.EntitiesWithAutoGeneratedKeys);
@@ -411,7 +445,12 @@ namespace CoreSharp.Breeze
             Session.FlushMode = FlushMode.Manual;
             var tx = Session.Transaction;
             var hasExistingTransaction = tx.IsActive;
-            if (!hasExistingTransaction) tx.Begin(_breezeConfig.GetTransactionSettings().IsolationLevelAs);
+
+            if (!hasExistingTransaction)
+            {
+                tx.Begin(_breezeConfig.GetTransactionSettings().IsolationLevelAs);
+            }
+
             try
             {
                 // Relate entities in the saveMap to other NH entities, so NH can save the FK values.
@@ -426,7 +465,10 @@ namespace CoreSharp.Breeze
                 Session.FlushMode = flushMode;
                 await AfterFlushAsync(saveOrder);
                 await RefreshFromSessionAsync(saveMap);
-                if (!hasExistingTransaction) await tx.CommitAsync();
+                if (!hasExistingTransaction)
+                {
+                    await tx.CommitAsync();
+                }
                 fixer.RemoveRelationships();
             }
             catch (PropertyValueException pve)
@@ -445,13 +487,19 @@ namespace CoreSharp.Breeze
             }
             catch (Exception)
             {
-                if (!hasExistingTransaction) tx.Rollback();
+                if (!hasExistingTransaction)
+                {
+                    tx.Rollback();
+                }
                 throw;
             }
             finally
             {
                 Session.FlushMode = flushMode;
-                if (!hasExistingTransaction) tx.Dispose();
+                if (!hasExistingTransaction)
+                {
+                    tx.Dispose();
+                }
             }
 
             saveWorkState.KeyMappings = UpdateAutoGeneratedKeys(saveWorkState.EntitiesWithAutoGeneratedKeys);
@@ -466,7 +514,7 @@ namespace CoreSharp.Breeze
         {
             // Get the map of foreign key relationships from the metadata
             var fkMap = GetMetadata().ForeignKeyMap;
-            return new NhRelationshipFixer(saveMap, fkMap, Session, BreezeConfigurator);
+            return new NhRelationshipFixer(saveMap, fkMap, Session, _breezeConfigurator);
         }
 
         /// <summary>
@@ -524,7 +572,10 @@ namespace CoreSharp.Breeze
             var state = entityInfo.EntityState;
 
             // Restore the old value of the concurrency column so Hibernate will be able to save the entity
-            if (classMeta.IsVersioned) RestoreOldVersionValue(entityInfo, classMeta);
+            if (classMeta.IsVersioned)
+            {
+                RestoreOldVersionValue(entityInfo, classMeta);
+            }
 
             if (state == EntityState.Modified)
             {
@@ -669,8 +720,12 @@ namespace CoreSharp.Breeze
         protected object[] GetIdentifierAsArray(object entity, IClassMetadata meta)
         {
             var value = GetIdentifier(entity, meta);
+
             if (value.GetType().IsArray)
+            {
                 return (object[]) value;
+            }
+
             return new[] {value};
         }
 
@@ -706,13 +761,20 @@ namespace CoreSharp.Breeze
             //using (var tx = session.BeginTransaction()) {
             foreach (var kvp in saveMap)
             {
-                var config = BreezeConfigurator.GetModelConfiguration(kvp.Key);
+                var config = _breezeConfigurator.GetModelConfiguration(kvp.Key);
                 if (!config.RefreshAfterSave && !config.RefreshAfterUpdate)
+                {
                     continue;
+                }
+
                 foreach (var entityInfo in kvp.Value)
+                {
                     if (entityInfo.EntityState == EntityState.Added && config.RefreshAfterSave ||
                         entityInfo.EntityState == EntityState.Modified && config.RefreshAfterUpdate)
+                    {
                         Session.Refresh(entityInfo.Entity);
+                    }
+                }
             }
 
             //tx.Commit();
@@ -728,13 +790,20 @@ namespace CoreSharp.Breeze
             //using (var tx = session.BeginTransaction()) {
             foreach (var kvp in saveMap)
             {
-                var config = BreezeConfigurator.GetModelConfiguration(kvp.Key);
+                var config = _breezeConfigurator.GetModelConfiguration(kvp.Key);
                 if (!config.RefreshAfterSave && !config.RefreshAfterUpdate)
+                {
                     continue;
+                }
+
                 foreach (var entityInfo in kvp.Value)
+                {
                     if (entityInfo.EntityState == EntityState.Added && config.RefreshAfterSave ||
                         entityInfo.EntityState == EntityState.Modified && config.RefreshAfterUpdate)
+                    {
                         await Session.RefreshAsync(entityInfo.Entity);
+                    }
+                }
             }
 
             //tx.Commit();

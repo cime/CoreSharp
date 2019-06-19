@@ -8,7 +8,7 @@ namespace CoreSharp.Breeze.Query {
   public abstract class BaseBlock {
 
     // will return either a PropBlock or a FnBlock
-    public static BaseBlock CreateLHSBlock(Object exprSource,
+    public static BaseBlock CreateLHSBlock(object exprSource,
         Type entityType) {
       if (exprSource == null) {
         throw new Exception(
@@ -25,12 +25,12 @@ namespace CoreSharp.Breeze.Query {
             "Array expressions are only permitted on the right hand side of a BinaryPredicate");
       }
 
-      if (!(exprSource is String)) {
+      if (!(exprSource is string)) {
         throw new Exception(
             "Only string expressions are permitted on this predicate");
       }
 
-      String source = (String)exprSource;
+      var source = (string)exprSource;
       if (source.IndexOf("(") == -1) {
         return new PropBlock(source, entityType);
       } else {
@@ -41,15 +41,15 @@ namespace CoreSharp.Breeze.Query {
     }
 
     // will return either a PropBlock or a LitBlock
-    public static BaseBlock CreateRHSBlock(Object exprSource,
+    public static BaseBlock CreateRHSBlock(object exprSource,
         Type entityType, DataType otherExprDataType) {
 
       if (exprSource == null) {
         return new LitBlock(exprSource, otherExprDataType);
       }
 
-      if (exprSource is String) {
-        String source = (String)exprSource;
+      if (exprSource is string) {
+        var source = (string)exprSource;
         if (entityType == null) {
           // if entityType is unknown then assume that the rhs is a
           // literal
@@ -67,8 +67,8 @@ namespace CoreSharp.Breeze.Query {
         return new LitBlock(exprSource, otherExprDataType);
       }
 
-      if (exprSource is IDictionary<string, Object>) {
-        var exprMap = (IDictionary<string, Object>)exprSource;
+      if (exprSource is IDictionary<string, object>) {
+        var exprMap = (IDictionary<string, object>)exprSource;
         // note that this is NOT the same a using get and checking for null
         // because null is a valid 'value'.
         if (!exprMap.ContainsKey("value")) {
@@ -76,13 +76,13 @@ namespace CoreSharp.Breeze.Query {
               "Unable to locate a 'value' property on: "
                   + exprMap.ToString());
         }
-        Object value = exprMap["value"];
+        var value = exprMap["value"];
 
         if (exprMap.ContainsKey("isProperty")) {
-          return new PropBlock((String)value, entityType);
+          return new PropBlock((string)value, entityType);
         } else {
-          String dt = (String)exprMap["dataType"];
-          DataType dataType = (dt != null) ? DataType.FromName(dt) : otherExprDataType;
+          var dt = (string)exprMap["dataType"];
+          var dataType = (dt != null) ? DataType.FromName(dt) : otherExprDataType;
           return new LitBlock(value, dataType);
         }
       }

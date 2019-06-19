@@ -6,12 +6,12 @@ using System.Reflection;
 namespace CoreSharp.Breeze.Query {
   public class AnyAllPredicate : BasePredicate {
 
-    public Object ExprSource { get; private set; }
+    public object ExprSource { get; private set; }
     public PropBlock NavPropBlock { get; private set; } // calculated as a result of validate;
     public BasePredicate Predicate { get; private set; }
 
 
-    public AnyAllPredicate(Operator op, Object exprSource, BasePredicate predicate) : base(op) {
+    public AnyAllPredicate(Operator op, object exprSource, BasePredicate predicate) : base(op) {
       ExprSource = exprSource;
       Predicate = predicate;
     }
@@ -37,9 +37,9 @@ namespace CoreSharp.Breeze.Query {
       var elementType = NavPropBlock.Property.ElementType;
       MethodInfo mi;
       if (Operator == Operator.Any) {
-        mi = TypeFns.GetMethodByExample((IQueryable<String> list) => list.Any(x => x != null), elementType);
+        mi = TypeFns.GetMethodByExample((IQueryable<string> list) => list.Any(x => x != null), elementType);
       } else {
-        mi = TypeFns.GetMethodByExample((IQueryable<String> list) => list.All(x => x != null), elementType);
+        mi = TypeFns.GetMethodByExample((IQueryable<string> list) => list.All(x => x != null), elementType);
       }
 
       var lambdaExpr = Predicate.ToLambda(elementType);

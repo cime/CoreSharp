@@ -5,7 +5,8 @@ namespace CoreSharp.Breeze.Serialization
 {
     public class JsonSettings
     {
-        protected static Dictionary<Type, IList<SerializationModelRule>> serializationModelRules = new Dictionary<Type, IList<SerializationModelRule>>();
+        protected static Dictionary<Type, IList<SerializationModelRule>> serializationModelRules =
+            new Dictionary<Type, IList<SerializationModelRule>>();
 
         static JsonSettings()
         {
@@ -13,7 +14,7 @@ namespace CoreSharp.Breeze.Serialization
 
         public static IList<SerializationModelRule> GetSerializationModelRules<TModel>()
         {
-            return GetSerializationModelRules(typeof (TModel));
+            return GetSerializationModelRules(typeof(TModel));
         }
 
         public static IList<SerializationModelRule> GetSerializationModelRules(Type modelType)
@@ -28,8 +29,12 @@ namespace CoreSharp.Breeze.Serialization
             var type = typeof(TModel);
             var modelRule = new SerializationModelRule<TModel>();
             if (!serializationModelRules.ContainsKey(type))
+            {
                 serializationModelRules.Add(type, new List<SerializationModelRule>());
+            }
+
             serializationModelRules[type].Add(modelRule);
+
             return modelRule;
         }
     }

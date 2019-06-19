@@ -53,7 +53,7 @@ namespace CoreSharp.Breeze
         /// <param name="list">Top-level collection of objects</param>
         /// <param name="map">Map of properties to initialize for each type</param>
         /// <param name="remainingDepth">How deep to follow the tree; prevents infinite looping</param>
-        public static void InitializeList(IEnumerable list, IDictionary<Type, List<String>> map, int remainingDepth)
+        public static void InitializeList(IEnumerable list, IDictionary<Type, List<string>> map, int remainingDepth)
         {
             foreach (var el in list)
             {
@@ -67,7 +67,7 @@ namespace CoreSharp.Breeze
         /// <param name="parent">Top-level object</param>
         /// <param name="map">Map of properties to initialize for each type</param>
         /// <param name="remainingDepth">How deep to follow the tree; prevents infinite looping</param>
-        public static void InitializeWithCascade(object parent, IDictionary<Type, List<String>> map, int remainingDepth)
+        public static void InitializeWithCascade(object parent, IDictionary<Type, List<string>> map, int remainingDepth)
         {
             if (remainingDepth < 0 || parent == null) return;
             remainingDepth--;

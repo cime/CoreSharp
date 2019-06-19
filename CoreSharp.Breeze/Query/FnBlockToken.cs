@@ -15,13 +15,13 @@ namespace CoreSharp.Breeze.Query {
       _sb = new StringBuilder();
     }
 
-    public static FnBlock ToExpression(String source, Type entityType) {
-      FnBlockToken token = ParseToken(source, 0);
+    public static FnBlock ToExpression(string source, Type entityType) {
+      var token = ParseToken(source, 0);
       return (FnBlock)token.ToExpression(entityType, null);
     }
 
     private BaseBlock ToExpression(Type entityType, DataType returnDataType) {
-      String text = _sb.ToString();
+      var text = _sb.ToString();
       if (this._fnArgs == null) {
 
         if (PropertySignature.IsProperty(entityType, text)) {
@@ -32,7 +32,7 @@ namespace CoreSharp.Breeze.Query {
         }
 
       } else {
-        String fnName = text;
+        var fnName = text;
         var argTypes = FnBlock.GetArgTypes(fnName);
         if (argTypes.Count != _fnArgs.Count) {
           throw new Exception("Incorrect number of arguments to '" + fnName
@@ -45,17 +45,17 @@ namespace CoreSharp.Breeze.Query {
 
     }
 
-    private static FnBlockToken ParseToken(String source, int ix) {
+    private static FnBlockToken ParseToken(string source, int ix) {
       ix = SkipWhitespace(source, ix);
       var token = CollectQuotedToken(source, ix);
       if (token != null) {
         return token;
       }
       token = new FnBlockToken();
-      String badChars = "'\"";
+      var badChars = "'\"";
 
       while (ix < source.Length) {
-        char c = source[ix];
+        var c = source[ix];
 
         if (c == '(') {
           ix++;
@@ -79,7 +79,7 @@ namespace CoreSharp.Breeze.Query {
 
     }
 
-    private static void ParseFnArgs(FnBlockToken token, String source, int ix) {
+    private static void ParseFnArgs(FnBlockToken token, string source, int ix) {
       token._fnArgs = new List<FnBlockToken>();
 
       while (ix < source.Length) {
@@ -88,7 +88,7 @@ namespace CoreSharp.Breeze.Query {
         if (argToken._sb.Length != 0) {
           token._fnArgs.Add(argToken);
         }
-        char c = source[ix];
+        var c = source[ix];
         ix++;
         if (c == ')') break;
       }
@@ -97,9 +97,9 @@ namespace CoreSharp.Breeze.Query {
 
     }
 
-    private static int SkipWhitespace(String source, int ix) {
+    private static int SkipWhitespace(string source, int ix) {
       while (ix < source.Length) {
-        char c = source[ix];
+        var c = source[ix];
         if (c == ' ') {
           ix++;
         } else {
@@ -109,8 +109,8 @@ namespace CoreSharp.Breeze.Query {
       return ix;
     }
 
-    private static FnBlockToken CollectQuotedToken(String source, int ix) {
-      char c = source[ix];
+    private static FnBlockToken CollectQuotedToken(string source, int ix) {
+      var c = source[ix];
       if (c != '\'' && c != '"') return null;
       var token = new FnBlockToken();
       var quoteChar = c;

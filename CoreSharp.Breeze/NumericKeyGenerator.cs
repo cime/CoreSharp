@@ -15,7 +15,7 @@ namespace CoreSharp.Breeze {
 
     public void UpdateKeys(List<TempKeyInfo> keys) {
 
-      long nextId = GetNextId(keys.Count);
+      var nextId = GetNextId(keys.Count);
       keys.ForEach(ki => {
         try {
           var nextIdValue = Convert.ChangeType(nextId, ki.Property.PropertyType);
@@ -33,21 +33,21 @@ namespace CoreSharp.Breeze {
     //***********************************
 
     private long GetNextId(int pCount) {
-      // Serialize access to GetNextId 
-      lock (__lock) {
+      // Serialize access to GetNextId
+      lock (Lock) {
 
-        if (__nextId + pCount > __maxNextId) {
+        if (_nextId + pCount > _maxNextId) {
           AllocateMoreIds(pCount);
         }
-        long result = __nextId;
-        __nextId += pCount;
+        var result = _nextId;
+        _nextId += pCount;
         return result;
       }
     }
 
     private void AllocateMoreIds(int pCount) {
-      const String sqlSelect = "select NextId from NextId where Name = 'GLOBAL'";
-      const String sqlUpdate = "update NextId set NextId={0} where Name = 'GLOBAL' and NextId={1}";
+      const string sqlSelect = "select NextId from NextId where Name = 'GLOBAL'";
+      const string sqlUpdate = "update NextId set NextId={0} where Name = 'GLOBAL' and NextId={1}";
 
       // allocate the larger of the amount requested or the default alloc group size
       pCount = Math.Max(pCount, DefaultGroupSize);
@@ -59,26 +59,26 @@ namespace CoreSharp.Breeze {
         }
         IDbCommand aCommand = CreateDbCommand(_connection);
 
-        for (int trys = 0; trys <= MaxTrys; trys++) {
+        for (var tries = 0; tries <= MaxTries; tries++) {
 
           aCommand.CommandText = sqlSelect;
-          IDataReader aDataReader = aCommand.ExecuteReader();
+          var aDataReader = aCommand.ExecuteReader();
           if (!aDataReader.Read()) {
             throw new Exception("Unable to locate 'NextId' record");
           }
 
-          Object tmp = aDataReader.GetValue(0);
-          long nextId = (long) Convert.ChangeType(tmp, typeof (Int64));
-          long newNextId = nextId + pCount;
+          var tmp = aDataReader.GetValue(0);
+          var nextId = (long) Convert.ChangeType(tmp, typeof (long));
+          var newNextId = nextId + pCount;
           aDataReader.Close();
 
           // do the update;
-          aCommand.CommandText = String.Format(sqlUpdate, newNextId, nextId);
+          aCommand.CommandText = string.Format(sqlUpdate, newNextId, nextId);
 
           // if only one record was affected - we're ok; otherwise try again.
           if (aCommand.ExecuteNonQuery() == 1) {
-            __nextId = nextId;
-            __maxNextId = newNextId;
+            _nextId = nextId;
+            _maxNextId = newNextId;
             return;
           }
         }
@@ -91,7 +91,7 @@ namespace CoreSharp.Breeze {
     }
 
     private DbCommand CreateDbCommand(IDbConnection connection) {
-      IDbCommand command = connection.CreateCommand();
+      var command = connection.CreateCommand();
       try {
         return (DbCommand) command;
       } catch {
@@ -99,11 +99,11 @@ namespace CoreSharp.Breeze {
       }
     }
 
-    private static long __nextId;
-    private static long __maxNextId;
+    private static long _nextId;
+    private static long _maxNextId;
 
-    private static object __lock = new Object();
-    private const int MaxTrys = 3;
+    private static readonly object Lock = new object();
+    private const int MaxTries = 3;
     private const int DefaultGroupSize = 100;
     private const int MaxGroupSize = 1000;
   }

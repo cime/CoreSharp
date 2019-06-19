@@ -14,6 +14,7 @@ namespace CoreSharp.Breeze
         public new IModelConfiguration<TModel> RefreshAfterUpdate(bool value)
         {
             base.RefreshAfterUpdate = value;
+
             return this;
         }
 
@@ -22,19 +23,27 @@ namespace CoreSharp.Breeze
             var propName = propExpression.GetFullPropertyName();
             var propInfo = ModelType.GetProperty(propName);
             if (propInfo == null)
+            {
                 throw new NullReferenceException(string.Format("Type '{0}' does not contain a property with name '{1}'.", ModelType, propName));
+            }
 
             IMemberConfiguration memberConfiguration;
             if (MemberConfigurations.ContainsKey(propName))
+            {
                 memberConfiguration = MemberConfigurations[propName];
+            }
             else
             {
                 memberConfiguration = new MemberConfiguration<TModel, TProperty>(propInfo);
                 BreezeConfigurator.OnSerializationMemberRuleCreated(memberConfiguration);
                 MemberConfigurations[propName] = memberConfiguration;
             }
+
             if (action != null)
+            {
                 action((IMemberConfiguration<TModel, TProperty>)memberConfiguration);
+            }
+
             return this;
         }
 
@@ -53,15 +62,19 @@ namespace CoreSharp.Breeze
         public IModelConfiguration<TModel> AddMember<TProperty>(string serializedName, Action<ICustomMemberConfiguration<TModel, TProperty>> action)
         {
             IMemberConfiguration memberConfiguration;
-            if(MemberConfigurations.ContainsKey(serializedName))
+            if (MemberConfigurations.ContainsKey(serializedName))
+            {
                 memberConfiguration = MemberConfigurations[serializedName];
+            }
             else
             {
                 memberConfiguration = new MemberConfiguration<TModel, TProperty>(serializedName, typeof(TProperty), typeof(TModel));
                 BreezeConfigurator.OnSerializationMemberRuleCreated(memberConfiguration);
                 MemberConfigurations[serializedName] = memberConfiguration;
             }
+
             action?.Invoke((ICustomMemberConfiguration<TModel, TProperty>)memberConfiguration);
+
             return this;
         }
     }

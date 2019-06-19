@@ -392,7 +392,7 @@ namespace CoreSharp.Breeze
                 }
             }
 
-            for (int i = 0; i < propNames.Length; i++)
+            for (var i = 0; i < propNames.Length; i++)
             {
                 var propType = propTypes[i];
                 if (propType.IsAssociationType && propType.IsEntityType)
@@ -585,8 +585,8 @@ namespace CoreSharp.Breeze
             var compPropTypes = compType.Subtypes;
             object component = null;
             object[] compValues = null;
-            bool isChanged = false;
-            for (int j = 0; j < compPropNames.Length; j++)
+            var isChanged = false;
+            for (var j = 0; j < compPropNames.Length; j++)
             {
                 var compPropType = compPropTypes[j];
                 if (compPropType.IsAssociationType && compPropType.IsEntityType)
@@ -634,8 +634,8 @@ namespace CoreSharp.Breeze
             var entity = entityInfo.Entity;
             if (_removeMode)
             {
-                string foreignKeyName = FindForeignKey(propName, meta);
-                object id = GetForeignKeyValue(entityInfo, meta, foreignKeyName);
+                var foreignKeyName = FindForeignKey(propName, meta);
+                var id = GetForeignKeyValue(entityInfo, meta, foreignKeyName);
                 meta.SetPropertyValue(entity, propName, null);
                 if (id != null)
                 {
@@ -667,12 +667,12 @@ namespace CoreSharp.Breeze
         private object GetRelatedEntity(string propName, EntityType propType, EntityInfo entityInfo, IClassMetadata meta)
         {
             object relatedEntity = null;
-            string foreignKeyName = FindForeignKey(propName, meta);
-            object id = GetForeignKeyValue(entityInfo, meta, foreignKeyName);
+            var foreignKeyName = FindForeignKey(propName, meta);
+            var id = GetForeignKeyValue(entityInfo, meta, foreignKeyName);
 
             if (id != null)
             {
-                EntityInfo relatedEntityInfo = FindInSaveMap(propType.ReturnedClass, id);
+                var relatedEntityInfo = FindInSaveMap(propType.ReturnedClass, id);
 
                 if (relatedEntityInfo == null)
                 {
@@ -685,7 +685,7 @@ namespace CoreSharp.Breeze
                 }
                 else
                 {
-                    bool removeReverseRelationship = propType.UseLHSPrimaryKey;
+                    var removeReverseRelationship = propType.UseLHSPrimaryKey;
                     /*
                     var entityPersister = ((AbstractEntityPersister) meta);
                     var propIndx = entityPersister.GetPropertyIndex(propName);
@@ -812,7 +812,7 @@ namespace CoreSharp.Breeze
         /// <returns>The entity, or null if not found</returns>
         private EntityInfo FindInSaveMap(Type entityType, object entityId)
         {
-            List<EntityInfo> entityInfoList = _saveMap.Where(p => entityType.IsAssignableFrom(p.Key)).SelectMany(p => p.Value).ToList();
+            var entityInfoList = _saveMap.Where(p => entityType.IsAssignableFrom(p.Key)).SelectMany(p => p.Value).ToList();
             if (entityInfoList != null && entityInfoList.Count != 0)
             {
                 var entityIdString = entityId.ToString();

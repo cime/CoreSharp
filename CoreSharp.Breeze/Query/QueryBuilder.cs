@@ -14,7 +14,7 @@ namespace CoreSharp.Breeze.Query {
   public class QueryBuilder {
 
     public static IQueryable ApplyWhere(IQueryable source, Type elementType, BasePredicate predicate) {
-      var method = TypeFns.GetMethodByExample((IQueryable<String> q) => q.Where(s => s != null), elementType);
+      var method = TypeFns.GetMethodByExample((IQueryable<string> q) => q.Where(s => s != null), elementType);
       var lambdaExpr = predicate.ToLambda(elementType);
       var func = BuildIQueryableFunc(elementType, method, lambdaExpr);
       return func(source);
@@ -26,7 +26,7 @@ namespace CoreSharp.Breeze.Query {
       var propSigs = selectClause.Properties;
       var dti = DynamicTypeInfo.FindOrCreate(propSigs.Select(ps => ps.Name), propSigs.Select(ps => ps.ReturnType));
       var lambdaExpr = CreateNewLambda(dti, propSigs);
-      var method = TypeFns.GetMethodByExample((IQueryable<String> q) => q.Select(s => s.Length), elementType, dti.DynamicType);
+      var method = TypeFns.GetMethodByExample((IQueryable<string> q) => q.Select(s => s.Length), elementType, dti.DynamicType);
       var func = BuildIQueryableFunc(elementType, method, lambdaExpr);
       return func(source);
     }
@@ -43,13 +43,13 @@ namespace CoreSharp.Breeze.Query {
     }
 
     public static IQueryable ApplySkip(IQueryable source, Type elementType, int skipCount) {
-      var method = TypeFns.GetMethodByExample((IQueryable<String> q) => Queryable.Skip<String>(q, 999), elementType);
+      var method = TypeFns.GetMethodByExample((IQueryable<string> q) => Queryable.Skip<string>(q, 999), elementType);
       var func = BuildIQueryableFunc(elementType, method, skipCount);
       return func(source);
     }
 
     public static IQueryable ApplyTake(IQueryable source, Type elementType, int takeCount) {
-      var method = TypeFns.GetMethodByExample((IQueryable<String> q) => Queryable.Take<String>(q, 999), elementType);
+      var method = TypeFns.GetMethodByExample((IQueryable<string> q) => Queryable.Take<string>(q, 999), elementType);
       var func = BuildIQueryableFunc(elementType, method, takeCount);
       return func(source);
     }
@@ -57,7 +57,7 @@ namespace CoreSharp.Breeze.Query {
     // TODO: Check if the ThenBy portion of this works
     private static Func<IQueryable, IQueryable> BuildOrderByFunc(bool isThenBy, Type elementType, OrderByClause.OrderByItem obi) {
       var propertyPath = obi.PropertyPath;
-      bool isDesc = obi.IsDesc;
+      var isDesc = obi.IsDesc;
       var paramExpr = Expression.Parameter(elementType, "o");
       Expression nextExpr = paramExpr;
       var propertyNames = propertyPath.Split('.').ToList();
@@ -85,18 +85,18 @@ namespace CoreSharp.Breeze.Query {
       if (isThenBy) {
         orderByMethod = isDesc
                           ? TypeFns.GetMethodByExample(
-                            (IOrderedQueryable<String> q) => q.ThenByDescending(s => s.Length),
+                            (IOrderedQueryable<string> q) => q.ThenByDescending(s => s.Length),
                             elementType, nextExprType)
                           : TypeFns.GetMethodByExample(
-                            (IOrderedQueryable<String> q) => q.ThenBy(s => s.Length),
+                            (IOrderedQueryable<string> q) => q.ThenBy(s => s.Length),
                             elementType, nextExprType);
       } else {
         orderByMethod = isDesc
                           ? TypeFns.GetMethodByExample(
-                            (IQueryable<String> q) => q.OrderByDescending(s => s.Length),
+                            (IQueryable<string> q) => q.OrderByDescending(s => s.Length),
                             elementType, nextExprType)
                           : TypeFns.GetMethodByExample(
-                            (IQueryable<String> q) => q.OrderBy(s => s.Length),
+                            (IQueryable<string> q) => q.OrderBy(s => s.Length),
                             elementType, nextExprType);
       }
       return orderByMethod;

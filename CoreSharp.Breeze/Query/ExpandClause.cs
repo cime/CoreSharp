@@ -13,19 +13,19 @@ namespace CoreSharp.Breeze.Query {
    *
    */
   public class ExpandClause {
-    private List<String> _propertyPaths;
+    private List<string> _propertyPaths;
 
 
     public static ExpandClause From(IEnumerable propertyPaths) {
-      return (propertyPaths == null) ? null : new ExpandClause(propertyPaths.Cast<String>());
+      return (propertyPaths == null) ? null : new ExpandClause(propertyPaths.Cast<string>());
     }
 
-    public ExpandClause(IEnumerable<String> propertyPaths) {
+    public ExpandClause(IEnumerable<string> propertyPaths) {
       _propertyPaths = propertyPaths.ToList();
     }
 
 
-    public IEnumerable<String> PropertyPaths {
+    public IEnumerable<string> PropertyPaths {
       get { return _propertyPaths.AsReadOnly(); }
     }
 

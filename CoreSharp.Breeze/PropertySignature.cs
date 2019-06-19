@@ -7,21 +7,21 @@ using System.Reflection;
 namespace CoreSharp.Breeze {
 
   public class PropertySignature {
-    public PropertySignature(Type instanceType, String propertyPath) {
+    public PropertySignature(Type instanceType, string propertyPath) {
       InstanceType = instanceType;
       PropertyPath = propertyPath;
       Properties = GetProperties(InstanceType, PropertyPath).ToList();
     }
 
-    public static bool IsProperty(Type instanceType, String propertyPath) {
+    public static bool IsProperty(Type instanceType, string propertyPath) {
       return GetProperties(instanceType, propertyPath, false).Any(pi => pi != null);
     }
 
     public Type InstanceType { get; private set; }
-    public String PropertyPath { get; private set; }
+    public string PropertyPath { get; private set; }
     public List<PropertyInfo> Properties { get; private set; }
 
-    public String Name {
+    public string Name {
       get { return Properties.Select(p => p.Name).ToAggregateString("_"); }
     }
 
@@ -46,7 +46,7 @@ namespace CoreSharp.Breeze {
 
 
     // returns an IEnumerable<PropertyInfo> with nulls if invalid and throwOnError = true
-    public static IEnumerable<PropertyInfo> GetProperties(Type instanceType, String propertyPath, bool throwOnError = true) {
+    public static IEnumerable<PropertyInfo> GetProperties(Type instanceType, string propertyPath, bool throwOnError = true) {
       var propertyNames = propertyPath.Split('.');
 
       var nextInstanceType = instanceType;
@@ -62,12 +62,12 @@ namespace CoreSharp.Breeze {
       }
     }
 
-    private static PropertyInfo GetProperty(Type instanceType, String propertyName, bool throwOnError = true) {
+    private static PropertyInfo GetProperty(Type instanceType, string propertyName, bool throwOnError = true) {
       var propertyInfo = (PropertyInfo)TypeFns.FindPropertyOrField(instanceType, propertyName,
         BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public);
       if (propertyInfo == null) {
         if (throwOnError) {
-          var msg = String.Format("Unable to locate property '{0}' on type '{1}'.", propertyName, instanceType);
+          var msg = string.Format("Unable to locate property '{0}' on type '{1}'.", propertyName, instanceType);
           throw new Exception(msg);
         } else {
           return null;
@@ -77,7 +77,7 @@ namespace CoreSharp.Breeze {
     }
 
     public Expression BuildMemberExpression(ParameterExpression parmExpr) {
-      Expression memberExpr = BuildPropertyExpression(parmExpr, Properties.First());
+      var memberExpr = BuildPropertyExpression(parmExpr, Properties.First());
       foreach (var property in Properties.Skip(1)) {
         memberExpr = BuildPropertyExpression(memberExpr, property);
       }

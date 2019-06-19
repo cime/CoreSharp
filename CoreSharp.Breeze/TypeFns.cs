@@ -16,53 +16,53 @@ namespace CoreSharp.Breeze {
     /// Returns an array of numeric types.
     /// </summary>
     public static readonly Type[] NumericTypes = new Type[] {
-      typeof(Byte),
-      typeof(Int16), typeof(UInt16),
-      typeof(Int32), typeof(UInt32),
-      typeof(Int64), typeof(UInt64),
-      typeof(Single),
-      typeof(Double),
-      typeof(Decimal)
+      typeof(byte),
+      typeof(short), typeof(ushort),
+      typeof(int), typeof(uint),
+      typeof(long), typeof(ulong),
+      typeof(float),
+      typeof(double),
+      typeof(decimal)
     };
 
     /// <summary>
     /// Returns an array of integer types.
     /// </summary>
     public static readonly Type[] IntegerTypes = new Type[] {
-      typeof(Byte),
-      typeof(Int16), typeof(UInt16),
-      typeof(Int32), typeof(UInt32),
-      typeof(Int64), typeof(UInt64),
+      typeof(byte),
+      typeof(short), typeof(ushort),
+      typeof(int), typeof(uint),
+      typeof(long), typeof(ulong),
     };
 
     /// <summary>
     /// Returns an array of decimal types.
     /// </summary>
     public static readonly Type[] DecimalTypes = new Type[] {
-      typeof(Single),
-      typeof(Double),
-      typeof(Decimal)
+      typeof(float),
+      typeof(double),
+      typeof(decimal)
     };
 
     /// <summary>
     /// Returns an array of predefined types.
     /// </summary>
     public static readonly Type[] PredefinedTypes = {
-            typeof(Object),
-            typeof(Boolean),
-            typeof(Char),
-            typeof(String),
-            typeof(SByte),
-            typeof(Byte),
-            typeof(Int16),
-            typeof(UInt16),
-            typeof(Int32),
-            typeof(UInt32),
-            typeof(Int64),
-            typeof(UInt64),
-            typeof(Single),
-            typeof(Double),
-            typeof(Decimal),
+            typeof(object),
+            typeof(bool),
+            typeof(char),
+            typeof(string),
+            typeof(sbyte),
+            typeof(byte),
+            typeof(short),
+            typeof(ushort),
+            typeof(int),
+            typeof(uint),
+            typeof(long),
+            typeof(ulong),
+            typeof(float),
+            typeof(double),
+            typeof(decimal),
             typeof(DateTime),
             typeof(DateTimeOffset),
             typeof(TimeSpan),
@@ -77,8 +77,8 @@ namespace CoreSharp.Breeze {
     /// <param name="type"></param>
     /// <returns>the name of the given type</returns>
     public static string GetTypeName(Type type) {
-      Type baseType = GetNonNullableType(type);
-      string s = baseType.Name;
+      var baseType = GetNonNullableType(type);
+      var s = baseType.Name;
       if (type != baseType) s += '?';
       return s;
     }
@@ -231,7 +231,7 @@ namespace CoreSharp.Breeze {
     /// <param name="seqType"></param>
     /// <returns></returns>
     public static Type GetElementType(Type seqType) {
-      Type ienum = FindIEnumerable(seqType);
+      var ienum = FindIEnumerable(seqType);
       if (ienum == null) return null;
       return ienum.GetGenericArguments()[0];
     }
@@ -251,18 +251,18 @@ namespace CoreSharp.Breeze {
       }
 
       if (seqType.GetTypeInfo().IsGenericType) {
-        foreach (Type arg in seqType.GetGenericArguments()) {
-          Type ienum = typeof(IEnumerable<>).MakeGenericType(arg);
+        foreach (var arg in seqType.GetGenericArguments()) {
+          var ienum = typeof(IEnumerable<>).MakeGenericType(arg);
           if (ienum.IsAssignableFrom(seqType)) {
             return ienum;
           }
         }
       }
 
-      Type[] ifaces = seqType.GetInterfaces();
+      var ifaces = seqType.GetInterfaces();
       if (ifaces != null && ifaces.Length > 0) {
-        foreach (Type iface in ifaces) {
-          Type ienum = FindIEnumerable(iface);
+        foreach (var iface in ifaces) {
+          var ienum = FindIEnumerable(iface);
           if (ienum != null) return ienum;
         }
       }
@@ -279,7 +279,7 @@ namespace CoreSharp.Breeze {
     /// <param name="type"></param>
     /// <returns>true if the specified type is a predefined type; false otherwise</returns>
     public static bool IsPredefinedType(Type type) {
-      foreach (Type t in PredefinedTypes) if (t == type) return true;
+      foreach (var t in PredefinedTypes) if (t == type) return true;
       return false;
     }
 
@@ -379,8 +379,8 @@ namespace CoreSharp.Breeze {
     /// <param name="bindingFlags"></param>
     /// <returns></returns>
     public static MemberInfo FindPropertyOrField(Type type, string memberName, BindingFlags bindingFlags) {
-      foreach (Type t in GetSelfAndBaseTypes(type)) {
-        MemberInfo[] members = t.GetTypeInfo().FindMembers(MemberTypes.Property | MemberTypes.Field,
+      foreach (var t in GetSelfAndBaseTypes(type)) {
+        var members = t.GetTypeInfo().FindMembers(MemberTypes.Property | MemberTypes.Field,
             bindingFlags, Type.FilterNameIgnoreCase, memberName);
         if (members.Length != 0) return members[0];
       }
@@ -398,7 +398,7 @@ namespace CoreSharp.Breeze {
     /// <param name="parameterTypes"></param>
     /// <returns></returns>
     public static MethodInfo FindMethod(Type type, string methodName, Type[] parameterTypes) {
-      BindingFlags flags = BindingFlags.Public | BindingFlags.DeclaredOnly |
+      var flags = BindingFlags.Public | BindingFlags.DeclaredOnly |
           BindingFlags.Static | BindingFlags.Instance;
       return FindMethod(type, methodName, flags, parameterTypes);
     }
@@ -419,12 +419,12 @@ namespace CoreSharp.Breeze {
       if (!methods.Any()) return null;
       var counts = methods.Select(m => {
         var candidateParameterTypes = m.GetParameters().Select(p => p.ParameterType);
-        return candidateParameterTypes.Zip(parameterTypes, (a, b) => Object.Equals(a, b) ? 1 : 0).Sum();
+        return candidateParameterTypes.Zip(parameterTypes, (a, b) => object.Equals(a, b) ? 1 : 0).Sum();
       }).ToList();
       // best method is where most number of parameters are an exact match.
       var bestMethod = methods.OrderByDescending(m => {
         var candidateParameterTypes = m.GetParameters().Select(p => p.ParameterType);
-        return candidateParameterTypes.Zip(parameterTypes, (a, b) => Object.Equals(a, b) ? 1 : 0).Sum();
+        return candidateParameterTypes.Zip(parameterTypes, (a, b) => object.Equals(a, b) ? 1 : 0).Sum();
       }).First();
       return bestMethod;
     }
@@ -439,10 +439,10 @@ namespace CoreSharp.Breeze {
     /// <param name="parameterTypes"></param>
     /// <returns></returns>
     public static IEnumerable<MethodInfo> FindMethods(Type type, string methodName, BindingFlags flags, Type[] genericArgTypes, Type[] parameterTypes) {
-      foreach (Type t in GetSelfAndBaseTypes(type)) {
-        MemberInfo[] members = t.GetTypeInfo().FindMembers(MemberTypes.Method,
+      foreach (var t in GetSelfAndBaseTypes(type)) {
+        var members = t.GetTypeInfo().FindMembers(MemberTypes.Method,
             flags, Type.FilterNameIgnoreCase, methodName);
-        foreach (MethodInfo method in members.OfType<MethodInfo>()) {
+        foreach (var method in members.OfType<MethodInfo>()) {
           MethodInfo resolvedMethod;
           if (genericArgTypes != null && genericArgTypes.Length > 0) {
             var genericArgs = method.GetGenericArguments();
@@ -472,10 +472,10 @@ namespace CoreSharp.Breeze {
     /// <param name="parameterTypes"></param>
     /// <returns></returns>
     public static IEnumerable<MethodInfo> FindMethods(Type type, string methodName, BindingFlags flags, Type[] parameterTypes) {
-      foreach (Type t in GetSelfAndBaseTypes(type)) {
-        MemberInfo[] members = t.GetTypeInfo().FindMembers(MemberTypes.Method,
+      foreach (var t in GetSelfAndBaseTypes(type)) {
+        var members = t.GetTypeInfo().FindMembers(MemberTypes.Method,
             flags, Type.FilterNameIgnoreCase, methodName);
-        foreach (MethodBase method in members.Cast<MethodBase>()) {
+        foreach (var method in members.Cast<MethodBase>()) {
           var parameters = method.GetParameters();
           if (parameters.Length != parameterTypes.Length) continue;
           var candidateParameterTypes = parameters.Select(p => p.ParameterType);
@@ -499,7 +499,7 @@ namespace CoreSharp.Breeze {
     /// <param name="parameterTypes"></param>
     /// <returns></returns>
     public static MethodInfo FindMethod(Type type, string methodName, bool isStatic, Type[] parameterTypes) {
-      BindingFlags flags = BindingFlags.Public | BindingFlags.DeclaredOnly |
+      var flags = BindingFlags.Public | BindingFlags.DeclaredOnly |
           (isStatic ? BindingFlags.Static : BindingFlags.Instance);
       return FindMethod(type, methodName, flags, parameterTypes);
     }
@@ -525,10 +525,10 @@ namespace CoreSharp.Breeze {
     /// <param name="genericArgTypes"></param>
     /// <returns></returns>
     public static IEnumerable<MethodInfo> FindGenericMethods(Type type, string methodName, BindingFlags flags, Type[] genericArgTypes) {
-      foreach (Type t in GetSelfAndBaseTypes(type)) {
-        MemberInfo[] members = t.GetTypeInfo().FindMembers(MemberTypes.Method,
+      foreach (var t in GetSelfAndBaseTypes(type)) {
+        var members = t.GetTypeInfo().FindMembers(MemberTypes.Method,
             flags, Type.FilterNameIgnoreCase, methodName);
-        foreach (MethodInfo method in members.OfType<MethodInfo>()) {
+        foreach (var method in members.OfType<MethodInfo>()) {
           MethodInfo resolvedMethod;
           if (genericArgTypes != null && genericArgTypes.Length > 0) {
             var genericArgs = method.GetGenericArguments();
@@ -550,7 +550,7 @@ namespace CoreSharp.Breeze {
     /// <returns></returns>
     public static IEnumerable<Type> GetSelfAndBaseTypes(Type type) {
       if (type.GetTypeInfo().IsInterface) return (new List<Type>() { type }).Concat(type.GetInterfaces());
-      if (type == typeof(Object)) return new List<Type>() { type };
+      if (type == typeof(object)) return new List<Type>() { type };
       var ifaceTypes = type.GetInterfaces();
       var baseTypes =  GetSelfAndBaseTypes(type.GetTypeInfo().BaseType);
       var results = new[] { type }.Concat(baseTypes).Concat(ifaceTypes).Distinct().ToList();
@@ -579,11 +579,11 @@ namespace CoreSharp.Breeze {
     public static bool IsCompatibleWith(Type source, Type target) {
       if (source == target) return true;
       if (!target.GetTypeInfo().IsValueType) return target.IsAssignableFrom(source);
-      Type st = GetNonNullableType(source);
-      Type tt = GetNonNullableType(target);
+      var st = GetNonNullableType(source);
+      var tt = GetNonNullableType(target);
       if (st != source && tt == target) return false;
-      TypeCode sc = st.GetTypeInfo().IsEnum ? TypeCode.Object : Type.GetTypeCode(st);
-      TypeCode tc = tt.GetTypeInfo().IsEnum ? TypeCode.Object : Type.GetTypeCode(tt);
+      var sc = st.GetTypeInfo().IsEnum ? TypeCode.Object : Type.GetTypeCode(st);
+      var tc = tt.GetTypeInfo().IsEnum ? TypeCode.Object : Type.GetTypeCode(tt);
       switch (sc) {
       case TypeCode.SByte:
         switch (tc) {
@@ -694,12 +694,12 @@ namespace CoreSharp.Breeze {
     /// <param name="genericType"></param>
     /// <param name="argTypes"></param>
     /// <returns></returns>
-    public static Object ConstructGenericInstance(Type genericType, params Type[] argTypes) {
+    public static object ConstructGenericInstance(Type genericType, params Type[] argTypes) {
       if (genericType == null) {
         throw new ArgumentNullException("genericType");
       }
 
-      Type finalType = genericType.MakeGenericType(argTypes);
+      var finalType = genericType.MakeGenericType(argTypes);
       return Activator.CreateInstance(finalType);
     }
 
@@ -719,13 +719,13 @@ namespace CoreSharp.Breeze {
     /// <param name="argTypes"></param>
     /// <param name="constructorParams"></param>
     /// <returns></returns>
-    public static Object ConstructGenericInstance(Type genericType, Type[] argTypes,
-      params Object[] constructorParams) {
+    public static object ConstructGenericInstance(Type genericType, Type[] argTypes,
+      params object[] constructorParams) {
       if (genericType == null) {
         throw new ArgumentNullException("genericType");
       }
 
-      Type finalType = genericType.MakeGenericType(argTypes);
+      var finalType = genericType.MakeGenericType(argTypes);
       return Activator.CreateInstance(finalType, constructorParams);
     }
 
@@ -733,18 +733,18 @@ namespace CoreSharp.Breeze {
       get {
         lock (__nullableInfoMap) {
           if (__nullableInfoMap.Count == 0) {
-            UpdateNullableInfoMap<Byte>();
-            UpdateNullableInfoMap<Int16>();
-            UpdateNullableInfoMap<UInt16>();
-            UpdateNullableInfoMap<Int32>();
-            UpdateNullableInfoMap<UInt32>();
-            UpdateNullableInfoMap<Int64>();
-            UpdateNullableInfoMap<UInt64>();
-            UpdateNullableInfoMap<Single>();
-            UpdateNullableInfoMap<Double>();
-            UpdateNullableInfoMap<Decimal>();
-            UpdateNullableInfoMap<Boolean>();
-            UpdateNullableInfoMap<Char>();
+            UpdateNullableInfoMap<byte>();
+            UpdateNullableInfoMap<short>();
+            UpdateNullableInfoMap<ushort>();
+            UpdateNullableInfoMap<int>();
+            UpdateNullableInfoMap<uint>();
+            UpdateNullableInfoMap<long>();
+            UpdateNullableInfoMap<ulong>();
+            UpdateNullableInfoMap<float>();
+            UpdateNullableInfoMap<double>();
+            UpdateNullableInfoMap<decimal>();
+            UpdateNullableInfoMap<bool>();
+            UpdateNullableInfoMap<char>();
             UpdateNullableInfoMap<DateTime>();
             UpdateNullableInfoMap<DateTimeOffset>();
             UpdateNullableInfoMap<TimeSpan>();
@@ -765,12 +765,12 @@ namespace CoreSharp.Breeze {
 
 
     private class NullableInfo {
-      public NullableInfo(Type pNullableType, Object pDefaultValue) {
+      public NullableInfo(Type pNullableType, object pDefaultValue) {
         NullableType = pNullableType;
         DefaultValue = pDefaultValue;
       }
       public Type   NullableType;
-      public Object DefaultValue;
+      public object DefaultValue;
     }
 
 
@@ -796,8 +796,8 @@ namespace CoreSharp.Breeze {
       //    hash ^= item.GetHashCode();
       //  }
       //}
-      int hash = 0;
-      foreach (Object item in items) {
+      var hash = 0;
+      foreach (var item in items) {
         if (item != null) {
           if (hash == 0) {
             hash = item.GetHashCode();
@@ -817,7 +817,7 @@ namespace CoreSharp.Breeze {
     /// <returns>A delimited string</returns>
     public static string ToAggregateString(this IEnumerable items, string delimiter) {
       StringBuilder sb = null;
-      foreach (object aObject in items) {
+      foreach (var aObject in items) {
         if (sb == null) {
           sb = new StringBuilder();
         } else {
@@ -825,7 +825,7 @@ namespace CoreSharp.Breeze {
         }
         sb.Append(aObject.ToString());
       }
-      if (sb == null) return String.Empty;
+      if (sb == null) return string.Empty;
       return sb.ToString();
     }
   }

@@ -12,19 +12,19 @@ namespace CoreSharp.Breeze.Query {
    *
    */
   public class SelectClause {
-    private List<String> _propertyPaths;
+    private List<string> _propertyPaths;
     private List<PropertySignature> _properties;
 
     public static SelectClause From(IEnumerable propertyPaths) {
-      return (propertyPaths == null) ? null : new SelectClause(propertyPaths.Cast<String>());
+      return (propertyPaths == null) ? null : new SelectClause(propertyPaths.Cast<string>());
     }
 
-    public SelectClause(IEnumerable<String> propertyPaths) {
+    public SelectClause(IEnumerable<string> propertyPaths) {
       _propertyPaths = propertyPaths.ToList();
     }
 
 
-    public IEnumerable<String> PropertyPaths {
+    public IEnumerable<string> PropertyPaths {
       get { return _propertyPaths.AsReadOnly(); }
     }
 

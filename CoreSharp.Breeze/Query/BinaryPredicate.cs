@@ -11,12 +11,12 @@ namespace CoreSharp.Breeze.Query {
    *
    */
   public class BinaryPredicate : BasePredicate {
-    public Object Expr1Source { get; private set; }
-    public Object Expr2Source { get; private set; }
+    public object Expr1Source { get; private set; }
+    public object Expr2Source { get; private set; }
     private BaseBlock _block1;
     private BaseBlock _block2;
 
-    public BinaryPredicate(Operator op, Object expr1Source, Object expr2Source) : base(op) {
+    public BinaryPredicate(Operator op, object expr1Source, object expr2Source) : base(op) {
       Expr1Source = expr1Source;
       Expr2Source = expr2Source;
     }
@@ -38,7 +38,7 @@ namespace CoreSharp.Breeze.Query {
       if (enumType != null) {
         if (Expr2Source != null) {
           var et = TypeFns.GetNonNullableType(enumType);
-          var expr2Enum = Enum.Parse(et, (String)Expr2Source);
+          var expr2Enum = Enum.Parse(et, (string)Expr2Source);
           this._block2 = BaseBlock.CreateRHSBlock(expr2Enum, entityType, null);
         } else {
           this._block2 = BaseBlock.CreateRHSBlock(null, entityType, null);
@@ -63,7 +63,7 @@ namespace CoreSharp.Breeze.Query {
 
     private Type GetEnumType(BaseBlock block) {
       if (block is PropBlock) {
-        PropBlock pExpr = (PropBlock)block;
+        var pExpr = (PropBlock)block;
         var prop = pExpr.Property;
         if (prop.IsDataProperty) {
           if (TypeFns.IsEnumType(prop.ReturnType)) {
@@ -104,17 +104,17 @@ namespace CoreSharp.Breeze.Query {
       } else if (op == BinaryOperator.LessThanOrEqual) {
         return Expression.LessThanOrEqual(expr1, expr2);
       } else if (op == BinaryOperator.StartsWith) {
-        var mi = TypeFns.GetMethodByExample((String s) => s.StartsWith("abc"));
+        var mi = TypeFns.GetMethodByExample((string s) => s.StartsWith("abc"));
         return Expression.Call(expr1, mi, expr2);
       } else if (op == BinaryOperator.EndsWith) {
-        var mi = TypeFns.GetMethodByExample((String s) => s.EndsWith("abc"));
+        var mi = TypeFns.GetMethodByExample((string s) => s.EndsWith("abc"));
         return Expression.Call(expr1, mi, expr2);
       } else if (op == BinaryOperator.Contains) {
-        var mi = TypeFns.GetMethodByExample((String s) => s.Contains("abc"));
+        var mi = TypeFns.GetMethodByExample((string s) => s.Contains("abc"));
         return Expression.Call(expr1, mi, expr2);
       } else if (op == BinaryOperator.In) {
         // TODO: need to generalize this past just 'string'
-        var mi = TypeFns.GetMethodByExample((List<String> list) => list.Contains("abc"), expr1.Type);
+        var mi = TypeFns.GetMethodByExample((List<string> list) => list.Contains("abc"), expr1.Type);
         return Expression.Call(expr2, mi, expr1);
       }
 
@@ -128,7 +128,7 @@ namespace CoreSharp.Breeze.Query {
 
     private bool CannotBeNull(Expression expr) {
       var t = expr.Type;
-      return TypeFns.IsPredefinedType(t) && t != typeof(String);
+      return TypeFns.IsPredefinedType(t) && t != typeof(string);
     }
   }
 }

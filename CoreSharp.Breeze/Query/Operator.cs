@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace CoreSharp.Breeze.Query {
   public class Operator {
-    public static Dictionary<String, Operator> _opMap = new Dictionary<String, Operator>();
+    public static Dictionary<string, Operator> _opMap = new Dictionary<string, Operator>();
 
     public static Operator Any = new Operator("any,some", OperatorType.AnyAll);
     public static Operator All = new Operator("all,every", OperatorType.AnyAll);
@@ -26,11 +26,11 @@ namespace CoreSharp.Breeze.Query {
 
     public static BinaryOperator In = new BinaryOperator("in");
         
-    public String Name { get; private set; }
+    public string Name { get; private set; }
     public OperatorType OpType { get; private set; }
-    public List<String> _aliases;
+    public List<string> _aliases;
 
-    public static Operator FromString(String op) {
+    public static Operator FromString(string op) {
       if (_opMap.ContainsKey(op.ToLowerInvariant())) {
         return _opMap[op.ToLowerInvariant()];
       } else {
@@ -38,7 +38,7 @@ namespace CoreSharp.Breeze.Query {
       }
     }
 
-    public Operator(String aliases, OperatorType opType) {
+    public Operator(string aliases, OperatorType opType) {
       _aliases = aliases.Split(',').ToList();
       Name = _aliases[0];
       OpType = opType;
@@ -53,7 +53,7 @@ namespace CoreSharp.Breeze.Query {
 
   public class BinaryOperator : Operator {
     public Expression Expression { get; private set; }
-    public BinaryOperator(String name) : base(name, OperatorType.Binary) {
+    public BinaryOperator(string name) : base(name, OperatorType.Binary) {
       
     }
 

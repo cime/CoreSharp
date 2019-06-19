@@ -15,31 +15,31 @@ namespace CoreSharp.Breeze.Query {
   public class OrderByClause {
 
     private List<OrderByItem> _orderByItems;
-    private List<String> _propertyPaths;
+    private List<string> _propertyPaths;
 
     
     // need to be able to take in a List<Object>
     public static OrderByClause From(IEnumerable propertyPaths) {
-      return (propertyPaths == null) ? null : new OrderByClause(propertyPaths.Cast<String>());
+      return (propertyPaths == null) ? null : new OrderByClause(propertyPaths.Cast<string>());
     }
 
-    public OrderByClause(IEnumerable<String> propertyPaths) {
+    public OrderByClause(IEnumerable<string> propertyPaths) {
       _propertyPaths = propertyPaths.ToList();
       _orderByItems = _propertyPaths.Select(pp => {
         var itemTrimmed = Regex.Replace(pp, @"\s+", " ").Trim();
-        String[] itemParts = itemTrimmed.Split(' ');
+        var itemParts = itemTrimmed.Split(' ');
         var isDesc = itemParts.Length == 1 ? false : itemParts[1].Equals("desc");
         return new OrderByItem(itemParts[0], isDesc);
       }).ToList();
     }
 
     public void Validate(Type entityType) {
-      foreach (OrderByItem item in _orderByItems) {
+      foreach (var item in _orderByItems) {
         item.Validate(entityType);
       }
     }
 
-    public IEnumerable<String> PropertyPaths {
+    public IEnumerable<string> PropertyPaths {
       get { return _propertyPaths.AsReadOnly(); }
     }
 
@@ -52,7 +52,7 @@ namespace CoreSharp.Breeze.Query {
       public bool IsDesc { get; private set; }
       public PropertySignature Property { get; private set; }
 
-      public OrderByItem(String propertyPath, bool isDesc) {
+      public OrderByItem(string propertyPath, bool isDesc) {
         PropertyPath = propertyPath;
         IsDesc = isDesc;
       }

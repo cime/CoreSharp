@@ -14,11 +14,11 @@ namespace CoreSharp.Breeze {
   /// </remarks>
   public class QueryBuilder  {   
     
-    public static Func<IQueryable, IQueryable> BuildSelectFunc(Type elementType, List<String> selectClauses) {
+    public static Func<IQueryable, IQueryable> BuildSelectFunc(Type elementType, List<string> selectClauses) {
       var propSigs = selectClauses.Select(sc => new PropertySignature(elementType, sc)).ToList();
       var dti = DynamicTypeInfo.FindOrCreate(propSigs.Select(ps => ps.Name), propSigs.Select(ps => ps.ReturnType));
       var lambdaExpr = CreateNewLambda(dti, propSigs);
-      var method = TypeFns.GetMethodByExample((IQueryable<String> q) => q.Select(s => s.Length), elementType, dti.DynamicType);
+      var method = TypeFns.GetMethodByExample((IQueryable<string> q) => q.Select(s => s.Length), elementType, dti.DynamicType);
       var func = BuildIQueryableFunc(elementType, method, lambdaExpr);
       return func;
     }
@@ -42,7 +42,7 @@ namespace CoreSharp.Breeze {
     public static Func<IQueryable, IQueryable> BuildOrderByFunc(bool isThenBy, Type elementType, string obc) {
       var parts = obc.Trim().Replace("  ", " ").Split(' ');
       var propertyPath = parts[0];
-      bool isDesc = parts.Length > 1 && parts[1] == "desc";
+      var isDesc = parts.Length > 1 && parts[1] == "desc";
       var paramExpr = Expression.Parameter(elementType, "o");
       Expression nextExpr = paramExpr;
       var propertyNames = propertyPath.Split('/').ToList();
@@ -68,18 +68,18 @@ namespace CoreSharp.Breeze {
       if (isThenBy) {
         orderByMethod = isDesc
                           ? TypeFns.GetMethodByExample(
-                            (IOrderedQueryable<String> q) => q.ThenByDescending(s => s.Length),
+                            (IOrderedQueryable<string> q) => q.ThenByDescending(s => s.Length),
                             elementType, nextExprType)
                           : TypeFns.GetMethodByExample(
-                            (IOrderedQueryable<String> q) => q.ThenBy(s => s.Length),
+                            (IOrderedQueryable<string> q) => q.ThenBy(s => s.Length),
                             elementType, nextExprType);
       } else {
         orderByMethod = isDesc
                           ? TypeFns.GetMethodByExample(
-                            (IQueryable<String> q) => q.OrderByDescending(s => s.Length),
+                            (IQueryable<string> q) => q.OrderByDescending(s => s.Length),
                             elementType, nextExprType)
                           : TypeFns.GetMethodByExample(
-                            (IQueryable<String> q) => q.OrderBy(s => s.Length),
+                            (IQueryable<string> q) => q.OrderBy(s => s.Length),
                             elementType, nextExprType);
       }
       return orderByMethod;

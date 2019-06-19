@@ -108,7 +108,7 @@ namespace CoreSharp.Breeze {
     /// </summary>
     /// <returns></returns>
     public TransactionOptions ToTransactionOptions() {
-      TransactionOptions options = new TransactionOptions();
+      var options = new TransactionOptions();
       options.IsolationLevel = this.IsolationLevel;
       options.Timeout = this.Timeout;
       return options;
@@ -119,9 +119,9 @@ namespace CoreSharp.Breeze {
     /// </summary>
     /// <param name="obj"></param>
     /// <returns></returns>
-    public override bool Equals(Object obj) {
+    public override bool Equals(object obj) {
       if (obj == null) return false;
-      TransactionSettings other = obj as TransactionSettings;
+      var other = obj as TransactionSettings;
       if (other == null) return false;
       return other.IsolationLevel.Equals(this.IsolationLevel)
         && other.Timeout.Equals(this.Timeout)

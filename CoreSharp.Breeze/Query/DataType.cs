@@ -5,9 +5,9 @@ using System.Xml;
 
 namespace CoreSharp.Breeze.Query {
   public class DataType {
-    private String _name;
+    private string _name;
     private Type _type;
-    private static Dictionary<String, DataType> _nameMap = new Dictionary<String, DataType>();
+    private static Dictionary<string, DataType> _nameMap = new Dictionary<string, DataType>();
     private static Dictionary<Type, DataType> _typeMap = new Dictionary<Type, DataType>();
 
     public static DataType Binary = new DataType("Binary");
@@ -24,18 +24,18 @@ namespace CoreSharp.Breeze.Query {
     public static DataType Int64 = new DataType("Int64", typeof(long));
     public static DataType Boolean = new DataType("Boolean", typeof(bool));
 
-    public static DataType Decimal = new DataType("Decimal", typeof(Decimal));
-    public static DataType Double = new DataType("Double", typeof(Double));
-    public static DataType Single = new DataType("Single", typeof(Single));
+    public static DataType Decimal = new DataType("Decimal", typeof(decimal));
+    public static DataType Double = new DataType("Double", typeof(double));
+    public static DataType Single = new DataType("Single", typeof(float));
 
 
 
-    public DataType(String name) {
+    public DataType(string name) {
       _name = name;
       _nameMap[name] = this;
     }
 
-    public DataType(String name, Type type) {
+    public DataType(string name, Type type) {
       _name = name;
       _type = type;
       _nameMap[name] = this;
@@ -43,7 +43,7 @@ namespace CoreSharp.Breeze.Query {
     }
 
 
-    public String GetName() {
+    public string GetName() {
       return _name;
     }
 
@@ -51,7 +51,7 @@ namespace CoreSharp.Breeze.Query {
       return _type;
     }
 
-    public static DataType FromName(String name) {
+    public static DataType FromName(string name) {
       return _nameMap[name];
     }
 
@@ -63,7 +63,7 @@ namespace CoreSharp.Breeze.Query {
     // Can't use this safely because of missing support for optional parts.
     // private static DateFormat ISO8601_Format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
-    public static Object CoerceData(Object value, DataType dataType) {
+    public static object CoerceData(object value, DataType dataType) {
 
       if (value == null || dataType == null || value.GetType() == dataType.GetUnderlyingType()) {
         return value;
@@ -82,7 +82,7 @@ namespace CoreSharp.Breeze.Query {
       } else if (dataType == DataType.DateTimeOffset && value is DateTime) {
         DateTimeOffset result = (DateTime)value;
         return result;
-      } else if (dataType == DataType.Time && value is String) {
+      } else if (dataType == DataType.Time && value is string) {
         return XmlConvert.ToTimeSpan((string)value);
       } else {
         return Convert.ChangeType(value, dataType.GetUnderlyingType());

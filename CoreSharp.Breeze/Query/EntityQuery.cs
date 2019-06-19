@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 namespace CoreSharp.Breeze.Query {
   public class EntityQuery {
 
-    private String _resourceName;
+    private string _resourceName;
     private BasePredicate _wherePredicate;
     private OrderByClause _orderByClause;
     private ExpandClause _expandClause;
@@ -14,7 +14,7 @@ namespace CoreSharp.Breeze.Query {
     private int? _skipCount;
     private int? _takeCount;
     private bool? _inlineCountEnabled;
-    private Dictionary<String, Object> _parameters;
+    private Dictionary<string, object> _parameters;
     private Type _entityType;
 
     public EntityQuery() {
@@ -26,7 +26,7 @@ namespace CoreSharp.Breeze.Query {
      * Materializes the serialized json representation of an EntityQuery.
      * @param json The serialized json version of the EntityQuery.
      */
-    public EntityQuery(String json) {
+    public EntityQuery(string json) {
       if (json == null || json.Length == 0) {
         return;
       }
@@ -44,9 +44,9 @@ namespace CoreSharp.Breeze.Query {
       this._skipCount = GetMapInt(qmap, "skip");
       this._takeCount = GetMapInt(qmap, "take");
       this._wherePredicate = BasePredicate.PredicateFromMap( GetMapValue<Dictionary<string, object>>(qmap, "where"));
-      this._orderByClause = OrderByClause.From(GetMapValue<List<Object>>(qmap,"orderBy"));
-      this._selectClause = SelectClause.From(GetMapValue<List<Object>>(qmap, "select"));
-      this._expandClause = ExpandClause.From(GetMapValue<List<Object>>(qmap, "expand"));
+      this._orderByClause = OrderByClause.From(GetMapValue<List<object>>(qmap,"orderBy"));
+      this._selectClause = SelectClause.From(GetMapValue<List<object>>(qmap, "select"));
+      this._expandClause = ExpandClause.From(GetMapValue<List<object>>(qmap, "expand"));
       this._parameters = GetMapValue<Dictionary<string, object>>(qmap, "parameters");
       this._inlineCountEnabled = GetMapValue<bool?>(qmap, "inlineCount");
 
@@ -77,7 +77,7 @@ namespace CoreSharp.Breeze.Query {
      * @param json Json representation of the where clause.
      * @return A new EntityQuery.
      */
-    public EntityQuery Where(String json) {
+    public EntityQuery Where(string json) {
       var qmap = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
       var pred = BasePredicate.PredicateFromMap(qmap);
       return this.Where(pred);
@@ -105,11 +105,11 @@ namespace CoreSharp.Breeze.Query {
      * @return A new EntityQuery.
      */
     public EntityQuery Where(BasePredicate predicate) {
-      EntityQuery eq = new EntityQuery(this);
+      var eq = new EntityQuery(this);
       if (eq._wherePredicate == null) {
         eq._wherePredicate = predicate;
       } else if (eq._wherePredicate.Operator == Operator.And) {
-        AndOrPredicate andOrPred = (AndOrPredicate)eq._wherePredicate;
+        var andOrPred = (AndOrPredicate)eq._wherePredicate;
         var preds = new List<BasePredicate>(andOrPred.Predicates);
         preds.Add(predicate);
         eq._wherePredicate = new AndOrPredicate(Operator.And, preds);
@@ -125,7 +125,7 @@ namespace CoreSharp.Breeze.Query {
      * @param propertyPaths A varargs array of orderBy clauses ( each consisting of a property path and an optional sort direction).
      * @return A new EntityQuery.
      */
-    public EntityQuery OrderBy(params String[] propertyPaths) {
+    public EntityQuery OrderBy(params string[] propertyPaths) {
       return OrderBy(propertyPaths.ToList());
     }
 
@@ -134,8 +134,8 @@ namespace CoreSharp.Breeze.Query {
      * @param propertyPaths An List of orderBy clauses ( each consisting of a property path and an optional sort direction).
      * @return A new EntityQuery.
      */
-    public EntityQuery OrderBy(List<String> propertyPaths) {
-      EntityQuery eq = new EntityQuery(this);
+    public EntityQuery OrderBy(List<string> propertyPaths) {
+      var eq = new EntityQuery(this);
       if (this._orderByClause == null) {
         eq._orderByClause = new OrderByClause(propertyPaths);
       } else {
@@ -151,7 +151,7 @@ namespace CoreSharp.Breeze.Query {
      * @param propertyPaths A varargs array of expand clauses ( each a dot delimited property path).
      * @return A new EntityQuery.
      */
-    public EntityQuery Expand(params String[] propertyPaths) {
+    public EntityQuery Expand(params string[] propertyPaths) {
       return Expand(propertyPaths.ToList());
     }
 
@@ -160,8 +160,8 @@ namespace CoreSharp.Breeze.Query {
      * @param propertyPaths A list of expand clauses (each a dot delimited property path).
      * @return A new EntityQuery.
      */
-    public EntityQuery Expand(List<String> propertyPaths) {
-      EntityQuery eq = new EntityQuery(this);
+    public EntityQuery Expand(List<string> propertyPaths) {
+      var eq = new EntityQuery(this);
       if (this._expandClause == null) {
         eq._expandClause = new ExpandClause(propertyPaths);
       } else {
@@ -178,7 +178,7 @@ namespace CoreSharp.Breeze.Query {
      * @param propertyPaths A varargs array of select clauses (each a dot delimited property path).
      * @return A new EntityQuery.
      */
-    public EntityQuery Select(params String[] propertyPaths) {
+    public EntityQuery Select(params string[] propertyPaths) {
       return Select(propertyPaths.ToList());
     }
 
@@ -187,8 +187,8 @@ namespace CoreSharp.Breeze.Query {
      * @param propertyPaths A list of select clauses (each a dot delimited property path).
      * @return A new EntityQuery.
      */
-    public EntityQuery Select(IEnumerable<String> propertyPaths) {
-      EntityQuery eq = new EntityQuery(this);
+    public EntityQuery Select(IEnumerable<string> propertyPaths) {
+      var eq = new EntityQuery(this);
       if (this._selectClause == null) {
         eq._selectClause = new SelectClause(propertyPaths);
       } else {
@@ -207,7 +207,7 @@ namespace CoreSharp.Breeze.Query {
      * @return A new EntityQuery
      */
     public EntityQuery Take(int takeCount) {
-      EntityQuery eq = new EntityQuery(this);
+      var eq = new EntityQuery(this);
       eq._takeCount = takeCount;
       return eq;
     }
@@ -218,7 +218,7 @@ namespace CoreSharp.Breeze.Query {
      * @return A new EntityQuery
      */
     public EntityQuery Skip(int skipCount) {
-      EntityQuery eq = new EntityQuery(this);
+      var eq = new EntityQuery(this);
       eq._skipCount = skipCount;
       return eq;
     }
@@ -229,7 +229,7 @@ namespace CoreSharp.Breeze.Query {
      * @return A new EntityQuery
      */
     public EntityQuery EnableInlineCount(bool inlineCountEnabled) {
-      EntityQuery eq = new EntityQuery(this);
+      var eq = new EntityQuery(this);
       eq._inlineCountEnabled = inlineCountEnabled;
       return eq;
     }
@@ -239,22 +239,22 @@ namespace CoreSharp.Breeze.Query {
      * @param resourceName The name of the url resource.
      * @return A new EntityQuery
      */
-    public EntityQuery WithResourceName(String resourceName) {
-      EntityQuery eq = new EntityQuery(this);
+    public EntityQuery WithResourceName(string resourceName) {
+      var eq = new EntityQuery(this);
       eq._resourceName = resourceName;
       return eq;
     }
 
 
     
-    private List<String> ToStringList(Object src) {
+    private List<string> ToStringList(object src) {
       if (src == null)
         return null;
-      if (src is List<String>) {
-        return (List<String>)src;
-      } else if (src is String) {
-        var list = new List<String>();
-        list.Add(src as String);
+      if (src is List<string>) {
+        return (List<string>)src;
+      } else if (src is string) {
+        var list = new List<string>();
+        list.Add(src as string);
         return list;
          
       }
@@ -291,7 +291,7 @@ namespace CoreSharp.Breeze.Query {
 
 
 
-    public String ResourceName {
+    public string ResourceName {
       get { return _resourceName; }
     }
 

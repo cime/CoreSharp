@@ -4,11 +4,11 @@ using System.Linq.Expressions;
 namespace CoreSharp.Breeze.Query {
 
   public class PropBlock : BaseBlock {
-    public String PropertyPath { get; private set; }
+    public string PropertyPath { get; private set; }
     public PropertySignature Property { get; private set; }
     public Type EntityType { get; private set; } 
 
-    public PropBlock(String propertyPath, Type entityType) {
+    public PropBlock(string propertyPath, Type entityType) {
       EntityType = entityType;
       PropertyPath = propertyPath;
       Property = new PropertySignature(entityType, propertyPath);

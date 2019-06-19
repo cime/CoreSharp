@@ -35,7 +35,7 @@ namespace CoreSharp.Breeze
         /// <returns></returns>
         public IQueryable ApplyExpansions(IQueryable queryable, string expandsQueryString, ExpandTypeMap expandMap, bool expandCollections = false)
         {
-            string[] expandPaths = expandsQueryString.Split(',').Select(s => s.Trim()).ToArray();
+            var expandPaths = expandsQueryString.Split(',').Select(s => s.Trim()).ToArray();
             if (!expandPaths.Any()) throw new Exception("Expansion Paths cannot be null");
             if (queryable == null) throw new Exception("Query cannot be null");
 
@@ -63,7 +63,7 @@ namespace CoreSharp.Breeze
             if (!expandPaths.Any()) throw new ArgumentException("Expansion Paths cannot be null");
 
             var currentQueryable = queryable;
-            foreach (string expand in expandPaths)
+            foreach (var expand in expandPaths)
             {
                 // We always start with the resulting element type
                 var currentType = currentQueryable.ElementType;
@@ -73,12 +73,12 @@ namespace CoreSharp.Breeze
                 // split on '/' or '.'
                 var segments = expand.Split('/', '.');
                 expandMap.Deepen(segments.Length);
-                foreach (string seg in segments)
+                foreach (var seg in segments)
                 {
                     if (expandMap != null && !expandMap.map.ContainsKey(currentType))
                         expandMap.map.Add(currentType, new List<string>());
 
-                    IClassMetadata metadata = sessionFactory.GetClassMetadata(currentType);
+                    var metadata = sessionFactory.GetClassMetadata(currentType);
                     if (metadata == null)
                     {
                         throw new ArgumentException("Type '" + currentType + "' not recognized as a valid type for this Context");
@@ -178,7 +178,7 @@ namespace CoreSharp.Breeze
             if (!expandPaths.Any()) throw new ArgumentException("Expansion Paths cannot be null");
 
             if (expandMap == null) expandMap = new ExpandTypeMap();
-            foreach (string expand in expandPaths)
+            foreach (var expand in expandPaths)
             {
                 // We always start with the resulting element type
                 var currentType = type;
@@ -186,7 +186,7 @@ namespace CoreSharp.Breeze
                 // split on '/' or '.'
                 var segments = expand.Split('/','.');
                 expandMap.Deepen(segments.Length);
-                foreach (string seg in segments)
+                foreach (var seg in segments)
                 {
                     if (expandMap != null && !expandMap.map.ContainsKey(currentType))
                         expandMap.map.Add(currentType, new List<string>());
@@ -223,7 +223,7 @@ namespace CoreSharp.Breeze
 
             if (!expandPaths.Any()) throw new ArgumentException("Expansion Paths cannot be null");
 
-            foreach (string expand in expandPaths)
+            foreach (var expand in expandPaths)
             {
                 // We always start with the resulting element type
                 var currentType = criteria.GetRootEntityTypeIfAvailable();
@@ -231,7 +231,7 @@ namespace CoreSharp.Breeze
                 criteria = criteria.Fetch(SelectMode.JoinOnly, dotpath);
 
                 // Add the types and properties to the expandMap so they will be serialized
-                foreach (string seg in expand.Split('/'))
+                foreach (var seg in expand.Split('/'))
                 {
                     if (expandMap != null && !expandMap.ContainsKey(currentType))
                         expandMap.Add(currentType, new List<string>());
