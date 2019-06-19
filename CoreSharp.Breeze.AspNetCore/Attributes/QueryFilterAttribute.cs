@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using NHibernate;
 using NHibernate.Linq;
 
@@ -14,22 +13,26 @@ namespace CoreSharp.Breeze.AspNetCore.Attributes
 {
     public class QueryFilter : ActionFilterAttribute
     {
-        public override void OnActionExecuting(ActionExecutingContext context) {
-            if (!context.ModelState.IsValid) {
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            if (!context.ModelState.IsValid)
+            {
                 context.Result = new BadRequestObjectResult(context.ModelState);
             }
         }
 
-        public override void OnActionExecuted(ActionExecutedContext context) {
-
+        public override void OnActionExecuted(ActionExecutedContext context)
+        {
             var qs = QueryFns.ExtractAndDecodeQueryString(context);
-            if (qs == null) {
+            if (qs == null)
+            {
                 base.OnActionExecuted(context);
                 return;
             }
 
             var queryable = QueryFns.ExtractQueryable(context);
-            if (queryable == null) {
+            if (queryable == null)
+            {
                 base.OnActionExecuted(context);
 
                 return;
@@ -45,8 +48,9 @@ namespace CoreSharp.Breeze.AspNetCore.Attributes
             var originalQueryable = queryable;
             queryable = eq.ApplyWhere(queryable, eleType);
 
-            if (eq.IsInlineCountEnabled) {
-                inlineCount = (int)Queryable.Count((dynamic)queryable);
+            if (eq.IsInlineCountEnabled)
+            {
+                inlineCount = (int) Queryable.Count((dynamic) queryable);
             }
 
             queryable = eq.ApplyOrderBy(queryable, eleType);
@@ -55,19 +59,21 @@ namespace CoreSharp.Breeze.AspNetCore.Attributes
             queryable = eq.ApplySelect(queryable, eleType);
             queryable = eq.ApplyExpand(queryable, eleType);
 
-            if (queryable != originalQueryable) {
+            if (queryable != originalQueryable)
+            {
                 // if a select or expand was encountered we need to
                 // execute the DbQueries here, so that any exceptions thrown can be properly returned.
                 // if we wait to have the query executed within the serializer, some exceptions will not
                 // serialize properly.
-                var listResult = Enumerable.ToList((dynamic)queryable);
+                var listResult = Enumerable.ToList((dynamic) queryable);
                 var qr = new QueryResult(listResult, inlineCount);
                 var breezeConfig = context.HttpContext.RequestServices.GetService<IBreezeConfig>();
                 context.Result = new ObjectResult(qr)
                 {
-                    Formatters = new FormatterCollection<IOutputFormatter>()
+                    Formatters = new FormatterCollection<IOutputFormatter>
                     {
-                        new JsonOutputFormatter(breezeConfig.GetJsonSerializerSettings(), context.HttpContext.RequestServices.GetRequiredService<ArrayPool<char>>())
+                        new JsonOutputFormatter(breezeConfig.GetJsonSerializerSettings(),
+                            context.HttpContext.RequestServices.GetRequiredService<ArrayPool<char>>())
                     }
                 };
 
@@ -83,18 +89,30 @@ namespace CoreSharp.Breeze.AspNetCore.Attributes
 
         private static void Close(ISession session)
         {
-            if (session == null || !session.IsOpen) return;
+            if (session == null || !session.IsOpen)
+            {
+                return;
+            }
+
             if (session.GetSessionImplementation().TransactionInProgress)
             {
                 var tx = session.Transaction;
                 try
                 {
-                    if (tx.IsActive) tx.Commit();
+                    if (tx.IsActive)
+                    {
+                        tx.Commit();
+                    }
+
                     session.Close();
                 }
                 catch (Exception)
                 {
-                    if (tx.IsActive) tx.Rollback();
+                    if (tx.IsActive)
+                    {
+                        tx.Rollback();
+                    }
+
                     throw;
                 }
             }
@@ -105,7 +123,7 @@ namespace CoreSharp.Breeze.AspNetCore.Attributes
         }
 
         /// <summary>
-        /// Get the ISession from the IQueryable.
+        ///     Get the ISession from the IQueryable.
         /// </summary>
         /// <param name="queryable"></param>
         /// <returns>the session if queryable.Provider is NHibernate.Linq.DefaultQueryProvider, else null</returns>

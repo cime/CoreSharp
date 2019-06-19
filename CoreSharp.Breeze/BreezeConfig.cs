@@ -5,18 +5,40 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Xml;
+using CoreSharp.Breeze.Json;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using SimpleInjector;
 
 namespace CoreSharp.Breeze
 {
     public class BreezeConfig : IBreezeConfig
     {
-        private readonly JsonSerializerSettings _jsonSerializerSettings = CreateJsonSerializerSettings();
-        private readonly JsonSerializerSettings _jsonSerializerSettingsForSave = CreateJsonSerializerSettingsForSave();
+        private static ReadOnlyCollection<Assembly> _probeAssemblies;
+        private static int _assemblyCount;
+        private static int _assemblyLoadedCount;
 
-        public BreezeConfig()
+        protected static readonly List<string> FrameworkProductNames = new List<string>
         {
+            "Microsoft®",
+            "Microsoft (R)",
+            "Microsoft ASP.",
+            "System.Net.Http",
+            "Json.NET",
+            "Antlr3.Runtime",
+            "Iesi.Collections",
+            "WebGrease",
+            "Breeze.ContextProvider"
+        };
+
+        private readonly JsonSerializerSettings _jsonSerializerSettings;
+        private readonly JsonSerializerSettings _jsonSerializerSettingsForSave;
+
+        public BreezeConfig(BreezeContractResolver contractResolver)
+        {
+            _jsonSerializerSettings = CreateJsonSerializerSettings(contractResolver);
+            _jsonSerializerSettingsForSave = CreateJsonSerializerSettingsForSave(contractResolver);
+
             AppDomain.CurrentDomain.AssemblyLoad += (sender, args) =>
             {
                 Interlocked.Increment(ref _assemblyLoadedCount);
@@ -49,17 +71,24 @@ namespace CoreSharp.Breeze
             }
         }
 
-        private static ReadOnlyCollection<Assembly> _probeAssemblies;
-        private static int _assemblyCount = 0;
-        private static int _assemblyLoadedCount = 0;
+        /// <summary>
+        ///     Returns TransactionSettings.Default.  Override to return different settings.
+        /// </summary>
+        /// <returns></returns>
+        public virtual TransactionSettings GetTransactionSettings()
+        {
+            return TransactionSettings.Default;
+        }
 
         /// <summary>
-        /// Override to use a specialized JsonSerializer implementation.
+        ///     Override to use a specialized JsonSerializer implementation.
         /// </summary>
-        private static JsonSerializerSettings CreateJsonSerializerSettings()
+        /// <param name="contractResolver">BreezeContractResolver</param>
+        private static JsonSerializerSettings CreateJsonSerializerSettings(BreezeContractResolver contractResolver)
         {
-            var jsonSerializerSettings = new JsonSerializerSettings()
+            var jsonSerializerSettings = new JsonSerializerSettings
             {
+                ContractResolver = contractResolver,
                 NullValueHandling = NullValueHandling.Include,
                 PreserveReferencesHandling = PreserveReferencesHandling.Objects,
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
@@ -85,13 +114,14 @@ namespace CoreSharp.Breeze
         }
 
         /// <summary>
-        /// Override to use a specialized JsonSerializer implementation for saving.
-        /// Base implementation uses CreateJsonSerializerSettings, then changes TypeNameHandling to None.
-        /// http://www.newtonsoft.com/json/help/html/T_Newtonsoft_Json_TypeNameHandling.htm
+        ///     Override to use a specialized JsonSerializer implementation for saving.
+        ///     Base implementation uses CreateJsonSerializerSettings, then changes TypeNameHandling to None.
+        ///     http://www.newtonsoft.com/json/help/html/T_Newtonsoft_Json_TypeNameHandling.htm
         /// </summary>
-        private static JsonSerializerSettings CreateJsonSerializerSettingsForSave()
+        /// <param name="container"></param>
+        private static JsonSerializerSettings CreateJsonSerializerSettingsForSave(BreezeContractResolver contractResolver)
         {
-            var settings = CreateJsonSerializerSettings();
+            var settings = CreateJsonSerializerSettings(contractResolver);
             settings.TypeNameHandling = TypeNameHandling.None;
 
             return settings;
@@ -100,9 +130,21 @@ namespace CoreSharp.Breeze
         public static bool IsFrameworkAssembly(Assembly assembly)
         {
             var fullName = assembly.FullName;
-            if (fullName.StartsWith("Microsoft.")) return true;
-            if (fullName.StartsWith("EntityFramework")) return true;
-            if (fullName.StartsWith("NHibernate")) return true;
+            if (fullName.StartsWith("Microsoft."))
+            {
+                return true;
+            }
+
+            if (fullName.StartsWith("EntityFramework"))
+            {
+                return true;
+            }
+
+            if (fullName.StartsWith("NHibernate"))
+            {
+                return true;
+            }
+
             var attrs = assembly.GetCustomAttributes(typeof(AssemblyProductAttribute), false)
                 .OfType<AssemblyProductAttribute>();
             var attr = attrs.FirstOrDefault();
@@ -115,28 +157,6 @@ namespace CoreSharp.Breeze
             var productName = attr.Product;
 
             return FrameworkProductNames.Any(nm => productName.StartsWith(nm));
-        }
-
-        protected static readonly List<string> FrameworkProductNames = new List<string>
-        {
-            "Microsoft®",
-            "Microsoft (R)",
-            "Microsoft ASP.",
-            "System.Net.Http",
-            "Json.NET",
-            "Antlr3.Runtime",
-            "Iesi.Collections",
-            "WebGrease",
-            "Breeze.ContextProvider"
-        };
-
-        /// <summary>
-        /// Returns TransactionSettings.Default.  Override to return different settings.
-        /// </summary>
-        /// <returns></returns>
-        public virtual TransactionSettings GetTransactionSettings()
-        {
-            return TransactionSettings.Default;
         }
     }
 
