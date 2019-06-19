@@ -10,6 +10,7 @@ using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
 using CoreSharp.Breeze.Json;
 using CoreSharp.Breeze.Query;
+using CoreSharp.NHibernate.Json;
 using Newtonsoft.Json.Serialization;
 using NHibernate;
 using NHibernate.Linq;
@@ -171,13 +172,14 @@ namespace CoreSharp.Breeze.AspNet.Attributes
         /// </remarks>
         protected virtual JsonMediaTypeFormatter GetJsonFormatter(HttpConfiguration configuration)
         {
-            var formatter = JsonFormatter.Create();
+            var formatter = ((JsonFormatter)configuration.DependencyResolver.GetService(typeof(JsonFormatter))).Create();
             var jsonSerializer = formatter.SerializerSettings;
             if (!formatter.SerializerSettings.Converters.Any(o => o is NHibernateProxyJsonConverter))
                 jsonSerializer.Converters.Add(new NHibernateProxyJsonConverter());
-            jsonSerializer.ContractResolver = (IContractResolver)configuration.DependencyResolver.GetService(typeof(NHibernateContractResolver));
+            jsonSerializer.ContractResolver = (IContractResolver)configuration.DependencyResolver.GetService(typeof(BreezeContractResolver));
             // Setup save serializer
-            var saveJsonSerializer = BreezeConfig.Instance.GetJsonSerializerSettingsForSave();
+            var breezeConfig = (IBreezeConfig)configuration.DependencyResolver.GetService(typeof(IBreezeConfig));
+            var saveJsonSerializer = breezeConfig.GetJsonSerializerSettingsForSave();
             saveJsonSerializer.ContractResolver = jsonSerializer.ContractResolver;
 
             /* Error handling is not needed anymore. NHibernateContractResolver will take care of non initialized properties*/

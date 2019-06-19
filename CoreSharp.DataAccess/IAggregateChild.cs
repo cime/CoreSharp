@@ -1,6 +1,6 @@
 ﻿namespace CoreSharp.DataAccess
 {
-    public interface IAggregateChild
+    public interface IAggregateChild : IEntity
     {
         IAggregateRoot AggregateRoot { get; }
     }

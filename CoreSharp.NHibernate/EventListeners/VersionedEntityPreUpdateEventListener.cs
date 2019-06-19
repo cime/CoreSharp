@@ -11,14 +11,14 @@ using NHibernate.Event;
 
 namespace CoreSharp.NHibernate.EventListeners
 {
-public class VersionedEntityPreUpdateEventListener<TUser> : IPreUpdateEventListener
+    public class VersionedEntityPreUpdateEventListener<TUser> : IPreUpdateEventListener
         where TUser : IUser
     {
         // Default system user
         private static readonly string SystemUser = "system";
         private long? _systemUserId = null;
 
-        private readonly Type _genericVersionedEntityType = typeof(IVersionedEntity<>);
+        private readonly Type _genericVersionedEntityType = typeof(IVersionedEntityWithUser<>);
 
         public bool OnPreUpdate(PreUpdateEvent @event)
         {
@@ -44,18 +44,18 @@ public class VersionedEntityPreUpdateEventListener<TUser> : IPreUpdateEventListe
 
         private void HandleModified(IVersionedEntity entity, PreUpdateEvent @event)
         {
-            entity.SetMemberValue(x => x.ModifiedDate, DateTime.UtcNow);
-            @event.State[GetIndex(@event.Persister.PropertyNames, (IVersionedEntity x) => x.ModifiedDate)] = entity.ModifiedDate;
+            entity.SetMemberValue(x => x.LastModifiedDate, DateTime.UtcNow);
+            @event.State[GetIndex(@event.Persister.PropertyNames, (IVersionedEntity x) => x.LastModifiedDate)] = entity.LastModifiedDate;
 
-            if (IsGenericVersionedEntity(entity))
+            if (IsVersionedEntityWithUser(entity))
             {
                 var user = GetCurrentUser(@event.Session);
-                entity.SetMemberValue(PropertyName((IVersionedEntity<TUser> x) => x.ModifiedBy), user);
-                @event.State[GetIndex(@event.Persister.PropertyNames, (IVersionedEntity<TUser> x) => x.ModifiedBy)] = user;
+                entity.SetMemberValue(PropertyName((IVersionedEntityWithUser<TUser> x) => x.LastModifiedBy), user);
+                @event.State[GetIndex(@event.Persister.PropertyNames, (IVersionedEntityWithUser<TUser> x) => x.LastModifiedBy)] = user;
             }
         }
 
-        private bool IsGenericVersionedEntity(IVersionedEntity entity)
+        private bool IsVersionedEntityWithUser(IVersionedEntity entity)
         {
             return entity.GetType().IsAssignableToGenericType(_genericVersionedEntityType);
         }

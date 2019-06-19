@@ -4,15 +4,12 @@ namespace CoreSharp.DataAccess
 {
     public interface IEntity
     {
-        bool IsTransient();
-
         object GetId();
-
-        Type GetIdType();
+        bool IsTransient();
     }
 
-    public interface IEntity<TKey> : IEntity
+    public interface IEntity<out TId> : IEntity
     {
-        TKey Id { get; }
+        TId Id { get; }
     }
 }

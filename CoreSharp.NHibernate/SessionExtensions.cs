@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using CoreSharp.DataAccess;
 using CoreSharp.NHibernate.Decorators;
+using NHibernate.Intercept;
 using NHibernate.Metadata;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -17,7 +18,7 @@ namespace NHibernate
 {
     public static class SessionExtensions
     {
-        private static Random Random = new Random();
+        private static readonly Random Random = new Random();
 
         public static IEnumerable<T> DeepCopy<T>(this ISession session, IEnumerable<T> entities) where T : class
         {
@@ -47,7 +48,7 @@ namespace NHibernate
 
         private static T DeepCopy<T>(this ISession session, T entity, IDictionary<object, object> resolvedEntities) where T : class
         {
-            return (T)session.DeepCopy(entity, GetUnproxiedType(entity), resolvedEntities);
+            return (T)session.DeepCopy(entity, session.GetProxyRealType(entity), resolvedEntities);
         }
 
         private static object DeepCopy(this ISession session, object entity, System.Type entityType, IDictionary<object, object> resolvedEntities)
@@ -112,7 +113,7 @@ namespace NHibernate
                 {
                     var propertyList = CreateNewCollection(propType);
                     propertyInfo.SetValue(copiedEntity, propertyList, null);
-                    AddItemToCollection(propertyList, propertyValue, o => session.DeepCopy(o, GetUnproxiedType(o), resolvedEntities));
+                    AddItemToCollection(propertyList, propertyValue, o => session.DeepCopy(o, session.GetProxyRealType(o), resolvedEntities));
                 }
                 else if (entityPropertyType.IsEntityType)
                 {
@@ -130,16 +131,23 @@ namespace NHibernate
         /// <summary>
         /// Gets the underlying class type of a persistent object that may be proxied
         /// </summary>
-        public static System.Type GetUnproxiedType(object persistentObject)
+        public static System.Type GetProxyRealType(this ISession session, object proxy)
         {
-            var proxy = persistentObject as INHibernateProxy;
+            var obj = proxy;
 
-            if (proxy != null)
+            if (proxy.IsProxy())
             {
-                return proxy.HibernateLazyInitializer.PersistentClass;
+                obj = ((INHibernateProxy) proxy).HibernateLazyInitializer.GetImplementation();
             }
 
-            return persistentObject.GetType();
+            var fieldAccessor = FieldInterceptionHelper.ExtractFieldInterceptor(obj);
+
+            if (fieldAccessor != null)
+            {
+                return fieldAccessor.MappedClass;
+            }
+
+            return obj.GetType();
         }
 
         //can be an interface

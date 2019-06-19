@@ -17,6 +17,7 @@
     <ItemGroup>
         <PackageReference Include="FluentNHibernate" Version="2.1.2" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.2.4" />
+        <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
         <PackageReference Include="NHibernate" Version="5.2.5" />
         <PackageReference Include="NHibernate.Extensions" Version="2.1.1" />
         <PackageReference Include="SimpleInjector" Version="4.6.0" />
@@ -25,6 +26,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\CoreSharp.Common\CoreSharp.Common.csproj" />
+        <ProjectReference Include="..\CoreSharp.Cqrs\CoreSharp.Cqrs.csproj" />
         <ProjectReference Include="..\CoreSharp.DataAccess\CoreSharp.DataAccess.csproj" />
     </ItemGroup>
 

@@ -13,7 +13,6 @@ using NHibernate;
 using NHibernate.Intercept;
 using NHibernate.Metadata;
 using NHibernate.Proxy;
-using NHibernate.Proxy.DynamicProxy;
 using NHibernate.Type;
 using IsolationLevel = System.Data.IsolationLevel;
 
@@ -27,7 +26,7 @@ namespace CoreSharp.Breeze
 
         private static readonly object MetadataLock = new object();
         private static readonly object BuildMetadataLock = new object();
-        private readonly IBreezeConfigurator _breezeConfigurator;
+        protected readonly IBreezeConfigurator BreezeConfigurator;
         private readonly IEventPublisher _eventPublisher;
 
         /// <summary>
@@ -36,10 +35,10 @@ namespace CoreSharp.Breeze
         /// </summary>
         /// <param name="session">Used for queries and updates</param>
         /// <param name="breezeConfigurator">Used for get configurations</param>
-        public BreezeContext(ISession session, IBreezeConfigurator breezeConfigurator, IEventPublisher eventPublisher)
+        public BreezeContext(IBreezeConfig breezeConfig, ISession session, IBreezeConfigurator breezeConfigurator, IEventPublisher eventPublisher) : base(breezeConfig)
         {
             Session = session;
-            _breezeConfigurator = breezeConfigurator;
+            BreezeConfigurator = breezeConfigurator;
             _eventPublisher = eventPublisher;
         }
 
@@ -47,11 +46,11 @@ namespace CoreSharp.Breeze
         ///     Creates a new context using the session and metadata from the sourceContext
         /// </summary>
         /// <param name="sourceContext">source of the Session and metadata used by this new context.</param>
-        public BreezeContext(BreezeContext sourceContext, IEventPublisher eventPublisher)
+        public BreezeContext(BreezeContext sourceContext, IEventPublisher eventPublisher) : base(sourceContext._breezeConfig)
         {
             _eventPublisher = eventPublisher;
             Session = sourceContext.Session;
-            _breezeConfigurator = sourceContext._breezeConfigurator;
+            BreezeConfigurator = sourceContext.BreezeConfigurator;
             _metadata = sourceContext.GetMetadata();
         }
 
@@ -92,7 +91,7 @@ namespace CoreSharp.Breeze
         {
             if (SaveWorkState == null || SaveWorkState.WasUsed) InitializeSaveState(saveBundle);
 
-            transactionSettings = transactionSettings ?? BreezeConfig.Instance.GetTransactionSettings();
+            transactionSettings = transactionSettings ?? _breezeConfig.GetTransactionSettings();
             try
             {
                 if (transactionSettings.TransactionType == TransactionType.TransactionScope)
@@ -195,7 +194,7 @@ namespace CoreSharp.Breeze
 
         public object[] GetKeyValues(object entity)
         {
-            var entityType = GetProxyRealType(entity);
+            var entityType = Session.GetProxyRealType(entity);
             var classMeta = Session.SessionFactory.GetClassMetadata(entityType);
             if (classMeta == null) throw new ArgumentException("Metadata not found for type " + entity.GetType());
             var keyValues = GetIdentifierAsArray(entity, classMeta);
@@ -325,7 +324,7 @@ namespace CoreSharp.Breeze
                     if (!FactoryMetadata.TryGetValue(Session.SessionFactory, out _metadata))
                     {
                         //var builder = new NHBreezeMetadata(session.SessionFactory, configuration);
-                        var builder = new NHMetadataBuilder(Session.SessionFactory, _breezeConfigurator);
+                        var builder = new NHMetadataBuilder(Session.SessionFactory, BreezeConfigurator);
                         _metadata = builder.BuildMetadata(TypeFilter);
                         FactoryMetadata.Add(Session.SessionFactory, _metadata);
                         OnMetadataBuilt(_metadata);
@@ -359,7 +358,7 @@ namespace CoreSharp.Breeze
             Session.FlushMode = FlushMode.Manual;
             var tx = Session.Transaction;
             var hasExistingTransaction = tx.IsActive;
-            if (!hasExistingTransaction) tx.Begin(BreezeConfig.Instance.GetTransactionSettings().IsolationLevelAs);
+            if (!hasExistingTransaction) tx.Begin(_breezeConfig.GetTransactionSettings().IsolationLevelAs);
             try
             {
                 // Relate entities in the saveMap to other NH entities, so NH can save the FK values.
@@ -412,7 +411,7 @@ namespace CoreSharp.Breeze
             Session.FlushMode = FlushMode.Manual;
             var tx = Session.Transaction;
             var hasExistingTransaction = tx.IsActive;
-            if (!hasExistingTransaction) tx.Begin(BreezeConfig.Instance.GetTransactionSettings().IsolationLevelAs);
+            if (!hasExistingTransaction) tx.Begin(_breezeConfig.GetTransactionSettings().IsolationLevelAs);
             try
             {
                 // Relate entities in the saveMap to other NH entities, so NH can save the FK values.
@@ -467,7 +466,7 @@ namespace CoreSharp.Breeze
         {
             // Get the map of foreign key relationships from the metadata
             var fkMap = GetMetadata().ForeignKeyMap;
-            return new NhRelationshipFixer(saveMap, fkMap, Session, _breezeConfigurator);
+            return new NhRelationshipFixer(saveMap, fkMap, Session, BreezeConfigurator);
         }
 
         /// <summary>
@@ -479,7 +478,7 @@ namespace CoreSharp.Breeze
             var sessionFactory = Session.SessionFactory;
             foreach (var entityInfo in saveOrder)
             {
-                var entityType = GetProxyRealType(entityInfo.Entity);
+                var entityType = Session.GetProxyRealType(entityInfo.Entity);
                 var classMeta = sessionFactory.GetClassMetadata(entityType);
                 AddKeyMapping(entityInfo, entityType, classMeta);
             }
@@ -494,7 +493,7 @@ namespace CoreSharp.Breeze
             var sessionFactory = Session.SessionFactory;
             foreach (var entityInfo in saveOrder)
             {
-                var entityType = GetProxyRealType(entityInfo.Entity);
+                var entityType = Session.GetProxyRealType(entityInfo.Entity);
                 var classMeta = sessionFactory.GetClassMetadata(entityType);
                 ProcessEntity(entityInfo, classMeta);
             }
@@ -509,7 +508,7 @@ namespace CoreSharp.Breeze
             var sessionFactory = Session.SessionFactory;
             foreach (var entityInfo in saveOrder)
             {
-                var entityType = GetProxyRealType(entityInfo.Entity);
+                var entityType = Session.GetProxyRealType(entityInfo.Entity);
                 var classMeta = sessionFactory.GetClassMetadata(entityType);
                 await ProcessEntityAsync(entityInfo, classMeta);
             }
@@ -634,7 +633,7 @@ namespace CoreSharp.Breeze
         /// <returns></returns>
         protected object GetIdentifier(object entity, IClassMetadata meta = null)
         {
-            var type = GetProxyRealType(entity);
+            var type = Session.GetProxyRealType(entity);
             meta = meta ?? Session.SessionFactory.GetClassMetadata(type);
 
             if (meta.IdentifierType != null)
@@ -707,7 +706,7 @@ namespace CoreSharp.Breeze
             //using (var tx = session.BeginTransaction()) {
             foreach (var kvp in saveMap)
             {
-                var config = _breezeConfigurator.GetModelConfiguration(kvp.Key);
+                var config = BreezeConfigurator.GetModelConfiguration(kvp.Key);
                 if (!config.RefreshAfterSave && !config.RefreshAfterUpdate)
                     continue;
                 foreach (var entityInfo in kvp.Value)
@@ -729,7 +728,7 @@ namespace CoreSharp.Breeze
             //using (var tx = session.BeginTransaction()) {
             foreach (var kvp in saveMap)
             {
-                var config = _breezeConfigurator.GetModelConfiguration(kvp.Key);
+                var config = BreezeConfigurator.GetModelConfiguration(kvp.Key);
                 if (!config.RefreshAfterSave && !config.RefreshAfterUpdate)
                     continue;
                 foreach (var entityInfo in kvp.Value)
@@ -740,28 +739,6 @@ namespace CoreSharp.Breeze
 
             //tx.Commit();
             //}
-        }
-
-        /// <summary>
-        ///     Custom function to get the real entity type as NHibernateUtil.GetClass returns wrong types
-        /// </summary>
-        /// <param name="proxy"></param>
-        /// <returns></returns>
-        public static Type GetProxyRealType(object proxy)
-        {
-            var nhProxy = proxy as IProxy;
-            if (nhProxy == null) return proxy.GetType();
-
-            var lazyInitializer = nhProxy.Interceptor as ILazyInitializer;
-            if (lazyInitializer != null)
-                return lazyInitializer.PersistentClass;
-
-            var fieldInterceptorAccessor = nhProxy.Interceptor as IFieldInterceptorAccessor;
-            if (fieldInterceptorAccessor != null)
-                return fieldInterceptorAccessor.FieldInterceptor == null
-                    ? proxy.GetType().BaseType
-                    : fieldInterceptorAccessor.FieldInterceptor.MappedClass;
-            return proxy.GetType();
         }
 
         #endregion

@@ -6,7 +6,7 @@ using Newtonsoft.Json.Serialization;
 using NHibernate;
 using NHibernate.Metadata;
 
-namespace CoreSharp.Breeze.Json
+namespace CoreSharp.NHibernate.Json
 {
     /// <summary>
     /// Newtonsoft.Json ContractResolver that can be configured to include properties by name.

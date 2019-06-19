@@ -11,10 +11,12 @@ namespace CoreSharp.NHibernate.Alternations
         {
             model.IgnoreBase(typeof(Entity<>));
             model.IgnoreBase(typeof(Entity));
-            model.IgnoreBase(typeof(VersionedEntity<,>));
             model.IgnoreBase(typeof(VersionedEntity<>));
-            model.IgnoreBase(typeof(Document<,,>));
-            model.IgnoreBase(typeof(DocumentVersion<,,>));
+            model.IgnoreBase(typeof(VersionedEntity));
+            model.IgnoreBase(typeof(VersionedEntityWithUser<>));
+            model.IgnoreBase(typeof(VersionedEntityWithUser<,>));
+            model.IgnoreBase(typeof(Document<,,,>));
+            model.IgnoreBase(typeof(DocumentVersion<,,,>));
         }
     }
 }

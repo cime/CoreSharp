@@ -1,8 +1,12 @@
 using System;
+using System.Buffers;
 using System.Linq;
 using CoreSharp.Breeze.Query;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using NHibernate;
 using NHibernate.Linq;
 
@@ -58,7 +62,14 @@ namespace CoreSharp.Breeze.AspNetCore.Attributes
                 // serialize properly.
                 var listResult = Enumerable.ToList((dynamic)queryable);
                 var qr = new QueryResult(listResult, inlineCount);
-                context.Result = new ObjectResult(qr);
+                var breezeConfig = context.HttpContext.RequestServices.GetService<IBreezeConfig>();
+                context.Result = new ObjectResult(qr)
+                {
+                    Formatters = new FormatterCollection<IOutputFormatter>()
+                    {
+                        new JsonOutputFormatter(breezeConfig.GetJsonSerializerSettings(), context.HttpContext.RequestServices.GetRequiredService<ArrayPool<char>>())
+                    }
+                };
 
                 var session = GetSession(queryable);
                 if (session != null)

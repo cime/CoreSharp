@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using NHibernate;
 using NHibernate.Proxy;
 
-namespace CoreSharp.Breeze.Json
+namespace CoreSharp.NHibernate.Json
 {
     /// <summary>
     /// JsonConverter for handling NHibernate proxies.

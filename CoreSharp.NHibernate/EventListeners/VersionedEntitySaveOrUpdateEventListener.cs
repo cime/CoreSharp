@@ -20,7 +20,7 @@ public class VersionedEntitySaveOrUpdateEventListener<TUser> : DefaultSaveOrUpda
         // Default system user
         private static readonly string SystemUser = "system";
         private long? _systemUserId = null;
-        private readonly Type _genericVersionedEntityType = typeof(IVersionedEntity<>);
+        private readonly Type _genericVersionedEntityType = typeof(IVersionedEntityWithUser<>);
 
         private readonly IEventPublisher _eventPublisher;
 
@@ -69,11 +69,11 @@ public class VersionedEntitySaveOrUpdateEventListener<TUser> : DefaultSaveOrUpda
         {
             entity.SetMemberValue(x => x.CreatedDate, DateTime.UtcNow);
 
-            if (IsGenericVersionedEntity(entity))
+            if (IsVersionedEntityWithUser(entity))
             {
                 var user = GetCurrentUser(@event.Session);
 
-                entity.SetMemberValue(PropertyName((IVersionedEntity<TUser> x) => x.CreatedBy), user);
+                entity.SetMemberValue(PropertyName((IVersionedEntityWithUser<TUser> x) => x.CreatedBy), user);
             }
         }
 
@@ -118,7 +118,7 @@ public class VersionedEntitySaveOrUpdateEventListener<TUser> : DefaultSaveOrUpda
             return body.Member.Name;
         }
 
-        private bool IsGenericVersionedEntity(IVersionedEntity entity)
+        private bool IsVersionedEntityWithUser(IVersionedEntity entity)
         {
             return entity.GetType().IsAssignableToGenericType(_genericVersionedEntityType);
         }

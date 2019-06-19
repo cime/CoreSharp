@@ -5,17 +5,13 @@ using System.Reflection;
 namespace CoreSharp.Breeze.Query {
   public static class EntityQueryExtensions {
     private static readonly MethodInfo IncludeMethod;
-    
+
     static EntityQueryExtensions()
     {
-      IncludeMethod = AppDomain.CurrentDomain.GetAssemblies()
-              .Where(o => !o.IsDynamic)
-              .Where(o => o.GetName().Name == "NHibernate.Extensions")
-              .Select(o => o.GetTypes().First(t => t.FullName == "NHibernate.Linq.LinqExtensions"))
-              .Select(o => o.GetMethods().First(m => m.Name == "Include" && !m.IsGenericMethod && m.GetParameters().Length == 2))
-              .FirstOrDefault();
+      IncludeMethod = typeof(global::NHibernate.Linq.LinqExtensions)
+          .GetMethods().First(m => m.Name == "Include" && !m.IsGenericMethod && m.GetParameters().Length == 2);
     }
-    
+
     public static IQueryable ApplyWhere(this EntityQuery eq, IQueryable queryable, Type eleType) {
       if (eq.WherePredicate != null) {
         queryable = QueryBuilder.ApplyWhere(queryable, eleType, eq.WherePredicate);

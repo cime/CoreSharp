@@ -4,11 +4,18 @@ using System.Text;
 
 namespace CoreSharp.Breeze.AspNet
 {
-    internal static class JsonFormatter
+    internal class JsonFormatter
     {
-        public static JsonMediaTypeFormatter Create()
+        private readonly IBreezeConfig _breezeConfig;
+
+        public JsonFormatter(IBreezeConfig breezeConfig)
         {
-            var jsonSerializerSettings = BreezeConfig.Instance.GetJsonSerializerSettings();
+            _breezeConfig = breezeConfig;
+        }
+
+        public JsonMediaTypeFormatter Create()
+        {
+            var jsonSerializerSettings = _breezeConfig.GetJsonSerializerSettings();
 
             var formatter = new JsonMediaTypeFormatter();
             formatter.SerializerSettings = jsonSerializerSettings;

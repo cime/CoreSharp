@@ -19,8 +19,8 @@ namespace CoreSharp.DataAccess.Extensions
             }
 
             return query.Where(o =>
-                (o.ModifiedDate != null && o.ModifiedDate < timestamp) ||
-                (o.ModifiedDate == null && o.CreatedDate < timestamp));
+                (o.LastModifiedDate != null && o.LastModifiedDate < timestamp) ||
+                (o.LastModifiedDate == null && o.CreatedDate < timestamp));
         }
 
         public static IQueryable<TType> ModifiedBefore<TType>(this IQueryable<TType> query, DateTime? timestamp)
@@ -44,8 +44,8 @@ namespace CoreSharp.DataAccess.Extensions
             }
 
             return query.Where(o =>
-                (o.ModifiedDate != null && o.ModifiedDate < timestamp) ||
-                (o.ModifiedDate == null && o.CreatedDate < timestamp));
+                (o.LastModifiedDate != null && o.LastModifiedDate < timestamp) ||
+                (o.LastModifiedDate == null && o.CreatedDate < timestamp));
         }
     }
 }

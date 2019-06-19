@@ -1,6 +1,6 @@
 ﻿namespace CoreSharp.DataAccess
 {
-    public interface ICodeList : IEntity
+    public interface ICodeList : IEntity<string>
     {
         bool Active { get; set; }
     }

@@ -10,7 +10,7 @@ using Newtonsoft.Json.Serialization;
 using NHibernate;
 using NHibernate.Intercept;
 using NHibernate.Metadata;
-using NHibernate.Proxy.DynamicProxy;
+using NHibernate.Proxy;
 using NHibernate.Type;
 
 namespace CoreSharp.Breeze.Json
@@ -20,7 +20,7 @@ namespace CoreSharp.Breeze.Json
     /// Allows JSON serializer to skip properties that are not already resolved, thus preventing the
     /// serializer from trying to serialize the entire object graph.
     /// </summary>
-    public class NHibernateContractResolver : DefaultContractResolver
+    public class BreezeContractResolver : DefaultContractResolver
     {
         private Dictionary<Type, IClassMetadata> _entitiesMetadata = new Dictionary<Type, IClassMetadata>();
 
@@ -31,7 +31,7 @@ namespace CoreSharp.Breeze.Json
         private readonly IBreezeConfigurator _breezeConfigurator;
         private readonly Func<Type, IClassMetadata> _getMetadataFunc;
 
-        static NHibernateContractResolver()
+        static BreezeContractResolver()
         {
             DefaultContractResolverStateNameTableField = typeof(DefaultContractResolver).GetField("_nameTable", BindingFlags.Instance | BindingFlags.NonPublic);
             var propertyNameTableType = typeof(DefaultContractResolver).Assembly.GetType(
@@ -42,7 +42,7 @@ namespace CoreSharp.Breeze.Json
                 throw new NullReferenceException("internal _nameTable field was not found in DefaultContractResolver");
         }
 
-        public NHibernateContractResolver(Func<Type, IClassMetadata> getMetadataFunc, IBreezeConfigurator breezeConfigurator)
+        public BreezeContractResolver(Func<Type, IClassMetadata> getMetadataFunc, IBreezeConfigurator breezeConfigurator)
         {
             _breezeConfigurator = breezeConfigurator;
             _getMetadataFunc = getMetadataFunc;
@@ -50,9 +50,9 @@ namespace CoreSharp.Breeze.Json
 
         public bool CamelCaseNames { get; set; }
 
-        public NHibernateContractResolver CreateEmptyCopy()
+        public BreezeContractResolver CreateEmptyCopy()
         {
-            var copy = new NHibernateContractResolver(_getMetadataFunc, _breezeConfigurator)
+            var copy = new BreezeContractResolver(_getMetadataFunc, _breezeConfigurator)
             {
                 _entitiesMetadata = _entitiesMetadata
             };
@@ -68,13 +68,15 @@ namespace CoreSharp.Breeze.Json
                     "Field _instanceContractCache does not exist in DefaultContractResolver");
             var cache = cacheFieldInfo.GetValue(this) as IDictionary;
             if (cache != null)
+            {
                 cache.Clear();
+            }
         }
 
         protected override string ResolvePropertyName(string propertyName)
         {
             if (CamelCaseNames)
-                return Char.ToLowerInvariant(propertyName[0]) + propertyName.Substring(1);
+                return char.ToLowerInvariant(propertyName[0]) + propertyName.Substring(1);
             return base.ResolvePropertyName(propertyName);
         }
 
@@ -150,7 +152,7 @@ namespace CoreSharp.Breeze.Json
         public override JsonContract ResolveContract(Type type)
         {
             //Proxies for entity types that have one or more lazy fields/properties will implements IFieldInterceptorAccessor.
-            if (typeof(IProxy).IsAssignableFrom(type) || typeof(IFieldInterceptorAccessor).IsAssignableFrom(type))
+            if (typeof(INHibernateProxy).IsAssignableFrom(type) || typeof(IFieldInterceptorAccessor).IsAssignableFrom(type))
             {
                 type = type.BaseType;
             }
@@ -341,16 +343,25 @@ namespace CoreSharp.Breeze.Json
                 {
                     return true;
                 }
+
                 if (!NHibernateUtil.IsPropertyInitialized(entity, member.Name))
+                {
                     return false;
+                }
+
                 var propertyValue = metadata.GetPropertyValue(entity, member.Name);
+
                 return NHibernateUtil.IsInitialized(propertyValue);
             }
 
             if (jsonProperty.ShouldSerialize != null)
+            {
                 jsonProperty.ShouldSerialize = o => Predicate(o) && jsonProperty.ShouldSerialize(o);
+            }
             else
+            {
                 jsonProperty.ShouldSerialize = Predicate;
+            }
         }
     }
 }

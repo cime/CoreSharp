@@ -21,6 +21,7 @@
     
     <ItemGroup>
         <ProjectReference Include="..\CoreSharp.Common\CoreSharp.Common.csproj" />
+        <ProjectReference Include="..\CoreSharp.Cqrs\CoreSharp.Cqrs.csproj" />
         <ProjectReference Include="..\CoreSharp.DataAccess\CoreSharp.DataAccess.csproj" />
     </ItemGroup>
 

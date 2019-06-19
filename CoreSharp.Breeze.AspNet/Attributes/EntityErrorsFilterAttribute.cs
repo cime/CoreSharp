@@ -12,11 +12,13 @@ namespace CoreSharp.Breeze.AspNet.Attributes
         {
             if (context.Exception is EntityErrorsException)
             {
+                var formatter = ((JsonFormatter)context.ActionContext.ControllerContext.Configuration.DependencyResolver.GetService(typeof(JsonFormatter))).Create();
+
                 var e = (EntityErrorsException)context.Exception;
                 var error = new SaveError(e.Message, e.EntityErrors);
                 var resp = new HttpResponseMessage(e.StatusCode)
                 {
-                    Content = new ObjectContent(typeof(SaveError), error, JsonFormatter.Create()),
+                    Content = new ObjectContent(typeof(SaveError), error, formatter),
                 };
                 context.Response = resp;
             }

@@ -21,7 +21,7 @@ namespace CoreSharp.GraphQL
     /// </summary>
     /// <typeparam name="TSourceType"></typeparam>
     public class AutoRegisteringObjectGraphType<TSourceType> : ObjectGraphType<TSourceType>
-        where TSourceType : IEntity
+        //where TSourceType : IEntity
     {
         // ReSharper disable once StaticMemberInGenericType
         private static readonly Type BaseEntityType = typeof(IEntity);
@@ -87,11 +87,6 @@ namespace CoreSharp.GraphQL
 
         private static bool IsEnabledForRegister(Type propertyType, bool firstCall)
         {
-            if (!BaseEntityType.IsAssignableFrom(propertyType))
-            {
-                return false;
-            }
-
             if (propertyType.GetCustomAttribute<IgnoreAttribute>() != null)
             {
                 return false;
@@ -109,6 +104,11 @@ namespace CoreSharp.GraphQL
             if (GraphTypeTypeRegistry.Contains(propertyType))
             {
                 return true;
+            }
+
+            if (!BaseEntityType.IsAssignableFrom(propertyType))
+            {
+                return false;
             }
 
             if (firstCall)

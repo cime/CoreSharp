@@ -5,20 +5,12 @@ namespace CoreSharp.DataAccess
     public interface IVersionedEntity : IEntity
     {
         int Version { get; }
-
         DateTime CreatedDate { get; }
-
-        DateTime? ModifiedDate { get; }
-
-        //object CreatedBy { get; }
-
-        //object LastModifiedBy { get; }
+        DateTime? LastModifiedDate { get; }
     }
 
-    public interface IVersionedEntity<TUser> : IVersionedEntity
+    public interface IVersionedEntity<out TId> : IEntity<TId>, IVersionedEntity
     {
-        TUser CreatedBy { get; }
 
-        TUser ModifiedBy { get; }
     }
 }

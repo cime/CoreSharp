@@ -36,7 +36,7 @@ namespace CoreSharp.NHibernate.Conventions
             //var inverseAttribute = instance.ChildType.GetCustomAttribute<InverseAttribute>();
             var inverseAttribute = instance.Member.GetCustomAttribute<InverseAttribute>();
 
-            if (instance.EntityType.IsAssignableToGenericType(typeof(Document<,,>)))
+            if (instance.EntityType.IsAssignableToGenericType(typeof(Document<,,,>)))
             {
                 var mapping = GetMapping(instance.Key.Columns.First());
                 mapping.Set(x => x.Name, Layer.UserSupplied, "ParentId");

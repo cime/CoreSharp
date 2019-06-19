@@ -27,10 +27,10 @@ namespace CoreSharp.NHibernate
     }
 
     [Ignore]
-    public abstract class Document<TDocument, TDocumentVersion, TUser> : VersionedEntity<TUser>, IDocument<TDocumentVersion>
+    public abstract class Document<TDocument, TDocumentVersion, TUser, TId> : VersionedEntity<TId>, IDocument<TDocumentVersion>
         where TUser : IUser
-        where TDocument : Document<TDocument, TDocumentVersion, TUser>
-        where TDocumentVersion : DocumentVersion<TDocument, TDocumentVersion, TUser>
+        where TDocument : Document<TDocument, TDocumentVersion, TUser, TId>
+        where TDocumentVersion : DocumentVersion<TDocument, TDocumentVersion, TUser, TId>
     {
         public virtual ISet<TDocumentVersion> Versions { get; set; }
 
@@ -41,13 +41,13 @@ namespace CoreSharp.NHibernate
     }
 
     [Ignore]
-    public class DocumentVersion<TDocument, TDocumentVersion, TUser> : VersionedEntity<TUser>, IDocumentVersion<TDocument>
+    public class DocumentVersion<TDocument, TDocumentVersion, TUser, TId> : VersionedEntity<TId>, IDocumentVersion<TDocument>
         where TUser : IUser
-        where TDocument : Document<TDocument, TDocumentVersion, TUser>
-        where TDocumentVersion : DocumentVersion<TDocument, TDocumentVersion, TUser>
+        where TDocument : Document<TDocument, TDocumentVersion, TUser, TId>
+        where TDocumentVersion : DocumentVersion<TDocument, TDocumentVersion, TUser, TId>
     {
         private TDocument _parent;
-        private long _parentId;
+        private TId _parentId;
         private bool _isParentIdSet = false;
 
         [NotNull]
@@ -58,12 +58,12 @@ namespace CoreSharp.NHibernate
         }
 
         [ReadOnly(true)]
-        public virtual long ParentId
+        public virtual TId ParentId
         {
             get
             {
                 if (_isParentIdSet) return _parentId;
-                return Parent == null ? default(long) : Parent.Id;
+                return Parent == null ? default(TId) : Parent.Id;
             }
             set
             {
