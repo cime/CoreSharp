@@ -83,8 +83,41 @@ namespace SimpleInjector
 
         public static void RegisterQueryHandlersFromAssembly(this Container container, Assembly assembly)
         {
-            container.Register(typeof(IQueryHandler<,>), new[] { assembly }, Lifestyle.Scoped);
-            container.Register(typeof(IAsyncQueryHandler<,>), new[] { assembly }, Lifestyle.Scoped);
+            var types = assembly.DefinedTypes.Where(x => x.IsClass && !x.IsAbstract && !x.IsGenericType &&
+                                                         (
+                                                             x.IsAssignableToGenericType(typeof(IQueryHandler<,>)) ||
+                                                             x.IsAssignableToGenericType(typeof(IAsyncQueryHandler<,>))
+                                                         ));
+
+            foreach (var o in types.Select(t => new { Implementation = t, Services = t.ImplementedInterfaces }))
+            {
+                var type = o.Implementation.AsType();
+                var attr = o.Implementation.GetCustomAttribute<LifetimeAttribute>() ?? new LifetimeAttribute(Lifetime.Transient);
+
+                Registration registration;
+
+                switch (attr.Lifetime)
+                {
+                    case Lifetime.Singleton:
+                        registration = Lifestyle.Singleton.CreateRegistration(type, container);
+                        break;
+                    case Lifetime.Scoped:
+                        registration = Lifestyle.Scoped.CreateRegistration(type, container);
+                        break;
+                    case Lifetime.Transient:
+                        registration = Lifestyle.Transient.CreateRegistration(type, container);
+                        break;
+                    default:
+                        throw new CoreSharpException($"Invalid {nameof(Lifetime)} value: {attr.Lifetime}");
+                }
+
+                container.AddRegistration(type, registration);
+
+                foreach (var serviceType in o.Services)
+                {
+                    container.AddRegistration(serviceType, registration);
+                }
+            }
         }
 
         public static void RegisterEventHandlers(this Container container)
