@@ -14,7 +14,6 @@ using GraphQL.Resolvers;
 using GraphQL.Types;
 using GraphQL.Utilities;
 using Newtonsoft.Json;
-using SimpleInjector.Lifestyles;
 using Container = SimpleInjector.Container;
 
 namespace CoreSharp.GraphQL
@@ -110,7 +109,7 @@ namespace CoreSharp.GraphQL
                     {
                         new FieldType()
                         {
-                            Name = CamelCase(propertyInfo.Name),
+                            Name = propertyInfo.Name.ToCamelCase(),
                             Type = propertyInfo.PropertyType.GetGraphTypeFromType()
                         }
                     });
@@ -134,7 +133,7 @@ namespace CoreSharp.GraphQL
                     queryArgument
                 };
 
-                var mutationName = new Regex("Command$").Replace(commandType.Name, "");
+                var mutationName = exposeAttribute.IsUriSet ? exposeAttribute.Uri : new Regex("Command$").Replace(commandType.Name, "");
 
                 if (!Mutation.HasField(mutationName))
                 {
@@ -143,7 +142,7 @@ namespace CoreSharp.GraphQL
                         Type = resultGqlType == null ? GraphTypeTypeRegistry.Get(resultType) : null,
                         ResolvedType = resultGqlType,
                         Resolver = new CommandResolver(_container, commandHandlerType, commandType),
-                        Name = CamelCase(mutationName),
+                        Name = GetNormalizedFieldName(mutationName),
                         Description = descriptionAttribute?.Description,
                         Arguments = new QueryArguments(commandQueryParameters)
                     };
@@ -176,13 +175,6 @@ namespace CoreSharp.GraphQL
                     continue;
                 }
 
-                //
-                // For each command here I would like to create a mutation that has 1 input of type commandType and returns the resultType
-                // Example command can be found inside Commands/TestCommand.cs
-                //
-                // Each command can be resolved using: var result = (new "commandHandlerType"()).Handle("command instance");
-                //
-
                 var inputTypeName = queryType.Name;
                 var inputObjectType = typeof(InputObjectGraphType<>).MakeGenericType(queryType);
                 var inputGqlType = (IInputObjectGraphType)Activator.CreateInstance(inputObjectType);
@@ -192,13 +184,14 @@ namespace CoreSharp.GraphQL
                 var addFieldMethod = inputGqlType.GetType().GetMethod("AddField");
                 var properties = queryType.GetProperties(BindingFlags.Instance | BindingFlags.Public);
 
+                //TODO autoregistering input type
                 foreach (var propertyInfo in properties)
                 {
                     addFieldMethod.Invoke(inputGqlType, new[]
                     {
                         new FieldType()
                         {
-                            Name = CamelCase(propertyInfo.Name),
+                            Name = GetNormalizedFieldName(propertyInfo.Name),
                             Type = propertyInfo.PropertyType.GetGraphTypeFromType()
                         }
                     });
@@ -222,7 +215,7 @@ namespace CoreSharp.GraphQL
                     queryArgument
                 };
 
-                var queryName = new Regex("Query").Replace(queryType.Name, "");
+                var queryName = exposeAttribute.IsUriSet ? exposeAttribute.Uri : new Regex("Query").Replace(queryType.Name, "");
 
                 if (!Query.HasField(queryName))
                 {
@@ -231,7 +224,7 @@ namespace CoreSharp.GraphQL
                         Type = resultGqlType == null ? GraphTypeTypeRegistry.Get(resultType) : null,
                         ResolvedType = resultGqlType,
                         Resolver = new QueryResolver(_container, queryHandlerType, queryType),
-                        Name = CamelCase(queryName),
+                        Name = GetNormalizedFieldName(queryName),
                         Description = descriptionAttribute?.Description,
                         Arguments = new QueryArguments(queryQueryParameters)
                     };
@@ -241,9 +234,13 @@ namespace CoreSharp.GraphQL
             }
         }
 
-        private static string CamelCase(string s)
+        private static string GetNormalizedFieldName(string value)
         {
-            return s.Substring(0, 1).ToLower() + s.Substring(1);
+            var parts = value.Split(new [] { '/' })
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Select(x => global::GraphQL.StringExtensions.ToPascalCase(x));
+
+            return string.Join("", parts).ToCamelCase();
         }
 
         public class CommandResolver : IFieldResolver
@@ -261,19 +258,16 @@ namespace CoreSharp.GraphQL
 
             public object Resolve(ResolveFieldContext context)
             {
-                //using (AsyncScopedLifestyle.BeginScope(_container))
-                //{
-                    var commandHandler = _container.GetInstance(_commandHandlerType);
-                    // TODO: find a better way to deserialize variable command
-                    var variableValue = context.Variables.SingleOrDefault(x => x.Name == "command")?.Value;
-                    var command =
-                        JsonConvert.DeserializeObject(JsonConvert.SerializeObject(variableValue), _commandType);
+                var commandHandler = _container.GetInstance(_commandHandlerType);
+                // TODO: find a better way to deserialize variable command
+                var variableValue = context.Variables.SingleOrDefault(x => x.Name == "command")?.Value;
+                var command =
+                    JsonConvert.DeserializeObject(JsonConvert.SerializeObject(variableValue), _commandType);
 
-                    var handleMethodInfo =
-                        _commandHandlerType.GetMethod("Handle", BindingFlags.Instance | BindingFlags.Public);
+                var handleMethodInfo =
+                    _commandHandlerType.GetMethod("Handle", BindingFlags.Instance | BindingFlags.Public);
 
-                    return handleMethodInfo.Invoke(commandHandler, new[] { command });
-                //}
+                return handleMethodInfo.Invoke(commandHandler, new[] { command });
             }
         }
 
@@ -292,19 +286,16 @@ namespace CoreSharp.GraphQL
 
             public object Resolve(ResolveFieldContext context)
             {
-                //using (AsyncScopedLifestyle.BeginScope(_container))
-                //{
-                    var queryHandler = _container.GetInstance(_queryHandlerType);
-                    // TODO: find a better way to deserialize variable query
-                    var variableValue = context.Variables.SingleOrDefault(x => x.Name == "query")?.Value;
-                    var query =
-                        JsonConvert.DeserializeObject(JsonConvert.SerializeObject(variableValue), _queryType);
+                var queryHandler = _container.GetInstance(_queryHandlerType);
+                // TODO: find a better way to deserialize variable query
+                var variableValue = context.Variables.SingleOrDefault(x => x.Name == "query")?.Value;
+                var query =
+                    JsonConvert.DeserializeObject(JsonConvert.SerializeObject(variableValue), _queryType);
 
-                    var handleMethodInfo =
-                        _queryHandlerType.GetMethod("Handle", BindingFlags.Instance | BindingFlags.Public);
+                var handleMethodInfo =
+                    _queryHandlerType.GetMethod("Handle", BindingFlags.Instance | BindingFlags.Public);
 
-                    return handleMethodInfo.Invoke(queryHandler, new[] { query });
-                //}
+                return handleMethodInfo.Invoke(queryHandler, new[] { query });
             }
         }
     }
