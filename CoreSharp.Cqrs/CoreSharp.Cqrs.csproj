@@ -17,9 +17,5 @@
   <ItemGroup>
     <ProjectReference Include="..\CoreSharp.Common\CoreSharp.Common.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="SimpleInjector" />
-  </ItemGroup>
-
+  
 </Project>

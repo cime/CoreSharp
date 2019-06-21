@@ -20,7 +20,7 @@ namespace CoreSharp.GraphQL
     /// Supports <see cref="DescriptionAttribute"/>, <see cref="ObsoleteAttribute"/>, <see cref="System.ComponentModel.DefaultValueAttribute"/> and <see cref="RequiredAttribute"/>.
     /// </summary>
     /// <typeparam name="TSourceType"></typeparam>
-    public class AutoRegisteringObjectGraphType<TSourceType> : ObjectGraphType<TSourceType>
+    public class EntityGraphType<TSourceType> : ObjectGraphType<TSourceType>
         //where TSourceType : IEntity
     {
         // ReSharper disable once StaticMemberInGenericType
@@ -30,7 +30,7 @@ namespace CoreSharp.GraphQL
         /// Creates a GraphQL type by specifying fields to exclude from registration.
         /// </summary>
         /// <param name="excludedProperties"> Expressions for excluding fields, for example 'o => o.Age'. </param>
-        public AutoRegisteringObjectGraphType(params Expression<Func<TSourceType, object>>[] excludedProperties)
+        public EntityGraphType(params Expression<Func<TSourceType, object>>[] excludedProperties)
         {
             foreach (var propertyInfo in GetRegisteredProperties())
             {

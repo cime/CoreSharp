@@ -7,7 +7,7 @@ namespace CoreSharp.GraphQL
     {
         public void Register(Container container)
         {
-            container.Register(() => new CqrsSchema(container), Lifestyle.Singleton);
+
         }
     }
 }
