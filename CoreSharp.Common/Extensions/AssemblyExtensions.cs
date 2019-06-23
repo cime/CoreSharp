@@ -3,10 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace StandardSharp.Common.Extensions
+namespace CoreSharp.Common.Extensions
 {
     public static class AssemblyExtensions
     {
+        /// <summary>
+        /// Get all assemblies that depends on <paramref name="analyzedAssembly"/>
+        /// </summary>
+        /// <param name="analyzedAssembly">Analyzed Assembly</param>
+        /// <returns>List of assemblies that depends on <paramref name="analyzedAssembly"/></returns>
         public static IEnumerable<Assembly> GetDependentAssemblies(this Assembly analyzedAssembly)
         {
             return AppDomain.CurrentDomain.GetAssemblies().Where(x => !x.IsDynamic)

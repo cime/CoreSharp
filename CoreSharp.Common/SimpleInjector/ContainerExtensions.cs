@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using StandardSharp.Common.Extensions;
+using CoreSharp.Common.Extensions;
 
 // ReSharper disable once CheckNamespace
 namespace SimpleInjector

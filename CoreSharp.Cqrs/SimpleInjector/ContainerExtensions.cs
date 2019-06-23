@@ -4,8 +4,8 @@ using System.Reflection;
 using CoreSharp.Common.Command;
 using CoreSharp.Common.Events;
 using CoreSharp.Common.Exceptions;
+using CoreSharp.Common.Extensions;
 using CoreSharp.Common.Query;
-using StandardSharp.Common.Extensions;
 
 // ReSharper disable once CheckNamespace
 namespace SimpleInjector

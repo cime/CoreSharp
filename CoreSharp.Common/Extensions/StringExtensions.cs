@@ -18,6 +18,11 @@ namespace System
             return bytes.Aggregate("", (current, b) => current + string.Format("{0:x2}", b));
         }
 
+        /// <summary>
+        /// Capitalize first letter of <paramref name="value"/>
+        /// </summary>
+        /// <param name="value">String value</param>
+        /// <returns>String with first letter capitalized</returns>
         public static string ToUpperFirstChar(this string value)
         {
             return char.ToUpper(value[0]) + value.Substring(1);
@@ -28,11 +33,16 @@ namespace System
             return char.ToLower(value[0]) + value.Substring(1);
         }
 
-        public static Stream ToStream(this string s)
+        /// <summary>
+        /// Get MemoryStream from <paramref name="value"/>
+        /// </summary>
+        /// <param name="value">String value</param>
+        /// <returns>MemoryStream containing <paramref name="value"/></returns>
+        public static Stream ToStream(this string value)
         {
             var stream = new MemoryStream();
             var writer = new StreamWriter(stream);
-            writer.Write(s);
+            writer.Write(value);
             writer.Flush();
             stream.Position = 0;
             return stream;

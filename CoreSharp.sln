@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
@@ -22,6 +22,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreSharp.Cqrs", "CoreSharp.Cqrs\CoreSharp.Cqrs.csproj", "{424588EF-F3DE-427B-95CF-3966BF5F2B1F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreSharp.Cqrs.AspNetCore", "CoreSharp.Cqrs.AspNetCore\CoreSharp.Cqrs.AspNetCore.csproj", "{E292C09F-CA29-4298-AA15-D09762B08BA0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreSharp.Common.Tests", "CoreSharp.Common.Tests\CoreSharp.Common.Tests.csproj", "{1C376457-B5D6-486A-B9B0-624C62732BB1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -72,5 +74,9 @@ Global
 		{E292C09F-CA29-4298-AA15-D09762B08BA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E292C09F-CA29-4298-AA15-D09762B08BA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E292C09F-CA29-4298-AA15-D09762B08BA0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C376457-B5D6-486A-B9B0-624C62732BB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C376457-B5D6-486A-B9B0-624C62732BB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C376457-B5D6-486A-B9B0-624C62732BB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C376457-B5D6-486A-B9B0-624C62732BB1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
