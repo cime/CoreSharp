@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using CoreSharp.Common.Command;
-using CoreSharp.Common.Events;
 using CoreSharp.Common.Exceptions;
 using CoreSharp.Common.Extensions;
-using CoreSharp.Common.Query;
+using CoreSharp.Cqrs.Command;
+using CoreSharp.Cqrs.Events;
+using CoreSharp.Cqrs.Query;
 
 // ReSharper disable once CheckNamespace
 namespace SimpleInjector

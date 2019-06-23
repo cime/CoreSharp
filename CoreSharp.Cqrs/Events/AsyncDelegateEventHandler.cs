@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace CoreSharp.Common.Events
+namespace CoreSharp.Cqrs.Events
 {
     internal class AsyncDelegateEventHandler<TEvent> : DelegateEventHandler,
             IAsyncEventHandler<TEvent> where TEvent : IAsyncEvent

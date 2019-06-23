@@ -1,4 +1,4 @@
-﻿namespace CoreSharp.Common.Command
+﻿namespace CoreSharp.Cqrs.Command
 {
     public interface ICommand
     {

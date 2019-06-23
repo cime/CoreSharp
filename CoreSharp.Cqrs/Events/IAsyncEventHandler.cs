@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace CoreSharp.Common.Events
+namespace CoreSharp.Cqrs.Events
 {
     public interface IAsyncEventHandler<in TEvent> where TEvent : IAsyncEvent
     {

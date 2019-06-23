@@ -1,4 +1,4 @@
-﻿namespace CoreSharp.Common.Events
+﻿namespace CoreSharp.Cqrs.Events
 {
     internal class DelegateEventHandler
     {

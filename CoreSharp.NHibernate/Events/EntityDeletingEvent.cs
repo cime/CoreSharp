@@ -1,4 +1,4 @@
-﻿using CoreSharp.Common.Events;
+﻿using CoreSharp.Cqrs.Events;
 using CoreSharp.DataAccess;
 using NHibernate;
 

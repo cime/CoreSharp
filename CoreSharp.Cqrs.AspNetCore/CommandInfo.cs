@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using CoreSharp.Common.Command;
+using CoreSharp.Cqrs.Command;
 
 namespace CoreSharp.Cqrs.AspNetCore
 {

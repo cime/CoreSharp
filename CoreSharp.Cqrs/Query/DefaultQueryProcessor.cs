@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using SimpleInjector;
 
-namespace CoreSharp.Common.Query
+namespace CoreSharp.Cqrs.Query
 {
     internal class DefaultQueryProcessor : IQueryProcessor
     {

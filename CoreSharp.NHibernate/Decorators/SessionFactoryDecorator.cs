@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
-using CoreSharp.Common.Events;
+using CoreSharp.Cqrs.Events;
 using NHibernate;
 using NHibernate.Engine;
 using NHibernate.Metadata;

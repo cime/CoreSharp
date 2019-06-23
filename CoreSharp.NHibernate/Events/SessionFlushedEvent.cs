@@ -1,4 +1,4 @@
-using CoreSharp.Common.Events;
+using CoreSharp.Cqrs.Events;
 using NHibernate;
 
 namespace CoreSharp.NHibernate.Events

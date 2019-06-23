@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using CoreSharp.Breeze.Events;
 using CoreSharp.Breeze.Metadata;
-using CoreSharp.Common.Events;
+using CoreSharp.Cqrs.Events;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NHibernate;

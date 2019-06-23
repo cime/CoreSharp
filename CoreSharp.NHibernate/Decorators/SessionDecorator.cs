@@ -5,7 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using CoreSharp.Common.Events;
+using CoreSharp.Cqrs.Events;
 using CoreSharp.NHibernate.Events;
 using NHibernate;
 using NHibernate.Engine;

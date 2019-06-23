@@ -1,6 +1,6 @@
-﻿using CoreSharp.Common.Command;
-using CoreSharp.Common.Events;
-using CoreSharp.Common.Query;
+﻿using CoreSharp.Cqrs.Command;
+using CoreSharp.Cqrs.Events;
+using CoreSharp.Cqrs.Query;
 using SimpleInjector;
 
 namespace CoreSharp.Cqrs

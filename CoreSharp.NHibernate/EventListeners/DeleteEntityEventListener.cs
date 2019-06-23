@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using CoreSharp.Common.Events;
+using CoreSharp.Cqrs.Events;
 using CoreSharp.NHibernate.Events;
 using NHibernate.Event;
 

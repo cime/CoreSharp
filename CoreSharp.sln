@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreSharp.Cqrs.AspNetCore",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreSharp.Common.Tests", "CoreSharp.Common.Tests\CoreSharp.Common.Tests.csproj", "{1C376457-B5D6-486A-B9B0-624C62732BB1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreSharp.Cqrs.Tests", "CoreSharp.Cqrs.Tests\CoreSharp.Cqrs.Tests.csproj", "{CED0F029-2DF9-4D48-BBD1-D900FABEB872}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -78,5 +80,9 @@ Global
 		{1C376457-B5D6-486A-B9B0-624C62732BB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C376457-B5D6-486A-B9B0-624C62732BB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1C376457-B5D6-486A-B9B0-624C62732BB1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CED0F029-2DF9-4D48-BBD1-D900FABEB872}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CED0F029-2DF9-4D48-BBD1-D900FABEB872}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CED0F029-2DF9-4D48-BBD1-D900FABEB872}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CED0F029-2DF9-4D48-BBD1-D900FABEB872}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

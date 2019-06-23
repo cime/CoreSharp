@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CoreSharp.Breeze.Events;
-using CoreSharp.Common.Events;
+using CoreSharp.Cqrs.Events;
 using CoreSharp.DataAccess;
 using SimpleInjector;
 

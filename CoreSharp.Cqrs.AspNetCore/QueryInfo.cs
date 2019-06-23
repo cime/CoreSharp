@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using CoreSharp.Common.Query;
+using CoreSharp.Cqrs.Query;
 
 namespace CoreSharp.Cqrs.AspNetCore
 {

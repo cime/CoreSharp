@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using CoreSharp.Common.Command;
+using CoreSharp.Cqrs.Command;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using Newtonsoft.Json;

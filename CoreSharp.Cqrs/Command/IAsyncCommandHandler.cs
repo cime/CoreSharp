@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace CoreSharp.Common.Command
+namespace CoreSharp.Cqrs.Command
 {
     public interface IAsyncCommandHandler<in TCommand> where TCommand : IAsyncCommand
     {

@@ -1,4 +1,4 @@
-﻿namespace CoreSharp.Common.Query
+﻿namespace CoreSharp.Cqrs.Query
 {
     public interface IAsyncQuery<TResult>
     {

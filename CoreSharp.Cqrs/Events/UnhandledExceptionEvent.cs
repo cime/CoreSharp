@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CoreSharp.Common.Events
+namespace CoreSharp.Cqrs.Events
 {
     public class UnhandledExceptionEvent : IEvent
     {

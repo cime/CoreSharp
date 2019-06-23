@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using CoreSharp.Common.Events;
+using CoreSharp.Cqrs.Events;
 
 namespace CoreSharp.Breeze.Events
 {

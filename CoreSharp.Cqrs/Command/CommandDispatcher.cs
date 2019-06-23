@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using SimpleInjector;
 
-namespace CoreSharp.Common.Command
+namespace CoreSharp.Cqrs.Command
 {
     public class CommandDispatcher : ICommandDispatcher
     {

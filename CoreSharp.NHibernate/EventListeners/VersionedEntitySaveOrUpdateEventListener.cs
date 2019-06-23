@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using CoreSharp.Common.Events;
+using CoreSharp.Cqrs.Events;
 using CoreSharp.DataAccess;
 using CoreSharp.NHibernate.Events;
 using NHibernate;
