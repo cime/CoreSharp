@@ -343,8 +343,7 @@ namespace CoreSharp.Breeze
                 {
                     if (!FactoryMetadata.TryGetValue(Session.SessionFactory, out _metadata))
                     {
-                        //var builder = new NHBreezeMetadata(session.SessionFactory, configuration);
-                        var builder = new NHMetadataBuilder(Session.SessionFactory, _breezeConfigurator);
+                        var builder = new NHMetadataBuilder(Session.SessionFactory, _breezeConfig, _breezeConfigurator);
                         _metadata = builder.BuildMetadata(TypeFilter);
                         FactoryMetadata.Add(Session.SessionFactory, _metadata);
                         OnMetadataBuilt(_metadata);

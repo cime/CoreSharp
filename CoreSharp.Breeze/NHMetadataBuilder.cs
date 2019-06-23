@@ -23,6 +23,7 @@ namespace CoreSharp.Breeze
     public class NHMetadataBuilder
     {
         private readonly ISessionFactory _sessionFactory;
+        private readonly IBreezeConfig _breezeConfig;
         private MetadataSchema _map;
         private List<Dictionary<string, object>> _typeList;
         private Dictionary<string, string> _resourceMap;
@@ -32,9 +33,10 @@ namespace CoreSharp.Breeze
         private readonly IBreezeConfigurator _breezeConfigurator;
         private Dictionary<Type, List<NHSyntheticProperty>> _syntheticProperties;
 
-        public NHMetadataBuilder(ISessionFactory sessionFactory, IBreezeConfigurator breezeConfigurator)
+        public NHMetadataBuilder(ISessionFactory sessionFactory, IBreezeConfig breezeConfig, IBreezeConfigurator breezeConfigurator)
         {
             _sessionFactory = sessionFactory;
+            _breezeConfig = breezeConfig;
             _breezeConfigurator = breezeConfigurator;
             _pluralizationService = new PluralizationServiceInstance(CultureInfo.GetCultureInfo("en-us"));
         }
@@ -529,9 +531,12 @@ namespace CoreSharp.Breeze
 
             nmap.Add("associationName", GetAssociationName(containingType.Name, relatedEntityTypeName, columnNames));
 
-            var propertyIndex = containingPersister.PropertyNames.ToList().IndexOf(propName);
-            var cascadeStyle = containingPersister.PropertyCascadeStyles[propertyIndex];
-            nmap.Add("hasOrphanDelete", cascadeStyle.HasOrphanDelete);
+            if (_breezeConfig.HasOrphanDeleteEnabled)
+            {
+                var propertyIndex = containingPersister.PropertyNames.ToList().IndexOf(propName);
+                var cascadeStyle = containingPersister.PropertyCascadeStyles[propertyIndex];
+                nmap.Add("hasOrphanDelete", cascadeStyle.HasOrphanDelete);
+            }
 
 
             string[] fkNames = null;

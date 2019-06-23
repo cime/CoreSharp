@@ -34,6 +34,8 @@ namespace CoreSharp.Breeze
         private readonly JsonSerializerSettings _jsonSerializerSettings;
         private readonly JsonSerializerSettings _jsonSerializerSettingsForSave;
 
+        public bool HasOrphanDeleteEnabled => true;
+
         public BreezeConfig(BreezeContractResolver contractResolver)
         {
             _jsonSerializerSettings = CreateJsonSerializerSettings(contractResolver);

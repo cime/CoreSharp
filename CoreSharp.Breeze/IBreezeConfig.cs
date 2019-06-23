@@ -16,5 +16,7 @@ namespace CoreSharp.Breeze
         /// </summary>
         /// <returns></returns>
         TransactionSettings GetTransactionSettings();
+        
+        bool HasOrphanDeleteEnabled { get; }
     }
 }
