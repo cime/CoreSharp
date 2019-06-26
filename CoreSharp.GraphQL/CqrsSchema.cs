@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using CoreSharp.Common.Attributes;
 using CoreSharp.Cqrs.Command;
 using CoreSharp.Cqrs.Query;
 using CoreSharp.GraphQL.Attributes;
@@ -88,13 +87,13 @@ namespace CoreSharp.GraphQL
         {
             foreach (var commandHandlerType in commandHandlerTypes)
             {
-                var descriptionAttribute = commandHandlerType.GetTypeInfo().GetCustomAttribute<DescriptionAttribute>();
                 var genericType = commandHandlerType.GetInterfaces().Single(x => x.GetTypeInfo().IsAssignableToGenericType(typeof(ICommandHandler<,>)) ||
                                                                                  x.GetTypeInfo().IsAssignableToGenericType(typeof(IAsyncCommandHandler<,>)));
                 var genericArguments = genericType.GetGenericArguments();
                 var commandType = genericArguments[0];
                 var resultType = genericArguments[1];
 
+                var descriptionAttribute = commandType.GetCustomAttribute<DescriptionAttribute>();
                 var exposeAttribute = commandType.GetCustomAttribute<ExposeGraphQLAttribute>();
 
                 if (exposeAttribute == null)
@@ -111,6 +110,7 @@ namespace CoreSharp.GraphQL
                     var inputObjectType = typeof(InputObjectGraphType<>).MakeGenericType(commandType);
                     inputGqlType = (IInputObjectGraphType)Activator.CreateInstance(inputObjectType);
                     inputGqlType.Name = commandType.Name;
+                    inputGqlType.Description = descriptionAttribute?.Description;
 
                     var addFieldMethod = inputGqlType.GetType().GetMethod("AddField");
 
@@ -122,7 +122,8 @@ namespace CoreSharp.GraphQL
                                 new FieldType()
                                 {
                                     Name = propertyInfo.Name.ToCamelCase(),
-                                    Type = propertyInfo.PropertyType.GetGraphTypeFromType()
+                                    Type = propertyInfo.PropertyType.GetGraphTypeFromType(),
+                                    Description = propertyInfo.GetCustomAttribute<DescriptionAttribute>()?.Description
                                 }
                             });
                     }
@@ -181,13 +182,13 @@ namespace CoreSharp.GraphQL
         {
             foreach (var queryHandlerType in queryHandlerTypes)
             {
-                var descriptionAttribute = queryHandlerType.GetTypeInfo().GetCustomAttribute<DescriptionAttribute>();
                 var genericType = queryHandlerType.GetInterfaces().Single(x => x.GetTypeInfo().IsAssignableToGenericType(typeof(IQueryHandler<,>)) ||
                                                                                x.GetTypeInfo().IsAssignableToGenericType(typeof(IAsyncQueryHandler<,>)));
                 var genericArguments = genericType.GetGenericArguments();
                 var queryType = genericArguments[0];
                 var resultType = genericArguments[1];
 
+                var descriptionAttribute = queryType.GetCustomAttribute<DescriptionAttribute>();
                 var exposeAttribute = queryType.GetCustomAttribute<ExposeGraphQLAttribute>();
 
                 if (exposeAttribute == null)
@@ -204,6 +205,7 @@ namespace CoreSharp.GraphQL
                     inputGqlType = (IInputObjectGraphType)Activator.CreateInstance(inputObjectType);
 
                     inputGqlType.Name = queryType.Name;
+                    inputGqlType.Description = descriptionAttribute?.Description;
 
                     var addFieldMethod = inputGqlType.GetType().GetMethod("AddField");
 
@@ -214,7 +216,8 @@ namespace CoreSharp.GraphQL
                             new FieldType()
                             {
                                 Name = GetNormalizedFieldName(propertyInfo.Name),
-                                Type = propertyInfo.PropertyType.GetGraphTypeFromType()
+                                Type = propertyInfo.PropertyType.GetGraphTypeFromType(),
+                                Description = propertyInfo.GetCustomAttribute<DescriptionAttribute>()?.Description
                             }
                         });
                     }
