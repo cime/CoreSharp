@@ -34,7 +34,7 @@ namespace CoreSharp.Breeze
         private readonly JsonSerializerSettings _jsonSerializerSettings;
         private readonly JsonSerializerSettings _jsonSerializerSettingsForSave;
 
-        public bool HasOrphanDeleteEnabled => true;
+        public virtual bool HasOrphanDeleteEnabled => true;
 
         public BreezeConfig(BreezeContractResolver contractResolver)
         {
@@ -47,17 +47,17 @@ namespace CoreSharp.Breeze
             };
         }
 
-        public JsonSerializerSettings GetJsonSerializerSettings()
+        public virtual JsonSerializerSettings GetJsonSerializerSettings()
         {
             return _jsonSerializerSettings;
         }
 
-        public JsonSerializerSettings GetJsonSerializerSettingsForSave()
+        public virtual JsonSerializerSettings GetJsonSerializerSettingsForSave()
         {
             return _jsonSerializerSettingsForSave;
         }
 
-        public ReadOnlyCollection<Assembly> ProbeAssemblies
+        public virtual ReadOnlyCollection<Assembly> ProbeAssemblies
         {
             get
             {
