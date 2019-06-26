@@ -22,6 +22,9 @@ namespace CoreSharp.GraphQL
         private readonly Container _container;
         private JsonSerializerSettings? _jsonSerializerSettings;
 
+        public virtual bool AllowNullQuery => false;
+        public virtual bool AllowNullCommand => false;
+
         public CqrsSchema(Container container)
         {
             _container = container;
@@ -143,7 +146,7 @@ namespace CoreSharp.GraphQL
 
                 if (inputGqlType != null)
                 {
-                    var argument = new QueryArgument(inputGqlType);
+                    var argument = AllowNullCommand ? new QueryArgument(inputGqlType) : new QueryArgument(new NonNullGraphType(inputGqlType));
                     argument.Name = "command";
                     arguments.Add(argument);
                 }
@@ -237,7 +240,7 @@ namespace CoreSharp.GraphQL
 
                 if (inputGqlType != null)
                 {
-                    var argument = new QueryArgument(inputGqlType);
+                    var argument = AllowNullQuery ? new QueryArgument(inputGqlType) : new QueryArgument(new NonNullGraphType(inputGqlType));
                     argument.Name = "query";
                     arguments.Add(argument);
                 }

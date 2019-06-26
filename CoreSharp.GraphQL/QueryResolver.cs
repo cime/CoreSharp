@@ -28,9 +28,8 @@ namespace CoreSharp.GraphQL
         public object Resolve(ResolveFieldContext context)
         {
             var queryHandler = _container.GetInstance(_queryHandlerType);
-            var variableValue = context.Arguments["query"];
-            var query =
-                JsonConvert.DeserializeObject(JsonConvert.SerializeObject(variableValue, _jsonSerializerSettings), _queryType, _jsonSerializerSettings);
+            var variableValue = context.Arguments.ContainsKey("query") ? JsonConvert.SerializeObject(context.Arguments["query"], _jsonSerializerSettings) : "{}";
+            var query = JsonConvert.DeserializeObject(variableValue, _queryType, _jsonSerializerSettings);
 
             var isAsync = _queryHandlerType.IsAssignableToGenericType(typeof(IAsyncQueryHandler<,>));
 
