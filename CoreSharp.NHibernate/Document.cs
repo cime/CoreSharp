@@ -54,10 +54,12 @@ namespace CoreSharp.NHibernate
 
         private bool _isParentIdSet = false;
 
+#nullable disable
         public DocumentVersion(TDocument parent)
         {
             _parent = parent;
         }
+#nullable enable
         
         [NotNull]
         public virtual TDocument Parent
@@ -66,6 +68,7 @@ namespace CoreSharp.NHibernate
             set { ResetField(ref _parent, value, ref _isParentIdSet); }
         }
 
+#nullable disable
         [ReadOnly(true)]
         public virtual TId ParentId
         {
@@ -80,7 +83,8 @@ namespace CoreSharp.NHibernate
                 _parentId = value;
             }
         }
-
+#nullable enable
+        
         [Common.Attributes.DefaultValue(false)]
         public virtual bool Active { get; set; }
 

@@ -104,7 +104,7 @@ namespace CoreSharp.GraphQL
                     continue;
                 }
 
-                IInputObjectGraphType inputGqlType = null;
+                IInputObjectGraphType? inputGqlType = null;
 
                 var properties = commandType.GetProperties(BindingFlags.Instance | BindingFlags.Public);
 
@@ -200,7 +200,7 @@ namespace CoreSharp.GraphQL
                 }
 
                 var properties = queryType.GetProperties(BindingFlags.Instance | BindingFlags.Public);
-                IInputObjectGraphType inputGqlType = null;
+                IInputObjectGraphType? inputGqlType = null;
 
                 if (properties.Any())
                 {
