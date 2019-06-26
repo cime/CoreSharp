@@ -9,6 +9,8 @@ using FluentNHibernate.Conventions.Inspections;
 using FluentNHibernate.Conventions.Instances;
 using FluentNHibernate.MappingModel;
 
+#nullable disable
+
 namespace CoreSharp.NHibernate.Conventions
 {
     public class CascadeConvention : IReferenceConvention, IHasManyConvention, IHasOneConvention, IHasManyToManyConvention
@@ -23,7 +25,7 @@ namespace CoreSharp.NHibernate.Conventions
             var type = inspector.GetType();
             var field = type.GetField("mapping", BindingFlags.Instance | BindingFlags.NonPublic);
             if (field == null)
-                throw new MissingMemberException(string.Format("field 'mapping' was not found in type {0}", type));
+                throw new MissingMemberException($"field 'mapping' was not found in type {type}");
             return field.GetValue(inspector) as ColumnMapping;
         }
 

@@ -7,11 +7,14 @@ namespace System.Linq.Expressions
 {
     public static class ExpressionExtensions
     {
+#nullable disable    
         public static string GetFullPropertyName<T, TProperty>(this Expression<Func<T, TProperty>> exp)
         {
             MemberExpression memberExp;
             if (!TryFindMemberExpression(exp.Body, out memberExp))
+            {
                 return string.Empty;
+            }
 
             var memberNames = new Stack<string>();
             do
@@ -22,8 +25,9 @@ namespace System.Linq.Expressions
 
             return string.Join(".", memberNames.ToArray());
         }
-
-        private static bool TryFindMemberExpression(Expression exp, out MemberExpression memberExp)
+#nullable enable
+        
+        private static bool TryFindMemberExpression(Expression exp, out MemberExpression? memberExp)
         {
             memberExp = exp as MemberExpression;
             if (memberExp != null)

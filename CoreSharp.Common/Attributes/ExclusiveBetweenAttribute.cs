@@ -15,7 +15,7 @@ namespace CoreSharp.Common.Attributes
             To = toValue;
         }
 
-        public object From { get; set; }
-        public object To { get; set; }
+        public object? From { get; set; }
+        public object? To { get; set; }
     }
 }

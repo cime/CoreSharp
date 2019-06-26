@@ -14,11 +14,7 @@ namespace CoreSharp.NHibernate.Conventions
 
         public void Apply(IManyToOneInstance instance)
         {
-            var fkName = string.Format("FK_{0}To{1}_{2}",
-                instance.EntityType.Name,
-                instance.Class.Name,
-                instance.Name
-            );
+            var fkName = $"FK_{instance.EntityType.Name}To{instance.Class.Name}_{instance.Name}";
 
             instance.ForeignKey(fkName);
         }
@@ -26,22 +22,15 @@ namespace CoreSharp.NHibernate.Conventions
         public void Apply(IOneToOneInstance instance)
         {
             var oneToOne = instance as IOneToOneInspector;
-            var fkName = string.Format("FK_{0}To{1}_{2}",
-                instance.EntityType.Name,
-                oneToOne.Class.Name,
-                instance.Name
-            );
+            var fkName = $"FK_{instance.EntityType.Name}To{oneToOne.Class.Name}_{instance.Name}";
 
             instance.ForeignKey(fkName);
         }
 
         public void Apply(IManyToManyCollectionInstance instance)
         {
-            var fkName = string.Format("FK_{0}{1}_{2}",
-                instance.EntityType.Name,
-                instance.OtherSide.EntityType.Name,
-                ((ICollectionInspector) instance).Name
-            );
+            var fkName =
+                $"FK_{instance.EntityType.Name}{instance.OtherSide.EntityType.Name}_{((ICollectionInspector) instance).Name}";
 
             instance.Relationship.ForeignKey(fkName);
         }

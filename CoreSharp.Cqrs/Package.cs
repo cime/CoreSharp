@@ -7,6 +7,10 @@ namespace CoreSharp.Cqrs
 {
     public class Package : IPackage
     {
+        /// <summary>
+        /// Registers IQueryProcessor, ICommandDispatcher, EventAggregator, IEventPublisher and IEventSubscriber
+        /// </summary>
+        /// <param name="container">SimpleInjector container</param>
         public void Register(Container container)
         {
             // Query system

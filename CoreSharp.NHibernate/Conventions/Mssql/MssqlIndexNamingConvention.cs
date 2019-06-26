@@ -47,7 +47,7 @@ namespace CoreSharp.NHibernate.Conventions.Mssql
 
         private static string GetUniqueKeyName(string tableName, IEnumerable<string> columnNames)
         {
-            return string.Format("IX_{0}_{1}", tableName, string.Join("_", columnNames.Select(o => o.TrimEnd(']').TrimStart('['))));
+            return $"IX_{tableName}_{string.Join("_", columnNames.Select(o => o.TrimEnd(']').TrimStart('[')))}";
         }
     }
 }

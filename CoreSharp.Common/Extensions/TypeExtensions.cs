@@ -115,7 +115,7 @@ namespace System
             return baseType != null && IsAssignableToGenericType(baseType, genericType);
         }
 
-        public static Type GetGenericType(this Type givenType, Type genericType)
+        public static Type? GetGenericType(this Type givenType, Type genericType)
         {
             while (true)
             {
@@ -148,7 +148,7 @@ namespace System
         /// </summary>
         /// <param name="t"></param>
         /// <returns></returns>
-        public static object GetDefaultValue(this Type t)
+        public static object? GetDefaultValue(this Type t)
         {
             return t.GetTypeInfo().IsValueType ? Activator.CreateInstance(t) : null;
         }
@@ -202,10 +202,10 @@ namespace System
             return type.GetPublicProperties().FirstOrDefault(o => o.Name == propertyName);
         }
 
-        public static MemberInfo GetNestedMember(this Type type, string path)
+        public static MemberInfo? GetNestedMember(this Type type, string path)
         {
             var currentType = type;
-            MemberInfo currentMember = null;
+            MemberInfo? currentMember = null;
 
             foreach (var memberName in path.Split('.'))
             {

@@ -11,8 +11,8 @@
             CompareToValue = value;
         }
 
-        public object CompareToValue { get; set; }
+        public object? CompareToValue { get; set; }
 
-        public string ComparsionProperty { get; set; }
+        public string? ComparsionProperty { get; set; }
     }
 }

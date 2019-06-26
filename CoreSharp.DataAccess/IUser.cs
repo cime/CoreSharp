@@ -6,6 +6,7 @@ namespace CoreSharp.DataAccess
     {
         string UserName { get; set; }
         string Email { get; set; }
+        string Password { get; set; }
         bool Active { get; set; }
     }
 }

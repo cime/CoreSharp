@@ -5,26 +5,37 @@ using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using CoreSharp.Common.Helpers;
 
+#nullable disable
+
 namespace System.Reflection
 {
     public static class ObjectExtensions
     {
-        private const BindingFlags AllBinding = BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static;
+        private const BindingFlags AllBinding =
+            BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static;
 
         public static T ConvertTo<T>(this object source)
         {
-            return (T)source.ConvertTo(typeof(T));
+            return (T) source.ConvertTo(typeof(T));
         }
-
+        
         public static object ConvertTo(this object source, Type destinationType)
         {
             if (destinationType == null)
+            {
                 throw new ArgumentNullException("destinationType");
+            }
+            
             if (destinationType.IsGenericType && destinationType.GetGenericTypeDefinition() == typeof(Nullable<>))
             {
-                if (source == null) return null;
+                if (source == null)
+                {
+                    return null;
+                }
+                
                 destinationType = Nullable.GetUnderlyingType(destinationType);
             }
+
             return Convert.ChangeType(source, destinationType);
         }
 
@@ -43,16 +54,18 @@ namespace System.Reflection
             var sourceType = source.GetType();
             var sourceProperty = sourceType.GetProperty(property);
 
-            return (T)sourceProperty.GetValue(sourceProperty);
+            return (T) sourceProperty.GetValue(sourceProperty);
         }
 
-        public static object GetPropertyValue<TSource, TProperty>(this TSource source, Expression<Func<TSource, TProperty>> propertyExpr)
+        public static object GetPropertyValue<TSource, TProperty>(this TSource source,
+            Expression<Func<TSource, TProperty>> propertyExpr)
         {
             var path = ExpressionHelper.GetExpressionPath(propertyExpr.Body);
             return GetMemberAndValue(source, path).MemberValue;
         }
 
-        public static IDictionary<string, object> AsDictionary(this object source, BindingFlags bindingAttr = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance)
+        public static IDictionary<string, object> AsDictionary(this object source,
+            BindingFlags bindingAttr = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance)
         {
             return source.GetType().GetProperties(bindingAttr).ToDictionary
             (
@@ -61,7 +74,8 @@ namespace System.Reflection
             );
         }
 
-        public static PropertyInfo GetPropertyInfo<TSource, TProperty>(this TSource source, Expression<Func<TSource, TProperty>> propertyExpr)
+        public static PropertyInfo GetPropertyInfo<TSource, TProperty>(this TSource source,
+            Expression<Func<TSource, TProperty>> propertyExpr)
         {
             var path = ExpressionHelper.GetExpressionPath(propertyExpr.Body);
             return GetMemberAndValue(source, path).MemberInfo as PropertyInfo;
@@ -93,7 +107,7 @@ namespace System.Reflection
 
         public static T GetMemberValue<T>(this object value, string path)
         {
-            return (T)value.GetMemberValue(path);
+            return (T) value.GetMemberValue(path);
         }
 
         public static object GetMemberValue(this object obj, string path)
@@ -101,7 +115,8 @@ namespace System.Reflection
             return GetMemberAndValue(obj, path).MemberValue;
         }
 
-        public static void SetMemberValue<TSource, TProperty>(this TSource obj, Expression<Func<TSource, TProperty>> memberExp, object value)
+        public static void SetMemberValue<TSource, TProperty>(this TSource obj,
+            Expression<Func<TSource, TProperty>> memberExp, object value)
         {
             var path = ExpressionHelper.GetExpressionPath(memberExp.Body);
             SetMemberValue(obj, path, value);
@@ -134,7 +149,6 @@ namespace System.Reflection
                 fieldInfo.SetValue(memberResult.ParentMemberValue, value);
                 return;
             }
-
         }
 
         /// <summary>
@@ -175,13 +189,15 @@ namespace System.Reflection
             Type currentType;
             MemberInfo currentMember = null;
             var prevValue = value;
-            if (value is Type)
+            if (value is Type type)
             {
-                currentType = value as Type;
+                currentType = type;
                 value = null;
             }
             else
+            {
                 currentType = value.GetType();
+            }
 
             foreach (var memberName in path.Split('.'))
             {
@@ -214,6 +230,7 @@ namespace System.Reflection
                             item = enumerator.Current;
                             break;
                         }
+
                         currIdx++;
                     }
 
@@ -227,7 +244,6 @@ namespace System.Reflection
                 }
 
 
-
                 var property = GetProperty(currentType, memberName);
                 if (property != null)
                 {
@@ -239,6 +255,7 @@ namespace System.Reflection
                     currentType = property.PropertyType;
                     continue;
                 }
+
                 var field = GetField(currentType, memberName);
                 if (field != null)
                 {
@@ -246,17 +263,24 @@ namespace System.Reflection
                     var defValue = field.FieldType.GetDefaultValue();
                     prevValue = value;
                     value = field.GetValue(value);
-                    if (value == defValue) return new GetMemberResult(value, currentMember, prevValue);
+                    if (value == defValue)
+                    {
+                        return new GetMemberResult(value, currentMember, prevValue);
+                    }
+
                     currentType = field.FieldType;
                     continue;
                 }
+
                 var method = GetMethod(currentType, memberName);
                 if (method != null) //If we found a method just return it
                 {
                     return new GetMemberResult(method.Invoke(value, new object[] { }), method, prevValue);
                 }
+
                 return new GetMemberResult(currentTypeDefVal, currentMember, prevValue);
             }
+
             return new GetMemberResult(value, currentMember, prevValue);
         }
 
@@ -282,7 +306,6 @@ namespace System.Reflection
                 MemberValue = memberValue;
                 MemberInfo = memberInfo;
                 ParentMemberValue = parentMemberValue;
-
             }
 
             public object MemberValue { get; set; }

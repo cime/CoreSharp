@@ -8,6 +8,7 @@ namespace System.Collections.Generic
     {
         private static readonly Random Random = new Random();
         
+#nullable disable
         public static T GetRandom<T>(this IEnumerable<T> sequence)
         {
             if (sequence == null)
@@ -42,6 +43,7 @@ namespace System.Collections.Generic
 
             return selected;
         }
+#nullable enable
 
         [DebuggerStepThrough]
         public static void ForEach<TSource>(this IEnumerable<TSource> source, Action<TSource> action)

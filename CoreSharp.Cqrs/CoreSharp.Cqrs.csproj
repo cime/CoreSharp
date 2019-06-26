@@ -12,6 +12,8 @@
     <PackageProjectUrl>https://github.com/cime/CoreSharp</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/cime/CoreSharp/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/cime/CoreSharp</RepositoryUrl>
+    <LangVersion>8</LangVersion>
+    <NullableContextOptions>enable</NullableContextOptions>
   </PropertyGroup>
 
   <ItemGroup>

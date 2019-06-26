@@ -3,6 +3,8 @@ using CoreSharp.DataAccess.Attributes;
 using FluentNHibernate.Conventions;
 using FluentNHibernate.Conventions.Instances;
 
+#nullable disable
+
 namespace CoreSharp.NHibernate.Conventions
 {
     public class IndexedAttributeConvention : AttributePropertyConvention<IndexAttribute>, IReferenceConvention
@@ -30,7 +32,7 @@ namespace CoreSharp.NHibernate.Conventions
 
         private static string GetIndexName(string tableName, string name)
         {
-            return string.Format("IX_{0}", name);
+            return $"IX_{name}";
         }
     }
 }

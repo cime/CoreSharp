@@ -20,7 +20,7 @@ namespace CoreSharp.GraphQL
     public abstract class CqrsSchema : Schema
     {
         private readonly Container _container;
-        private JsonSerializerSettings _getJsonSerializerSettings;
+        private JsonSerializerSettings? _jsonSerializerSettings;
 
         public CqrsSchema(Container container)
         {
@@ -58,8 +58,8 @@ namespace CoreSharp.GraphQL
 
         public virtual JsonSerializerSettings GetJsonSerializerSettings()
         {
-            if (_getJsonSerializerSettings == null) {
-                _getJsonSerializerSettings = new JsonSerializerSettings()
+            if (_jsonSerializerSettings == null) {
+                _jsonSerializerSettings = new JsonSerializerSettings()
                 {
                     ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
                     NullValueHandling = NullValueHandling.Include,
@@ -68,8 +68,8 @@ namespace CoreSharp.GraphQL
                     TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
                 };
             }
-
-            return _getJsonSerializerSettings;
+            
+            return _jsonSerializerSettings;
         }
 
         public virtual void RegisterCommandsFromContainer()
@@ -129,7 +129,7 @@ namespace CoreSharp.GraphQL
                     }
                 }
 
-                IGraphType resultGqlType = null;
+                IGraphType? resultGqlType = null;
 
                 if (!GraphTypeTypeRegistry.Contains(resultType))
                 {
@@ -223,7 +223,7 @@ namespace CoreSharp.GraphQL
                     }
                 }
 
-                IGraphType resultGqlType = null;
+                IGraphType? resultGqlType = null;
 
                 if (!GraphTypeTypeRegistry.Contains(resultType))
                 {
@@ -261,8 +261,13 @@ namespace CoreSharp.GraphQL
             }
         }
 
-        protected virtual string GetNormalizedFieldName(string value)
+        protected virtual string? GetNormalizedFieldName(string? value)
         {
+            if (string.IsNullOrEmpty(value))
+            {
+                return value;
+            }
+            
             var parts = value.Split(new [] { '/' })
                 .Where(x => !string.IsNullOrWhiteSpace(x))
                 .Select(x => global::GraphQL.StringExtensions.ToPascalCase(x));

@@ -49,8 +49,8 @@ namespace CoreSharp.NHibernate.Conventions.Mssql
                 if (string.IsNullOrEmpty(match.Groups[2].Value)) //named unique key
                 {
                     var columns = match.Groups[6].Value.Split(',').Select(o => o.Trim()).ToList();
-                    uniqueKeySql = string.Format("CONSTRAINT {0} UNIQUE ({1})",
-                                                 GetUniqueKeyName(tableName, columns), string.Join(", ", columns));
+                    uniqueKeySql =
+                        $"CONSTRAINT {GetUniqueKeyName(tableName, columns)} UNIQUE ({string.Join(", ", columns)})";
                     dbCommand.CommandText = dbCommand.CommandText.Replace(match.Groups[0].Value, uniqueKeySql);
 
                 }
@@ -69,8 +69,8 @@ namespace CoreSharp.NHibernate.Conventions.Mssql
                     else
                     {
                         dbCommand.CommandText = dbCommand.CommandText.Remove(dbCommand.CommandText.LastIndexOf(')'), 1);
-                        dbCommand.CommandText += string.Format(",CONSTRAINT {0} UNIQUE ({1}))",
-                                                               GetUniqueKeyName(tableName, column), column);
+                        dbCommand.CommandText +=
+                            $",CONSTRAINT {GetUniqueKeyName(tableName, column)} UNIQUE ({column}))";
                     }
 
                 }
@@ -85,7 +85,7 @@ namespace CoreSharp.NHibernate.Conventions.Mssql
 
         private static string GetUniqueKeyName(string tableName, IEnumerable<string> columnNames)
         {
-            return string.Format("UQ_{0}_{1}", tableName, string.Join("_", columnNames.Select(o => o.TrimEnd(']').TrimStart('['))));
+            return $"UQ_{tableName}_{string.Join("_", columnNames.Select(o => o.TrimEnd(']').TrimStart('[')))}";
         }
 
         public void ApplyAfterExecutingQuery(global::NHibernate.Cfg.Configuration config, IDbConnection connection, IDbCommand dbCommand)

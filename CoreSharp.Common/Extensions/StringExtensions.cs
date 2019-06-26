@@ -69,7 +69,7 @@ namespace System
 
             typeName = typeName.ToLower();
 
-            string parsedTypeName = null;
+            string? parsedTypeName = null;
 
             switch (typeName)
             {

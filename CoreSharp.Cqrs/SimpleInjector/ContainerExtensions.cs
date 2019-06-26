@@ -7,11 +7,17 @@ using CoreSharp.Cqrs.Command;
 using CoreSharp.Cqrs.Events;
 using CoreSharp.Cqrs.Query;
 
+#nullable disable
+
 // ReSharper disable once CheckNamespace
 namespace SimpleInjector
 {
     public static class ContainerExtensions
     {
+        /// <summary>
+        /// Registers all command handlers from assemblies that depends on assembly of ICommandHandler&lt;&gt;
+        /// </summary>
+        /// <param name="container">SimpleInjector container</param>
         public static void RegisterCommandHandlers(this Container container)
         {
             foreach (var dependentAssembly in typeof(ICommandHandler<>).Assembly.GetDependentAssemblies())
@@ -66,6 +72,10 @@ namespace SimpleInjector
             }
         }
 
+        /// <summary>
+        /// Registers all command handlers from assemblies that depends on assembly of IQueryHandler&lt;&gt;
+        /// </summary>
+        /// <param name="container">SimpleInjector container</param>
         public static void RegisterQueryHandlers(this Container container)
         {
             foreach (var dependentAssembly in typeof(IQueryHandler<,>).Assembly.GetDependentAssemblies())
@@ -120,6 +130,10 @@ namespace SimpleInjector
             }
         }
 
+        /// <summary>
+        /// Registers all event handlers from assemblies that depends on assembly of IEventHandler&lt;&gt;
+        /// </summary>
+        /// <param name="container">SimpleInjector container</param>
         public static void RegisterEventHandlers(this Container container)
         {
             foreach (var dependentAssembly in typeof(IEventHandler<>).Assembly.GetDependentAssemblies())
@@ -174,6 +188,10 @@ namespace SimpleInjector
             }
         }
 
+        /// <summary>
+        /// Registers all command, query and event handlers
+        /// </summary>
+        /// <param name="container">SimpleInjector container</param>
         public static void RegisterCqrs(this Container container)
         {
             RegisterCommandHandlers(container);
@@ -181,6 +199,10 @@ namespace SimpleInjector
             RegisterEventHandlers(container);
         }
 
+        /// <summary>
+        /// Registers all command, query and event handlers from assembly of <typeparamref name="T" />
+        /// </summary>
+        /// <param name="container">SimpleInjector container</param>
         public static void RegisterCqrsFromAssemblyOf<T>(this Container container)
         {
             RegisterCommandHandlersFromAssemblyOf<T>(container);

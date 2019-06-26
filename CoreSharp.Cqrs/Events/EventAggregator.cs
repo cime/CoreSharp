@@ -91,7 +91,7 @@ namespace CoreSharp.Cqrs.Events
 
         private IEnumerable<object> GetInstances(Type t)
         {
-            return _container
+            return (IEnumerable<object>)_container
                 .TryGetAllInstances(t)
                 .Select(o => new
                 {

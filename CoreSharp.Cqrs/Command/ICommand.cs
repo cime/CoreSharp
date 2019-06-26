@@ -1,11 +1,17 @@
 ﻿namespace CoreSharp.Cqrs.Command
 {
+    /// <summary>
+    /// Command interface
+    /// </summary>
     public interface ICommand
     {
 
     }
 
-    public interface ICommand<out T>
+    /// <summary>
+    /// Generic command interface
+    /// </summary>
+    public interface ICommand<out TResult>
     {
 
     }

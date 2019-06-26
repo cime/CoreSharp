@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿
+using System.Collections.Generic;
 using System.ComponentModel;
 using CoreSharp.Common.Attributes;
 using CoreSharp.DataAccess;
@@ -47,9 +48,17 @@ namespace CoreSharp.NHibernate
         where TDocumentVersion : DocumentVersion<TDocument, TDocumentVersion, TUser, TId>
     {
         private TDocument _parent;
+#nullable disable
         private TId _parentId;
+#nullable enable
+
         private bool _isParentIdSet = false;
 
+        public DocumentVersion(TDocument parent)
+        {
+            _parent = parent;
+        }
+        
         [NotNull]
         public virtual TDocument Parent
         {

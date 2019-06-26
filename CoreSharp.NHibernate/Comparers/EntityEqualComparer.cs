@@ -42,19 +42,45 @@ namespace CoreSharp.NHibernate.Comparers
         public new bool Equals(object x, object y)
         {
             if (x == null)
+            {
                 return false;
+            }
+            
+            if (y == null)
+            {
+                return false;
+            }
+
             if (ReferenceEquals(x, y))
+            {
                 return true;
+            }
+
             var xType = NHibernateProxyHelper.GetClassWithoutInitializingProxy(x);
             var yType = NHibernateProxyHelper.GetClassWithoutInitializingProxy(y);
+            
             if (!(xType == yType))
+            {
                 return false;
+            }
+            
             var xEntity = x as IEntity;
+            
             if (xEntity == null)
+            {
                 return false;
-            return HasSameNonDefaultIdAs(xEntity, y as IEntity);
-
+            }
+            
+            var yEntity = y as IEntity;
+            
+            if (yEntity == null)
+            {
+                return false;
+            }
+            
+            return HasSameNonDefaultIdAs(xEntity, yEntity);
         }
+
         #endregion
 
         private bool HasSameNonDefaultIdAs(IEntity x, IEntity y)

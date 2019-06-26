@@ -5,11 +5,11 @@ namespace CoreSharp.Common.Attributes
     [AttributeUsage(AttributeTargets.Property)]
     public class NotEmptyAttribute : ValidationAttribute
     {
-        public NotEmptyAttribute(object defaultValue = null)
+        public NotEmptyAttribute(object? defaultValue = null)
         {
             DefaultValue = defaultValue;
         }
 
-        public object DefaultValue { get; }
+        public object? DefaultValue { get; }
     }
 }

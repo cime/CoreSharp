@@ -33,14 +33,15 @@ namespace CoreSharp.NHibernate.Conventions.Mssql
             if (!match.Success) return;
             var tableName = match.Groups[1].Value.TrimEnd(']').TrimStart('[');
             var pkConstraintOld = match.Groups[2].Value;
-            var columns = match.Groups[3].Value.Split(',').Select(o => string.Format("{0} DESC", o.Trim())).ToList();
-            var pkConstraintNew = string.Format("CONSTRAINT {0} PRIMARY KEY ({1})", GetPrimaryKeyName(tableName), string.Join(", ", columns));
+            var columns = match.Groups[3].Value.Split(',').Select(o => $"{o.Trim()} DESC").ToList();
+            var pkConstraintNew =
+                $"CONSTRAINT {GetPrimaryKeyName(tableName)} PRIMARY KEY ({string.Join(", ", columns)})";
             dbCommand.CommandText = dbCommand.CommandText.Replace(pkConstraintOld, pkConstraintNew);
         }
 
         private static string GetPrimaryKeyName(string tableName)
         {
-            return string.Format("PK_{0}", tableName);
+            return $"PK_{tableName}";
         }
 
         public void ApplyAfterExecutingQuery(global::NHibernate.Cfg.Configuration config, IDbConnection connection, IDbCommand dbCommand)

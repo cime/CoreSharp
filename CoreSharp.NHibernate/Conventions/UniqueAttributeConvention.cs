@@ -4,6 +4,8 @@ using CoreSharp.DataAccess.Attributes;
 using FluentNHibernate.Conventions;
 using FluentNHibernate.Conventions.Instances;
 
+#nullable disable
+
 namespace CoreSharp.NHibernate.Conventions
 {
     public class UniqueAttributeConvention : AttributePropertyConvention<UniqueAttribute>, IReferenceConvention

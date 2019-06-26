@@ -40,7 +40,7 @@ namespace CoreSharp.NHibernate.Postgresql
             // In some cases the identifier is single-quoted.
             // We simply remove the single quotes:
             raw = raw.Replace("`", "");
-            return string.Format("\"{0}\"", raw);
+            return $"\"{raw}\"";
         }
     }
 }

@@ -10,13 +10,17 @@ namespace CoreSharp.Common.Expressions
             SubExpressions = new Dictionary<string, SubExpressionInfo>();
         }
 
-        public string FullPath { get; set; }
+        public string? FullPath { get; set; }
 
         public Dictionary<string, SubExpressionInfo> SubExpressions { get; private set; }
 
         public void AddSubExpression(MemberExpression memberExpression)
         {
-            if (SubExpressions.ContainsKey(FullPath)) return;
+            if (string.IsNullOrEmpty(FullPath) || SubExpressions.ContainsKey(FullPath))
+            {
+                return;
+            }
+            
             SubExpressions.Add(FullPath, new SubExpressionInfo
             {
                 Path = FullPath,
