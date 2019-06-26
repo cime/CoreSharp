@@ -14,21 +14,23 @@ namespace CoreSharp.GraphQL
         private readonly Container _container;
         private readonly Type _queryHandlerType;
         private readonly Type _queryType;
+        private readonly JsonSerializerSettings _jsonSerializerSettings;
 
-        public QueryResolver(Container container, Type queryHandlerType, Type queryType)
+        public QueryResolver(Container container, Type queryHandlerType, Type queryType,
+            JsonSerializerSettings jsonSerializerSettings)
         {
             _container = container;
             _queryHandlerType = queryHandlerType;
             _queryType = queryType;
+            _jsonSerializerSettings = jsonSerializerSettings;
         }
 
         public object Resolve(ResolveFieldContext context)
         {
             var queryHandler = _container.GetInstance(_queryHandlerType);
-            // TODO: find a better way to deserialize variable query
-            var variableValue = context.Variables.SingleOrDefault(x => x.Name == "query")?.Value;
+            var variableValue = context.Arguments["query"];
             var query =
-                JsonConvert.DeserializeObject(JsonConvert.SerializeObject(variableValue), _queryType);
+                JsonConvert.DeserializeObject(JsonConvert.SerializeObject(variableValue, _jsonSerializerSettings), _queryType, _jsonSerializerSettings);
 
             var isAsync = _queryHandlerType.IsAssignableToGenericType(typeof(IAsyncQueryHandler<,>));
 
