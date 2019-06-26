@@ -4,12 +4,11 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using CoreSharp.Common.Attributes;
 using CoreSharp.Cqrs.Command;
 using CoreSharp.Cqrs.Query;
 using CoreSharp.GraphQL.Attributes;
 using GraphQL;
-using GraphQL.Http;
 using GraphQL.Types;
 using GraphQL.Utilities;
 using Newtonsoft.Json;
@@ -41,24 +40,6 @@ namespace CoreSharp.GraphQL
             };
         }
 
-        public virtual string Execute(Action<ExecutionOptions> configure)
-        {
-            return new DocumentWriter(Formatting.Indented, GetJsonSerializerSettings()).Write((object) new DocumentExecuter().ExecuteAsync(_ =>
-            {
-                _.Schema = this;
-                configure(_);
-            }).GetAwaiter().GetResult());
-        }
-
-        public virtual async Task<string> ExecuteAsync(Action<ExecutionOptions> configure)
-        {
-            return new DocumentWriter(Formatting.Indented, GetJsonSerializerSettings()).Write((object) await new DocumentExecuter().ExecuteAsync(_ =>
-            {
-                _.Schema = this;
-                configure(_);
-            }));
-        }
-
         public virtual JsonSerializerSettings GetJsonSerializerSettings()
         {
             if (_jsonSerializerSettings == null) {
@@ -71,7 +52,7 @@ namespace CoreSharp.GraphQL
                     TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
                 };
             }
-            
+
             return _jsonSerializerSettings;
         }
 
@@ -98,6 +79,7 @@ namespace CoreSharp.GraphQL
 
                 var descriptionAttribute = commandType.GetCustomAttribute<DescriptionAttribute>();
                 var exposeAttribute = commandType.GetCustomAttribute<ExposeGraphQLAttribute>();
+                var authorizeAttribute = commandType.GetCustomAttribute<AuthorizeAttribute>();
 
                 if (exposeAttribute == null)
                 {
@@ -140,6 +122,22 @@ namespace CoreSharp.GraphQL
                     var returnObjectType = typeof(EntityGraphType<>).MakeGenericType(resultType);
                     resultGqlType = (IGraphType)Activator.CreateInstance(returnObjectType, null);
                     resultGqlType.Name = resultTypeName;
+
+                    if (authorizeAttribute != null)
+                    {
+                        var permissions = resultGqlType.GetMetadata<List<string>>(GraphQLExtensions.PermissionsKey);
+
+                        if (permissions == null)
+                        {
+                            permissions = new List<string>();
+                            resultGqlType.Metadata[GraphQLExtensions.PermissionsKey] = permissions;
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(authorizeAttribute.Permission))
+                        {
+                            permissions.Add(authorizeAttribute.Permission);
+                        }
+                    }
                 }
 
                 var arguments = new List<QueryArgument>();
@@ -193,6 +191,7 @@ namespace CoreSharp.GraphQL
 
                 var descriptionAttribute = queryType.GetCustomAttribute<DescriptionAttribute>();
                 var exposeAttribute = queryType.GetCustomAttribute<ExposeGraphQLAttribute>();
+                var authorizeAttribute = queryType.GetCustomAttribute<AuthorizeAttribute>();
 
                 if (exposeAttribute == null)
                 {
@@ -234,6 +233,22 @@ namespace CoreSharp.GraphQL
                     var returnObjectType = typeof(EntityGraphType<>).MakeGenericType(resultType);
                     resultGqlType = (IGraphType)Activator.CreateInstance(returnObjectType, null);
                     resultGqlType.Name = resultTypeName;
+
+                    if (authorizeAttribute != null)
+                    {
+                        var permissions = resultGqlType.GetMetadata<List<string>>(GraphQLExtensions.PermissionsKey);
+
+                        if (permissions == null)
+                        {
+                            permissions = new List<string>();
+                            resultGqlType.Metadata[GraphQLExtensions.PermissionsKey] = permissions;
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(authorizeAttribute.Permission))
+                        {
+                            permissions.Add(authorizeAttribute.Permission);
+                        }
+                    }
                 }
 
                 var arguments = new List<QueryArgument>();
@@ -270,7 +285,7 @@ namespace CoreSharp.GraphQL
             {
                 return value;
             }
-            
+
             var parts = value.Split(new [] { '/' })
                 .Where(x => !string.IsNullOrWhiteSpace(x))
                 .Select(x => global::GraphQL.StringExtensions.ToPascalCase(x));

@@ -1,9 +1,10 @@
 using System.IO;
+using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Http;
-using GraphQL.Types;
+using GraphQL.Validation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -21,13 +22,20 @@ namespace CoreSharp.GraphQL.AspNetCore
 
         private readonly ILogger<GraphQLMiddleware<TSchema>> _logger;
         private readonly TSchema _schema;
+        private readonly IComplexityConfigurationFactory _complexityConfigurationFactory;
+        private readonly IUserContextBuilder _userContextBuilder;
 
         private readonly PathString _path = "/graphql";
 
-        public GraphQLMiddleware(ILogger<GraphQLMiddleware<TSchema>> logger, TSchema schema)
+        public GraphQLMiddleware(
+            ILogger<GraphQLMiddleware<TSchema>> logger,
+            TSchema schema, IComplexityConfigurationFactory complexityConfigurationFactory,
+            IUserContextBuilder userContextBuilder)
         {
             _logger = logger;
             _schema = schema;
+            _complexityConfigurationFactory = complexityConfigurationFactory;
+            _userContextBuilder = userContextBuilder;
         }
 
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
@@ -80,8 +88,10 @@ namespace CoreSharp.GraphQL.AspNetCore
                 x.OperationName = gqlRequest.OperationName;
                 x.Query = gqlRequest.Query;
                 x.Inputs = gqlRequest.GetInputs();
-                //x.UserContext = userContext;
+                x.UserContext = _userContextBuilder.BuildContext();
+                x.ValidationRules = new[] { new AuthenticationValidationRule() }.Concat(DocumentValidator.CoreRules());
                 x.CancellationToken = context.RequestAborted;
+                x.ComplexityConfiguration = _complexityConfigurationFactory.GetComplexityConfiguration();
             });
 
             if (result.Errors != null)

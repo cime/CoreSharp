@@ -1,4 +1,3 @@
-using GraphQL.Types;
 using SimpleInjector;
 
 namespace CoreSharp.GraphQL
@@ -7,7 +6,7 @@ namespace CoreSharp.GraphQL
     {
         public void Register(Container container)
         {
-
+            container.Register<IComplexityConfigurationFactory>(() => new ComplexityConfigurationFactory(), Lifestyle.Singleton);
         }
     }
 }
