@@ -30,8 +30,8 @@ namespace CoreSharp.GraphQL
             var query =
                 JsonConvert.DeserializeObject(JsonConvert.SerializeObject(variableValue), _queryType);
 
-            var isAsync = _queryHandlerType.IsAssignableToGenericType(typeof(IQueryHandler<,>));
-            
+            var isAsync = _queryHandlerType.IsAssignableToGenericType(typeof(IAsyncQueryHandler<,>));
+
             var handleMethodInfo =
                 _queryHandlerType.GetMethod(isAsync ? "HandleAsync" : "Handle", BindingFlags.Instance | BindingFlags.Public);
 

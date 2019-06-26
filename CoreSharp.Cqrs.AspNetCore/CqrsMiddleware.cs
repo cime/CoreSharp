@@ -187,7 +187,7 @@ namespace CoreSharp.Cqrs.AspNetCore
 
     public static class CqrsMiddlewareExtensions
     {
-        public static IApplicationBuilder UseCqrs(this IApplicationBuilder builder, Container container)
+        public static IApplicationBuilder UseCqrs(this IApplicationBuilder builder)
         {
             return builder.UseMiddleware<CqrsMiddleware>();
         }

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using CoreSharp.Common.Attributes;
 using CoreSharp.Cqrs.Command;
 using CoreSharp.Cqrs.Query;
+using CoreSharp.GraphQL.Attributes;
 using GraphQL;
 using GraphQL.Http;
 using GraphQL.Types;
@@ -40,22 +41,22 @@ namespace CoreSharp.GraphQL
 
         public virtual string Execute(Action<ExecutionOptions> configure)
         {
-            return new DocumentWriter(Formatting.Indented, GetJsonSerializerSettings()).Write((object) new DocumentExecuter().ExecuteAsync((Action<ExecutionOptions>) (_ =>
+            return new DocumentWriter(Formatting.Indented, GetJsonSerializerSettings()).Write((object) new DocumentExecuter().ExecuteAsync(_ =>
             {
                 _.Schema = this;
                 configure(_);
-            })).GetAwaiter().GetResult());
+            }).GetAwaiter().GetResult());
         }
 
         public virtual async Task<string> ExecuteAsync(Action<ExecutionOptions> configure)
         {
-            return new DocumentWriter(Formatting.Indented, GetJsonSerializerSettings()).Write((object) await new DocumentExecuter().ExecuteAsync((Action<ExecutionOptions>) (_ =>
+            return new DocumentWriter(Formatting.Indented, GetJsonSerializerSettings()).Write((object) await new DocumentExecuter().ExecuteAsync(_ =>
             {
                 _.Schema = this;
                 configure(_);
-            })));
+            }));
         }
-        
+
         public virtual JsonSerializerSettings GetJsonSerializerSettings()
         {
             if (_getJsonSerializerSettings == null) {
@@ -68,7 +69,7 @@ namespace CoreSharp.GraphQL
                     TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
                 };
             }
-            
+
             return _getJsonSerializerSettings;
         }
 
@@ -94,32 +95,37 @@ namespace CoreSharp.GraphQL
                 var commandType = genericArguments[0];
                 var resultType = genericArguments[1];
 
-                var exposeAttribute = commandType.GetCustomAttribute<ExposeAttribute>();
+                var exposeAttribute = commandType.GetCustomAttribute<ExposeGraphQLAttribute>();
 
                 if (exposeAttribute == null)
                 {
                     continue;
                 }
 
-                var inputTypeName = commandType.Name;
-                var inputObjectType = typeof(InputObjectGraphType<>).MakeGenericType(commandType);
-                var inputGqlType = (IInputObjectGraphType)Activator.CreateInstance(inputObjectType);
+                IInputObjectGraphType inputGqlType = null;
 
-                inputGqlType.Name = inputTypeName;
-
-                var addFieldMethod = inputGqlType.GetType().GetMethod("AddField");
                 var properties = commandType.GetProperties(BindingFlags.Instance | BindingFlags.Public);
 
-                foreach (var propertyInfo in properties)
+                if (properties.Any())
                 {
-                    addFieldMethod.Invoke(inputGqlType, new[]
+                    var inputObjectType = typeof(InputObjectGraphType<>).MakeGenericType(commandType);
+                    inputGqlType = (IInputObjectGraphType)Activator.CreateInstance(inputObjectType);
+                    inputGqlType.Name = commandType.Name;
+
+                    var addFieldMethod = inputGqlType.GetType().GetMethod("AddField");
+
+                    foreach (var propertyInfo in properties)
                     {
-                        new FieldType()
-                        {
-                            Name = propertyInfo.Name.ToCamelCase(),
-                            Type = propertyInfo.PropertyType.GetGraphTypeFromType()
-                        }
-                    });
+                        addFieldMethod.Invoke(inputGqlType,
+                            new[]
+                            {
+                                new FieldType()
+                                {
+                                    Name = propertyInfo.Name.ToCamelCase(),
+                                    Type = propertyInfo.PropertyType.GetGraphTypeFromType()
+                                }
+                            });
+                    }
                 }
 
                 IGraphType resultGqlType = null;
@@ -132,15 +138,16 @@ namespace CoreSharp.GraphQL
                     resultGqlType.Name = resultTypeName;
                 }
 
-                var queryArgument = new QueryArgument(inputGqlType);
-                queryArgument.Name = "command";
+                var arguments = new List<QueryArgument>();
 
-                var commandQueryParameters = new List<QueryArgument>()
+                if (inputGqlType != null)
                 {
-                    queryArgument
-                };
+                    var argument = new QueryArgument(inputGqlType);
+                    argument.Name = "command";
+                    arguments.Add(argument);
+                }
 
-                var mutationName = exposeAttribute.IsUriSet ? exposeAttribute.Uri : new Regex("Command$").Replace(commandType.Name, "");
+                var mutationName = exposeAttribute.IsFieldNameSet ? exposeAttribute.FieldName : new Regex("Command$").Replace(commandType.Name, "");
 
                 if (!Mutation.HasField(mutationName))
                 {
@@ -151,7 +158,7 @@ namespace CoreSharp.GraphQL
                         Resolver = new CommandResolver(_container, commandHandlerType, commandType),
                         Name = GetNormalizedFieldName(mutationName),
                         Description = descriptionAttribute?.Description,
-                        Arguments = new QueryArguments(commandQueryParameters)
+                        Arguments = new QueryArguments(arguments)
                     };
 
                     Mutation.AddField(type);
@@ -175,39 +182,42 @@ namespace CoreSharp.GraphQL
             foreach (var queryHandlerType in queryHandlerTypes)
             {
                 var descriptionAttribute = queryHandlerType.GetTypeInfo().GetCustomAttribute<DescriptionAttribute>();
-                var genericType = queryHandlerType.GetInterfaces().Single(x => x.GetTypeInfo().IsAssignableToGenericType(typeof(IQueryHandler<,>)) || 
+                var genericType = queryHandlerType.GetInterfaces().Single(x => x.GetTypeInfo().IsAssignableToGenericType(typeof(IQueryHandler<,>)) ||
                                                                                x.GetTypeInfo().IsAssignableToGenericType(typeof(IAsyncQueryHandler<,>)));
                 var genericArguments = genericType.GetGenericArguments();
                 var queryType = genericArguments[0];
                 var resultType = genericArguments[1];
 
-                var exposeAttribute = queryType.GetCustomAttribute<ExposeAttribute>();
+                var exposeAttribute = queryType.GetCustomAttribute<ExposeGraphQLAttribute>();
 
                 if (exposeAttribute == null)
                 {
                     continue;
                 }
 
-                var inputTypeName = queryType.Name;
-                var inputObjectType = typeof(InputObjectGraphType<>).MakeGenericType(queryType);
-                var inputGqlType = (IInputObjectGraphType)Activator.CreateInstance(inputObjectType);
-
-                inputGqlType.Name = inputTypeName;
-
-                var addFieldMethod = inputGqlType.GetType().GetMethod("AddField");
                 var properties = queryType.GetProperties(BindingFlags.Instance | BindingFlags.Public);
+                IInputObjectGraphType inputGqlType = null;
 
-                //TODO autoregistering input type
-                foreach (var propertyInfo in properties)
+                if (properties.Any())
                 {
-                    addFieldMethod.Invoke(inputGqlType, new[]
+                    var inputObjectType = typeof(InputObjectGraphType<>).MakeGenericType(queryType);
+                    inputGqlType = (IInputObjectGraphType)Activator.CreateInstance(inputObjectType);
+
+                    inputGqlType.Name = queryType.Name;
+
+                    var addFieldMethod = inputGqlType.GetType().GetMethod("AddField");
+
+                    foreach (var propertyInfo in properties)
                     {
-                        new FieldType()
+                        addFieldMethod.Invoke(inputGqlType, new[]
                         {
-                            Name = GetNormalizedFieldName(propertyInfo.Name),
-                            Type = propertyInfo.PropertyType.GetGraphTypeFromType()
-                        }
-                    });
+                            new FieldType()
+                            {
+                                Name = GetNormalizedFieldName(propertyInfo.Name),
+                                Type = propertyInfo.PropertyType.GetGraphTypeFromType()
+                            }
+                        });
+                    }
                 }
 
                 IGraphType resultGqlType = null;
@@ -220,15 +230,16 @@ namespace CoreSharp.GraphQL
                     resultGqlType.Name = resultTypeName;
                 }
 
-                var queryArgument = new QueryArgument(inputGqlType);
-                queryArgument.Name = "query";
+                var arguments = new List<QueryArgument>();
 
-                var queryQueryParameters = new List<QueryArgument>()
+                if (inputGqlType != null)
                 {
-                    queryArgument
-                };
+                    var argument = new QueryArgument(inputGqlType);
+                    argument.Name = "query";
+                    arguments.Add(argument);
+                }
 
-                var queryName = exposeAttribute.IsUriSet ? exposeAttribute.Uri : new Regex("Query").Replace(queryType.Name, "");
+                var queryName = exposeAttribute.IsFieldNameSet ? exposeAttribute.FieldName : new Regex("Query").Replace(queryType.Name, "");
 
                 if (!Query.HasField(queryName))
                 {
@@ -239,7 +250,7 @@ namespace CoreSharp.GraphQL
                         Resolver = new QueryResolver(_container, queryHandlerType, queryType),
                         Name = GetNormalizedFieldName(queryName),
                         Description = descriptionAttribute?.Description,
-                        Arguments = new QueryArguments(queryQueryParameters)
+                        Arguments = new QueryArguments(arguments)
                     };
 
                     Query.AddField(type);
