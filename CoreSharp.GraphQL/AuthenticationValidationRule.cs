@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CoreSharp.GraphQL.Extensions;
 using GraphQL.Language.AST;
 using GraphQL.Validation;
 
@@ -9,8 +10,8 @@ namespace CoreSharp.GraphQL
         public INodeVisitor Validate(ValidationContext context)
         {
             var userContext = context.UserContext as IDictionary<string, object>;
-            var authenticated = userContext != null && userContext.ContainsKey("IsAuthenticated") && (userContext["IsAuthenticated"] as bool?) == true;
-            var claims = authenticated && userContext.ContainsKey("Claims") ? userContext["IsAuthenticated"] as IEnumerable<string> : new List<string>();
+            var authenticated = userContext.GetValueOrDefault("IsAuthenticated") as bool? == true;
+            var claims = userContext.GetValueOrDefault("Claims") as IEnumerable<string>;
 
             return new EnterLeaveListener(_ =>
             {
