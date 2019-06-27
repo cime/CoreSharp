@@ -8,7 +8,7 @@
     <Description>GraphQL CQRS integration and extension</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Copyright>Copyright 2019 (c) cime. All rights reserved.</Copyright>
-    <PackageTags>Core# GraphQL CQRS</PackageTags>
+    <PackageTags>Core# GraphQL CQRS AspNetCore</PackageTags>
     <PackageProjectUrl>https://github.com/cime/CoreSharp</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/cime/CoreSharp/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/cime/CoreSharp</RepositoryUrl>
@@ -16,7 +16,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
-    <PackageReference Include="SimpleInjector" Version="4.6.0" />
   </ItemGroup>
 
   <ItemGroup>
