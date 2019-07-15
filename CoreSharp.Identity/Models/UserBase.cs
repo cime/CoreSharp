@@ -19,8 +19,6 @@ namespace CoreSharp.Identity.Models
         where TOrganization : OrganizationBase<TOrganization, TRole, TUser, TOrganizationRole>
         where TClaim : UserClaimBase<TUser>
     {
-        public virtual long Id { get; }
-
         [NotNullOrEmpty]
         [Unique]
         [Length(50)]

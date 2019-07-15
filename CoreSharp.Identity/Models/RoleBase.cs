@@ -9,6 +9,9 @@ namespace CoreSharp.Identity.Models
         [NotNullOrEmpty]
         public virtual string Name { get; set; }
 
+        [NotNullOrEmpty]
+        public virtual string NormalizedName { get; set; }
+
         //TODO: references to UserRoles and OrganizationRoles
     }
 }
