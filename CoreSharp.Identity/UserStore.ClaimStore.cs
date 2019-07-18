@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace CoreSharp.Identity
 {
-    public partial class UserStore<TUser, TRole, TOrganization, TUserRole, TOrganizationRole, TClaim> : IUserClaimStore<TUser>
+    public partial class UserStore<TUser, TRole, TOrganization, TUserRole, TOrganizationRole, TRolePermission, TPermission, TClaim> : IUserClaimStore<TUser>
     {
         public Task<IList<Claim>> GetClaimsAsync(TUser user, CancellationToken cancellationToken = new CancellationToken())
         {

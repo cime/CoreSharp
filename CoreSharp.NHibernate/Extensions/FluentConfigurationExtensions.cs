@@ -43,16 +43,26 @@ namespace CoreSharp.NHibernate.Extensions
             });
         }
 
-        public static FluentConfiguration CreateSchema(this FluentConfiguration fluentConfiguration)
+        public static FluentConfiguration CreateSchema(this FluentConfiguration fluentConfiguration, bool create = true)
         {
+            if (!create)
+            {
+                return fluentConfiguration;
+            }
+
             return fluentConfiguration.ExposeConfiguration(cfg =>
             {
                 new SchemaExport(cfg).Execute(true, true, false);
             });
         }
 
-        public static FluentConfiguration UpdateSchema(this FluentConfiguration fluentConfiguration)
+        public static FluentConfiguration UpdateSchema(this FluentConfiguration fluentConfiguration, bool update = true)
         {
+            if (!update)
+            {
+                return fluentConfiguration;
+            }
+
             return fluentConfiguration.ExposeConfiguration(cfg =>
             {
                 new SchemaUpdate(cfg).Execute(true, true);

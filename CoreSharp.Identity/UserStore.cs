@@ -10,13 +10,15 @@ using NHibernate.Linq;
 
 namespace CoreSharp.Identity
 {
-    public partial class UserStore<TUser, TRole, TOrganization, TUserRole, TOrganizationRole, TClaim> : IUserPasswordStore<TUser>, IQueryableUserStore<TUser>
-        where TRole : RoleBase
+    public partial class UserStore<TUser, TRole, TOrganization, TUserRole, TOrganizationRole, TRolePermission, TPermission, TClaim> : IUserPasswordStore<TUser>, IQueryableUserStore<TUser>
+        where TUser : UserBase<TUser, TRole, TOrganization, TUserRole, TOrganizationRole, TRolePermission, TPermission, TClaim>, new()
+        where TRole : RoleBase<TRole, TRolePermission, TPermission>, new()
         where TUserRole : UserRoleBase<TUser, TRole>, new()
         where TOrganizationRole : OrganizationRoleBase<TOrganization, TRole>
-        where TOrganization : OrganizationBase<TOrganization, TRole, TUser, TOrganizationRole>
-        where TUser : UserBase<TUser, TRole, TOrganization, TUserRole, TOrganizationRole, TClaim>, new()
+        where TOrganization : OrganizationBase<TOrganization, TRole, TUser, TUserRole, TOrganizationRole, TRolePermission, TPermission, TClaim>
         where TClaim : UserClaimBase<TUser>, new()
+        where TPermission : PermissionBase
+        where TRolePermission : RolePermissionBase<TRole, TRolePermission, TPermission>
     {
         private readonly ISession _session;
 

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace CoreSharp.Identity
 {
-    public partial class UserStore<TUser, TRole, TOrganization, TUserRole, TOrganizationRole, TClaim> : IUserLockoutStore<TUser>
+    public partial class UserStore<TUser, TRole, TOrganization, TUserRole, TOrganizationRole, TRolePermission, TPermission, TClaim> : IUserLockoutStore<TUser>
     {
         public Task<DateTimeOffset?> GetLockoutEndDateAsync(TUser user, CancellationToken cancellationToken)
         {

@@ -7,7 +7,7 @@ using NHibernate.Linq;
 
 namespace CoreSharp.Identity
 {
-    public partial class UserStore<TUser, TRole, TOrganization, TUserRole, TOrganizationRole, TClaim> : IUserEmailStore<TUser>
+    public partial class UserStore<TUser, TRole, TOrganization, TUserRole, TOrganizationRole, TRolePermission, TPermission, TClaim> : IUserEmailStore<TUser>
     {
         public Task SetEmailAsync(TUser user, string email, CancellationToken cancellationToken = new CancellationToken())
         {

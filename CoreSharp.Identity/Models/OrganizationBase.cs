@@ -1,29 +1,27 @@
 ﻿using System.Collections.Generic;
+using CoreSharp.Common.Attributes;
 using CoreSharp.DataAccess;
 using CoreSharp.NHibernate;
 
 namespace CoreSharp.Identity.Models
 {
-    public abstract class OrganizationBase<TOrganization, TRole, TUser, TOrganizationRole> : Entity
-        where TRole : IEntity
-        where TUser : IEntity
-        where TOrganization : OrganizationBase<TOrganization, TRole, TUser, TOrganizationRole>
+    public abstract class OrganizationBase<TOrganization, TRole, TUser, TUserRole, TOrganizationRole, TRolePermission, TPermission, TClaim> : Entity
+        where TRole : RoleBase<TRole, TRolePermission, TPermission>
+        where TUser : UserBase<TUser, TRole, TOrganization, TUserRole, TOrganizationRole, TRolePermission, TPermission, TClaim>
+        where TUserRole : UserRoleBase<TUser, TRole>
+        where TPermission : PermissionBase
+        where TOrganization : OrganizationBase<TOrganization, TRole, TUser, TUserRole, TOrganizationRole, TRolePermission, TPermission, TClaim>
         where TOrganizationRole : OrganizationRoleBase<TOrganization, TRole>
+        where TRolePermission : RolePermissionBase<TRole, TRolePermission, TPermission>
+        where TClaim : UserClaimBase<TUser>
     {
-        private ISet<TOrganizationRole> _organizationRoles;
+        [Include]
+        public virtual ISet<TOrganizationRole> Roles { get; set; } = new HashSet<TOrganizationRole>();
 
-        public virtual ISet<TOrganizationRole> OrganizationRoles
-        {
-            get { return _organizationRoles ?? (_organizationRoles = new HashSet<TOrganizationRole>()); }
-            set { _organizationRoles = value; }
-        }
+        [Include]
+        public virtual ISet<TUser> Users { get; set; } = new HashSet<TUser>();
 
-        private ISet<TUser> _users;
-
-        public virtual ISet<TUser> Users
-        {
-            get { return _users ?? (_users = new HashSet<TUser>()); }
-            set { _users = value; }
-        }
+        [Include]
+        public virtual ISet<TPermission> Permissions { get; set; } = new HashSet<TPermission>();
     }
 }

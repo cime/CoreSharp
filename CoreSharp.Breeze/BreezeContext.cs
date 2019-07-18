@@ -177,7 +177,35 @@ namespace CoreSharp.Breeze
         /// </summary>
         protected override void CloseDbConnection()
         {
-            if (Session != null && Session.IsOpen)
+            if (Session == null || !Session.IsOpen)
+            {
+                return;
+            }
+
+            if (Session.GetSessionImplementation().TransactionInProgress)
+            {
+                var tx = Session.Transaction;
+                try
+                {
+                    if (tx.IsActive)
+                    {
+                        tx.Commit();
+                    }
+
+                    var dbc = Session.Close();
+                    dbc?.Close();
+                }
+                catch (Exception)
+                {
+                    if (tx.IsActive)
+                    {
+                        tx.Rollback();
+                    }
+
+                    throw;
+                }
+            }
+            else
             {
                 var dbc = Session.Close();
                 dbc?.Close();

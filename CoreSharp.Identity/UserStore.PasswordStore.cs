@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace CoreSharp.Identity
 {
-    public partial class UserStore<TUser, TRole, TOrganization, TUserRole, TOrganizationRole, TClaim>
+    public partial class UserStore<TUser, TRole, TOrganization, TUserRole, TOrganizationRole, TRolePermission, TPermission, TClaim>
     {
         public Task SetPasswordHashAsync(TUser user, string passwordHash, CancellationToken cancellationToken = new CancellationToken())
         {

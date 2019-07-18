@@ -1,3 +1,4 @@
+using FluentValidation;
 using SimpleInjector;
 
 namespace CoreSharp.Validation
@@ -6,7 +7,7 @@ namespace CoreSharp.Validation
     {
         public void Register(Container container)
         {
-
+            container.Register<IValidatorFactory, ValidatorFactory>(Lifestyle.Singleton);
         }
     }
 }

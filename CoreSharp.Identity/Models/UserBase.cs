@@ -7,17 +7,20 @@ using CoreSharp.Common.Attributes;
 using CoreSharp.DataAccess;
 using CoreSharp.DataAccess.Attributes;
 using CoreSharp.NHibernate;
+using FluentNHibernate.Conventions.Inspections;
 using Newtonsoft.Json;
 
 namespace CoreSharp.Identity.Models
 {
-    public abstract class UserBase<TUser, TRole, TOrganization, TUserRole, TOrganizationRole, TClaim> : VersionedEntity, IUser, IIdentity
-        where TRole : RoleBase
-        where TUser : UserBase<TUser, TRole, TOrganization, TUserRole, TOrganizationRole, TClaim>
+    public abstract class UserBase<TUser, TRole, TOrganization, TUserRole, TOrganizationRole, TRolePermission, TPermission, TClaim> : VersionedEntity, IUser, IIdentity
+        where TRole : RoleBase<TRole, TRolePermission, TPermission>
+        where TUser : UserBase<TUser, TRole, TOrganization, TUserRole, TOrganizationRole, TRolePermission, TPermission, TClaim>
         where TUserRole : UserRoleBase<TUser, TRole>
         where TOrganizationRole : OrganizationRoleBase<TOrganization, TRole>
-        where TOrganization : OrganizationBase<TOrganization, TRole, TUser, TOrganizationRole>
+        where TOrganization : OrganizationBase<TOrganization, TRole, TUser, TUserRole, TOrganizationRole, TRolePermission, TPermission, TClaim>
         where TClaim : UserClaimBase<TUser>
+        where TPermission : PermissionBase
+        where TRolePermission : RolePermissionBase<TRole, TRolePermission, TPermission>
     {
         [NotNullOrEmpty]
         [Unique]
@@ -54,27 +57,16 @@ namespace CoreSharp.Identity.Models
         public virtual bool Active { get; set; }
 
 
-        private ISet<TUserRole> _userRoles;
+        [Include]
+        public virtual ISet<TUserRole> Roles { get; set; } = new HashSet<TUserRole>();
 
-        public virtual ISet<TUserRole> UserRoles
-        {
-            get { return _userRoles ?? (_userRoles = new HashSet<TUserRole>()); }
-            set { _userRoles = value; }
-        }
-
-        private ISet<TClaim> _claims;
-
-        public virtual ISet<TClaim> Claims
-        {
-            get { return _claims ?? (_claims = new HashSet<TClaim>()); }
-            set { _claims = value; }
-        }
-
+        [Include]
+        public virtual ISet<TClaim> Claims { get; set; } = new HashSet<TClaim>();
 
         #region IPrincipal
         public virtual bool IsInRole(string role)
         {
-            return (UserRoles != null && UserRoles.Any(x => x.Role.Name == role)) || (Organization != null && Organization.OrganizationRoles.Any(x => x.Role.Name == role));
+            return (Roles != null && Roles.Any(x => x.Role.Name == role)) || (Organization != null && Organization.Roles.Any(x => x.Role.Name == role));
         }
 
         [Ignore]
@@ -93,5 +85,14 @@ namespace CoreSharp.Identity.Models
         [JsonIgnore]
         public virtual bool IsAuthenticated { get { return !IsTransient(); } }
         #endregion
+
+        public virtual bool HasPermission(string permission)
+        {
+            var permissions = Roles.SelectMany(x => x.Role.Permissions)
+                .Union(Organization.Roles.SelectMany(x => x.Role.Permissions)).Select(x => x.Permission).Distinct()
+                .ToList();
+
+            return permissions.Any(x => x.FullName == permission);
+        }
     }
 }

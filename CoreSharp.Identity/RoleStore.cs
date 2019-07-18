@@ -9,8 +9,10 @@ using Microsoft.AspNetCore.Identity;
 
 namespace CoreSharp.Identity
 {
-    public class RoleStore<TRole> : IRoleStore<TRole>
-        where TRole : RoleBase
+    public class RoleStore<TRole, TRolePermission, TPermission> : IRoleStore<TRole>
+        where TRole : RoleBase<TRole, TRolePermission, TPermission>
+        where TPermission : PermissionBase
+        where TRolePermission : RolePermissionBase<TRole, TRolePermission, TPermission>
     {
         private readonly IDbStore _dbStore;
 

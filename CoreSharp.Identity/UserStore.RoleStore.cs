@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace CoreSharp.Identity
 {
-    public partial class UserStore<TUser, TRole, TOrganization, TUserRole, TOrganizationRole, TClaim> : IUserRoleStore<TUser>
+    public partial class UserStore<TUser, TRole, TOrganization, TUserRole, TOrganizationRole, TRolePermission, TPermission, TClaim> : IUserRoleStore<TUser>
     {
         public Task AddToRoleAsync(TUser user, string roleName, CancellationToken cancellationToken = new CancellationToken())
         {
@@ -29,7 +29,7 @@ namespace CoreSharp.Identity
                 Role = _session.Query<TRole>().Single(x => x.Name == roleName)
             };
 
-            user.UserRoles.Add(userRole);
+            user.Roles.Add(userRole);
 
             return Task.CompletedTask;
         }
@@ -48,11 +48,11 @@ namespace CoreSharp.Identity
                 throw new ArgumentNullException(nameof(roleName));
             }
 
-            var userRole = user.UserRoles.FirstOrDefault(x => x.Role.Name == roleName);
+            var userRole = user.Roles.FirstOrDefault(x => x.Role.Name == roleName);
 
             if (userRole != null)
             {
-                user.UserRoles.Remove(userRole);
+                user.Roles.Remove(userRole);
 
                 _session.Delete(userRole);
             }
@@ -69,7 +69,7 @@ namespace CoreSharp.Identity
                 throw new ArgumentNullException(nameof(user));
             }
 
-            return Task.FromResult((IList<string>)user.UserRoles.Select(x => x.Role.Name).ToList());
+            return Task.FromResult((IList<string>)user.Roles.Select(x => x.Role.Name).ToList());
         }
 
         public Task<bool> IsInRoleAsync(TUser user, string roleName, CancellationToken cancellationToken = new CancellationToken())
@@ -98,7 +98,7 @@ namespace CoreSharp.Identity
                 throw new ArgumentNullException(nameof(roleName));
             }
 
-            return Task.FromResult((IList<TUser>)_session.Query<TUser>().Where(x => x.UserRoles.Any(r => r.Role.Name == roleName)).ToList());
+            return Task.FromResult((IList<TUser>)_session.Query<TUser>().Where(x => x.Roles.Any(r => r.Role.Name == roleName)).ToList());
         }
     }
 }
