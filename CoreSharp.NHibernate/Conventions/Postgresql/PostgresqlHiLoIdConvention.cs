@@ -13,15 +13,16 @@ namespace CoreSharp.NHibernate.Conventions.Postgresql
 {
     public class PostgresqlHiLoIdConvention : IIdConvention
     {
-        private const string NextHiValueColumnName = "NextHiValue";
-        private const string TableColumnName = "Entity";
-        private static readonly string HiLoIdentityTableName = "HiLoIdentity";
+        private const string NextHiValueColumnName = "next_hi_value";
+        private const string TableColumnName = "entity";
+        private static readonly string HiLoIdentityTableName = "hi_lo_identity";
         private static readonly string MaxLo = "1000";
         private static readonly Type[] ValidTypes = new [] { typeof(int), typeof(long), typeof(uint), typeof(ulong) };
         private static readonly HashSet<string> ValidDialects = new HashSet<string>
             {
                 typeof (PostgreSQL81Dialect).FullName,
                 typeof (PostgreSQL82Dialect).FullName,
+                typeof (PostgreSQL83Dialect).FullName,
                 typeof (PostgreSQLDialect).FullName
             };
 
@@ -51,7 +52,7 @@ namespace CoreSharp.NHibernate.Conventions.Postgresql
             script.AppendLine();
             script.AppendFormat("ALTER TABLE {0} ADD COLUMN {1} VARCHAR(128) NOT NULL;", HiLoIdentityTableName, TableColumnName);
             script.AppendLine();
-            script.AppendFormat("CREATE INDEX IX_{0}_{1} ON {0} (Entity);", HiLoIdentityTableName, TableColumnName);
+            script.AppendFormat("CREATE INDEX ix_{0}_{1} ON {0} (Entity);", HiLoIdentityTableName, TableColumnName);
             script.AppendLine();
 
             foreach (var entityName in config.ClassMappings.Select(m => m.MappedClass != null ? m.MappedClass.Name : m.Table.Name).Distinct())

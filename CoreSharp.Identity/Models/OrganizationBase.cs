@@ -20,8 +20,5 @@ namespace CoreSharp.Identity.Models
 
         [Include]
         public virtual ISet<TUser> Users { get; set; } = new HashSet<TUser>();
-
-        [Include]
-        public virtual ISet<TPermission> Permissions { get; set; } = new HashSet<TPermission>();
     }
 }

@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using CoreSharp.DataAccess;
 using CoreSharp.NHibernate.Conventions.Mssql;
+using CoreSharp.NHibernate.Conventions.Postgresql;
 using CoreSharp.NHibernate.EventListeners;
 using CoreSharp.NHibernate.Interceptors;
 using FluentNHibernate.Cfg;
@@ -35,11 +36,29 @@ namespace CoreSharp.NHibernate.Extensions
             });
         }
 
-        public static FluentConfiguration CreateHiLoSchema(this FluentConfiguration fluentConfiguration)
+        public static FluentConfiguration CreateMssqlHiLoSchema(this FluentConfiguration fluentConfiguration, bool create = true)
         {
+            if (!create)
+            {
+                return fluentConfiguration;
+            }
+
             return fluentConfiguration.ExposeConfiguration(cfg =>
             {
                 MssqlHiLoIdConvention.SchemaCreate(cfg);
+            });
+        }
+
+        public static FluentConfiguration CreatePostgresqlHiLoSchema(this FluentConfiguration fluentConfiguration, bool create = true)
+        {
+            if (!create)
+            {
+                return fluentConfiguration;
+            }
+
+            return fluentConfiguration.ExposeConfiguration(cfg =>
+            {
+                PostgresqlHiLoIdConvention.SchemaCreate(cfg);
             });
         }
 
@@ -81,8 +100,13 @@ namespace CoreSharp.NHibernate.Extensions
             });
         }
 
-        public static FluentConfiguration ExportMappings(this FluentConfiguration fluentConfiguration, string path)
+        public static FluentConfiguration ExportMappings(this FluentConfiguration fluentConfiguration, string path, bool export = true)
         {
+            if (!export)
+            {
+                return fluentConfiguration;
+            }
+
             return fluentConfiguration.Mappings(m =>
             {
                 if (Directory.Exists(path))

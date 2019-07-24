@@ -3,7 +3,7 @@ using System;
 
 namespace CoreSharp.NHibernate.Postgresql
 {
-    public class PostgresNamingStrategy : INamingStrategy
+    public class PostgresPascalCaseNamingStrategy : INamingStrategy
     {
         public string ClassToTableName(string className)
         {

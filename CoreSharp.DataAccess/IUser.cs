@@ -21,7 +21,7 @@ namespace CoreSharp.DataAccess
         /// Gets or sets the date and time, in UTC, when any user lockout ends.
         /// </summary>
         /// <remarks>A value in the past means the user is not locked out.</remarks>
-        DateTimeOffset? LockoutEnd { get; set; }
+        DateTime? LockoutEnd { get; set; }
 
         /// <summary>
         /// Gets or sets a flag indicating if the user could be locked out.

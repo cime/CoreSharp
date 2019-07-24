@@ -16,7 +16,14 @@ namespace CoreSharp.Identity
                 throw new ArgumentNullException(nameof(user));
             }
 
-            return Task.FromResult(user.LockoutEnd);
+            if (user.LockoutEnd == null)
+            {
+                return Task.FromResult(null as DateTimeOffset?);
+            }
+
+            var offset = DateTime.SpecifyKind(user.LockoutEnd.Value, DateTimeKind.Utc);
+
+            return Task.FromResult((DateTimeOffset?)offset);
         }
 
         public Task SetLockoutEndDateAsync(TUser user, DateTimeOffset? lockoutEnd, CancellationToken cancellationToken)
@@ -28,7 +35,7 @@ namespace CoreSharp.Identity
                 throw new ArgumentNullException(nameof(user));
             }
 
-            user.LockoutEnd = lockoutEnd;
+            user.LockoutEnd = lockoutEnd?.DateTime;
 
             return Task.CompletedTask;
         }

@@ -584,12 +584,12 @@ namespace CoreSharp.Breeze
                         // TODO: convert columnName to c# name
                         var synProp = new NHSyntheticProperty
                         {
-                            Name = columnName,
+                            PropertyName = propertyName.ToPascalCase(),
                             FkPropertyName = propName,
                             FkType = pType,
                             IsNullable = isNullable
                         };
-                        convertedColumns.Add(columnName);
+                        convertedColumns.Add(propertyName.ToPascalCase());
 
                         var relatedType = _sessionFactory.GetClassMetadata(synProp.FkType.Name);
                         if (relatedType == null)
@@ -602,7 +602,7 @@ namespace CoreSharp.Breeze
                         _syntheticProperties[containingType].Add(synProp);
 
                         //Create synthetic property as unmapped
-                        var dmap = MakeDataProperty(memberConfiguration, columnName, relatedType.IdentifierType, synProp.IsNullable, false, false);
+                        var dmap = MakeDataProperty(memberConfiguration, propertyName.ToPascalCase(), relatedType.IdentifierType, synProp.IsNullable, false, false);
                         dmap["isUnmapped"] = true;
                         dataProperties.Add(dmap);
                     }

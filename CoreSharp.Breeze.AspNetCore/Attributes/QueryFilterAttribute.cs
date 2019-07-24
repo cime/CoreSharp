@@ -45,7 +45,6 @@ namespace CoreSharp.Breeze.AspNetCore.Attributes
 
             int? inlineCount = null;
 
-            var originalQueryable = queryable;
             queryable = eq.ApplyWhere(queryable, eleType);
 
             if (eq.IsInlineCountEnabled)
@@ -59,29 +58,26 @@ namespace CoreSharp.Breeze.AspNetCore.Attributes
             queryable = eq.ApplySelect(queryable, eleType);
             queryable = eq.ApplyExpand(queryable, eleType);
 
-            if (queryable != originalQueryable)
+            // if a select or expand was encountered we need to
+            // execute the DbQueries here, so that any exceptions thrown can be properly returned.
+            // if we wait to have the query executed within the serializer, some exceptions will not
+            // serialize properly.
+            var listResult = Enumerable.ToList((dynamic) queryable);
+            var qr = new QueryResult(listResult, inlineCount);
+            var breezeConfig = context.HttpContext.RequestServices.GetService<IBreezeConfig>();
+            context.Result = new ObjectResult(qr)
             {
-                // if a select or expand was encountered we need to
-                // execute the DbQueries here, so that any exceptions thrown can be properly returned.
-                // if we wait to have the query executed within the serializer, some exceptions will not
-                // serialize properly.
-                var listResult = Enumerable.ToList((dynamic) queryable);
-                var qr = new QueryResult(listResult, inlineCount);
-                var breezeConfig = context.HttpContext.RequestServices.GetService<IBreezeConfig>();
-                context.Result = new ObjectResult(qr)
+                Formatters = new FormatterCollection<IOutputFormatter>
                 {
-                    Formatters = new FormatterCollection<IOutputFormatter>
-                    {
-                        new JsonOutputFormatter(breezeConfig.GetJsonSerializerSettings(),
-                            context.HttpContext.RequestServices.GetRequiredService<ArrayPool<char>>())
-                    }
-                };
-
-                var session = GetSession(queryable);
-                if (session != null)
-                {
-                    Close(session);
+                    new JsonOutputFormatter(breezeConfig.GetJsonSerializerSettings(),
+                        context.HttpContext.RequestServices.GetRequiredService<ArrayPool<char>>())
                 }
+            };
+
+            var session = GetSession(queryable);
+            if (session != null)
+            {
+                Close(session);
             }
 
             base.OnActionExecuted(context);

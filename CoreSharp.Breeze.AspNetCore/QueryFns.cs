@@ -21,6 +21,10 @@ namespace CoreSharp.Breeze.AspNetCore
             {
                 queryable = (IQueryable) result;
             }
+            else if (result is string)
+            {
+                return null;
+            }
             else if (result is IEnumerable)
             {
                 try
@@ -42,25 +46,15 @@ namespace CoreSharp.Breeze.AspNetCore
 
         public static string ExtractAndDecodeQueryString(ActionContext context)
         {
-            var qs = context.HttpContext.Request.QueryString;
-            var q = WebUtility.UrlDecode(qs.Value);
-            if (q.Length == 0)
+            if (!context.HttpContext.Request.Query.ContainsKey("query"))
             {
                 return null;
             }
 
-            var endIx = q.IndexOf('&');
+            var qs = context.HttpContext.Request.Query["query"];
+            var q = WebUtility.UrlDecode(qs);
 
-            if (endIx > 1)
-            {
-                q = q.Substring(1, endIx - 1);
-            }
-            else
-            {
-                q = q.Substring(1);
-            }
-
-            if (q == "{}")
+            if (q?.Length == 0)
             {
                 return null;
             }

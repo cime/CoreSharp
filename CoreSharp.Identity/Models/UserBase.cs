@@ -45,7 +45,7 @@ namespace CoreSharp.Identity.Models
         public virtual bool EmailConfirmed { get; set; }
         public virtual string PhoneNumber { get; set; }
         public virtual bool PhoneNumberConfirmed { get; set; }
-        public virtual DateTimeOffset? LockoutEnd { get; set; }
+        public virtual DateTime? LockoutEnd { get; set; }
         public virtual bool LockoutEnabled { get; set; }
         public virtual int AccessFailedCount { get; set; }
 
