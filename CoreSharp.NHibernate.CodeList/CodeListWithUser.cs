@@ -1,15 +1,20 @@
+using System;
 using CoreSharp.Common.Attributes;
 using CoreSharp.DataAccess;
 
-namespace CoreSharp.NHibernate
+namespace CoreSharp.NHibernate.CodeList
 {
-    public abstract class CodeList<TUser> : VersionedEntityWithUser<TUser, string>, ICodeList
+    [Ignore]
+    [Serializable]
+    public abstract class CodeListWithUser<TUser> : VersionedEntityWithUser<TUser, string>, ICodeList
         where TUser : IUser
     {
         private bool _isTransient = true;
 
         [DefaultValue(true)]
         public virtual bool Active { get; set; } = true;
+
+        public virtual string Name { get; set; }
 
         //Id can be changed via Code so we have to check CreatedBy and ModifiedBy
         public override bool IsTransient()

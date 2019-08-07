@@ -35,6 +35,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreSharp.NHibernate.Postgr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreSharp.NHibernate.SQLServer", "CoreSharp.NHibernate.SQLServer\CoreSharp.NHibernate.SQLServer.csproj", "{3A8912E0-352F-48C4-B9B1-6D07E3C7DEC1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreSharp.NHibernate.CodeList", "CoreSharp.NHibernate.CodeList\CoreSharp.NHibernate.CodeList.csproj", "{16EF686B-0290-4426-9428-43610DBA05D6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -108,5 +110,9 @@ Global
 		{3A8912E0-352F-48C4-B9B1-6D07E3C7DEC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A8912E0-352F-48C4-B9B1-6D07E3C7DEC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3A8912E0-352F-48C4-B9B1-6D07E3C7DEC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16EF686B-0290-4426-9428-43610DBA05D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16EF686B-0290-4426-9428-43610DBA05D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16EF686B-0290-4426-9428-43610DBA05D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16EF686B-0290-4426-9428-43610DBA05D6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

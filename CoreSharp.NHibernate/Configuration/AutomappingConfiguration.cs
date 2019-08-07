@@ -8,6 +8,7 @@ using CoreSharp.DataAccess.Attributes;
 using FluentNHibernate;
 using FluentNHibernate.Automapping;
 using FluentNHibernate.Automapping.Steps;
+using FluentNHibernate.Conventions;
 using Microsoft.Extensions.Configuration;
 
 namespace CoreSharp.NHibernate.Configuration
@@ -79,6 +80,14 @@ namespace CoreSharp.NHibernate.Configuration
             }
 
             return member.CanWrite && base.ShouldMap(member);
+        }
+
+        public override IEnumerable<IAutomappingStep> GetMappingSteps(AutoMapper mapper, IConventionFinder conventionFinder)
+        {
+            var steps = GetAdditionalMappingSteps();
+            steps.AddRange(base.GetMappingSteps(mapper, conventionFinder));
+
+            return steps;
         }
 
         private List<IAutomappingStep> GetAdditionalMappingSteps()
