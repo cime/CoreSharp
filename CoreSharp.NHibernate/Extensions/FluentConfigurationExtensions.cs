@@ -2,8 +2,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using CoreSharp.DataAccess;
-using CoreSharp.NHibernate.Conventions.Mssql;
-using CoreSharp.NHibernate.Conventions.Postgresql;
 using CoreSharp.NHibernate.EventListeners;
 using CoreSharp.NHibernate.Interceptors;
 using FluentNHibernate.Cfg;
@@ -33,32 +31,6 @@ namespace CoreSharp.NHibernate.Extensions
                     {container.GetInstance<VersionedEntitySaveOrUpdateEventListener<TUser>>()};
                 cfg.EventListeners.UpdateEventListeners = new ISaveOrUpdateEventListener[]
                     {container.GetInstance<VersionedEntitySaveOrUpdateEventListener<TUser>>()};
-            });
-        }
-
-        public static FluentConfiguration CreateMssqlHiLoSchema(this FluentConfiguration fluentConfiguration, bool create = true)
-        {
-            if (!create)
-            {
-                return fluentConfiguration;
-            }
-
-            return fluentConfiguration.ExposeConfiguration(cfg =>
-            {
-                MssqlHiLoIdConvention.SchemaCreate(cfg);
-            });
-        }
-
-        public static FluentConfiguration CreatePostgresqlHiLoSchema(this FluentConfiguration fluentConfiguration, bool create = true)
-        {
-            if (!create)
-            {
-                return fluentConfiguration;
-            }
-
-            return fluentConfiguration.ExposeConfiguration(cfg =>
-            {
-                PostgresqlHiLoIdConvention.SchemaCreate(cfg);
             });
         }
 

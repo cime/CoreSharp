@@ -6,7 +6,7 @@ using FluentNHibernate.Conventions;
 using FluentNHibernate.Conventions.Instances;
 using NHibernate.Dialect;
 
-namespace CoreSharp.NHibernate.Conventions.Postgresql
+namespace CoreSharp.NHibernate.PostgreSQL.Conventions
 {
     public class DateTimeOffsetPropertyConvention : IPropertyConvention, ISchemaConvention
     {

@@ -31,6 +31,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreSharp.GraphQL.AspNetCor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreSharp.Identity", "CoreSharp.Identity\CoreSharp.Identity.csproj", "{72F25016-1AD5-4A97-ADB7-CABA1828E018}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreSharp.NHibernate.PostgreSQL", "CoreSharp.NHibernate.PostgreSQL\CoreSharp.NHibernate.PostgreSQL.csproj", "{F62AECC7-806B-4C70-869B-23090558014B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreSharp.NHibernate.SQLServer", "CoreSharp.NHibernate.SQLServer\CoreSharp.NHibernate.SQLServer.csproj", "{3A8912E0-352F-48C4-B9B1-6D07E3C7DEC1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -96,5 +100,13 @@ Global
 		{72F25016-1AD5-4A97-ADB7-CABA1828E018}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{72F25016-1AD5-4A97-ADB7-CABA1828E018}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{72F25016-1AD5-4A97-ADB7-CABA1828E018}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F62AECC7-806B-4C70-869B-23090558014B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F62AECC7-806B-4C70-869B-23090558014B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F62AECC7-806B-4C70-869B-23090558014B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F62AECC7-806B-4C70-869B-23090558014B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A8912E0-352F-48C4-B9B1-6D07E3C7DEC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A8912E0-352F-48C4-B9B1-6D07E3C7DEC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A8912E0-352F-48C4-B9B1-6D07E3C7DEC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A8912E0-352F-48C4-B9B1-6D07E3C7DEC1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

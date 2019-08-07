@@ -2,7 +2,7 @@
 using FluentNHibernate.Conventions;
 using FluentNHibernate.Conventions.Instances;
 
-namespace CoreSharp.NHibernate.Conventions
+namespace CoreSharp.NHibernate.SQLServer.Conventions
 {
     public class DefaultValueAttributeConvention : AttributePropertyConvention<DefaultValueAttribute>
     {
@@ -12,8 +12,6 @@ namespace CoreSharp.NHibernate.Conventions
             {
                 if(instance.Type == typeof(bool) || instance.Type == typeof(bool?))
                 {
-                    // TODO: get current dialect
-                    //instance.Default(attribute.Value == "1" ? "true" : "false"); // postgresql
                     instance.Default(attribute.Value);
                 }
                 else
