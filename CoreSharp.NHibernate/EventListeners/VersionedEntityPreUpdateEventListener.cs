@@ -64,7 +64,7 @@ namespace CoreSharp.NHibernate.EventListeners
 
         private TUser GetCurrentUser(ISession session)
         {
-            if (Thread.CurrentPrincipal.Identity is ClaimsIdentity)
+            if (Thread.CurrentPrincipal?.Identity is ClaimsIdentity)
             {
                 var identity = Thread.CurrentPrincipal.Identity as ClaimsIdentity;
                 var idClaim = identity.Claims.SingleOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
