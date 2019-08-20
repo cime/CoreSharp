@@ -4,7 +4,7 @@ namespace CoreSharp.Breeze
 {
     public class NHSyntheticProperty
     {
-        public string PropertyName { get; set; }
+        public string Name { get; set; }
 
         public bool IsNullable { get; set; }
 

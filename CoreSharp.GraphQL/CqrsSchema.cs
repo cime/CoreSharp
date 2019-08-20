@@ -60,7 +60,7 @@ namespace CoreSharp.GraphQL
         {
             var registrations = _container.GetRootRegistrations();
             var registeredTypes = registrations.Select(x => x.Registration.ImplementationType).Distinct().ToList();
-            var commandHandlerTypes = registeredTypes.Where(x =>
+            var commandHandlerTypes = registeredTypes.Where(x => x.GetCustomAttribute<DecoratorAttribute>() == null).Where(x =>
                 x.GetTypeInfo().IsAssignableToGenericType(typeof(ICommandHandler<,>)) ||
                 x.GetTypeInfo().IsAssignableToGenericType(typeof(IAsyncCommandHandler<,>))).ToList();
 
@@ -172,7 +172,7 @@ namespace CoreSharp.GraphQL
         {
             var registrations = _container.GetRootRegistrations();
             var registeredTypes = registrations.Select(x => x.Registration.ImplementationType).Distinct().ToList();
-            var queryHandlerTypes = registeredTypes.Where(x =>
+            var queryHandlerTypes = registeredTypes.Where(x => x.GetCustomAttribute<DecoratorAttribute>() == null).Where(x =>
                 x.GetTypeInfo().IsAssignableToGenericType(typeof(IQueryHandler<,>)) ||
                 x.GetTypeInfo().IsAssignableToGenericType(typeof(IAsyncQueryHandler<,>))).ToList();
 

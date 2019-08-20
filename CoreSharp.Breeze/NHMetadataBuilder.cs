@@ -515,9 +515,7 @@ namespace CoreSharp.Breeze
 
             var relatedEntityTypeName = relatedEntityType.Name;
 
-            // TODO: get property's real name - it might not be equal to column name
-            var propertyName = columnNames[0].EndsWith("Id") ? columnNames[0].Substring(0, columnNames[0].Length - 2) : columnNames[0];
-            var propertyType = relatedEntityType.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public);
+            var propertyType = relatedEntityType.GetProperty(propName, BindingFlags.Instance | BindingFlags.Public);
 
             if (propertyType?.DeclaringType != null)
             {
@@ -581,15 +579,14 @@ namespace CoreSharp.Breeze
                     var convertedColumns = new List<string>();
                     foreach (var columnName in columnNames)
                     {
-                        // TODO: convert columnName to c# name
                         var synProp = new NHSyntheticProperty
                         {
-                            PropertyName = propertyName.ToPascalCase(),
+                            Name = columnName.ToPascalCase(),
                             FkPropertyName = propName,
                             FkType = pType,
                             IsNullable = isNullable
                         };
-                        convertedColumns.Add(propertyName.ToPascalCase());
+                        convertedColumns.Add(columnName.ToPascalCase());
 
                         var relatedType = _sessionFactory.GetClassMetadata(synProp.FkType.Name);
                         if (relatedType == null)
@@ -602,7 +599,7 @@ namespace CoreSharp.Breeze
                         _syntheticProperties[containingType].Add(synProp);
 
                         //Create synthetic property as unmapped
-                        var dmap = MakeDataProperty(memberConfiguration, propertyName.ToPascalCase(), relatedType.IdentifierType, synProp.IsNullable, false, false);
+                        var dmap = MakeDataProperty(memberConfiguration, columnName.ToPascalCase(), relatedType.IdentifierType, synProp.IsNullable, false, false);
                         dmap["isUnmapped"] = true;
                         dataProperties.Add(dmap);
                     }
@@ -865,7 +862,7 @@ namespace CoreSharp.Breeze
         /// <returns></returns>
         static string GetAssociationName(string name1, string name2, string[] columnNames)
         {
-            var cols = CatColumnNames(columnNames, '_');
+            var cols = CatColumnNames(columnNames?.Select(x => x.ToPascalCase()).ToArray(), '_');
             if (name1.CompareTo(name2) < 0)
                 return ASSN + name1 + '_' + name2 + '_' + cols;
             else

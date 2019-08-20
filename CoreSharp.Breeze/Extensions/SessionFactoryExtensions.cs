@@ -25,8 +25,8 @@ namespace CoreSharp.Breeze.Extensions
                 foreach (var type2 in types.Where(x => x != type1 && x.IsSubclassOf(type1)))
                 {
                     var properties2 = dict[type2];
-                    var propNames = properties2.Select(x => x.PropertyName);
-                    dict[type2] = properties2.Union(properties1.Where(x => !propNames.Contains(x.PropertyName))).ToList();
+                    var propNames = properties2.Select(x => x.Name);
+                    dict[type2] = properties2.Union(properties1.Where(x => !propNames.Contains(x.Name))).ToList();
                 }
             }
 

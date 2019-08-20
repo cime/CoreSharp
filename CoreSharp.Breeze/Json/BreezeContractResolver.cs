@@ -117,7 +117,7 @@ namespace CoreSharp.Breeze.Json
             {
                 foreach (var syntheticProp in syntheticPoperties)
                 {
-                    var propertyName = syntheticProp.PropertyName;
+                    var propertyName = ResolvePropertyName(syntheticProp.Name);
 
                     properties.Add(new JsonProperty
                     {

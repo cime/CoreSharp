@@ -771,7 +771,7 @@ namespace CoreSharp.Breeze
             {
                 return id;
             }
-            var synColumn = syntheticProperties[entityType].FirstOrDefault(o => o.PropertyName == foreignKeyName);
+            var synColumn = syntheticProperties[entityType].FirstOrDefault(o => o.Name == foreignKeyName);
             if (synColumn == null)
             {
                 return id;
