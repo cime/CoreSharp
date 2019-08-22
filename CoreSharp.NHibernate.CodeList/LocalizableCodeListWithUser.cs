@@ -9,31 +9,23 @@ namespace CoreSharp.NHibernate.CodeList
 {
     [Ignore]
     [Serializable]
-    public abstract class LocalizableCodeListWithUser<TUser, TCodeList, TCodeListNames> : VersionedEntityWithUser<TUser, string>, ILocalizableCodeList<TCodeList, TCodeListNames>
-        where TCodeListNames : class, ILocalizableCodeListLanguage<TCodeList, TCodeListNames>
-        where TCodeList : LocalizableCodeListWithUser<TUser, TCodeList, TCodeListNames>
+    public abstract class LocalizableCodeListWithUser<TUser, TLanguage, TCodeList, TCodeListTranslation> : VersionedEntityWithUser<TUser, string>, ILocalizableCodeList<TLanguage, TCodeList, TCodeListTranslation>
+        where TLanguage : ICodeList
+        where TCodeListTranslation : class, ILocalizableCodeListLanguage<TLanguage, TCodeList, TCodeListTranslation>
+        where TCodeList : LocalizableCodeListWithUser<TUser, TLanguage, TCodeList, TCodeListTranslation>
     {
-        private ISet<TCodeListNames> _names;
-
-        public virtual ISet<TCodeListNames> Names
-        {
-            get { return _names ?? (_names = new HashSet<TCodeListNames>()); }
-            protected set { _names = value; }
-        }
-
-        [Formula("`Id`")]
-        public virtual string Code { get { return Id; } set { Id = value; } }
+        public virtual ISet<TCodeListTranslation> Translations { get; set; } = new HashSet<TCodeListTranslation>();
 
         public virtual bool Active { get; set; } = true;
 
-        public virtual void AddName(TCodeListNames name)
+        public virtual void AddTranslation(TCodeListTranslation name)
         {
-            this.AddOneToMany(o => o.Names, name, o => o.CodeList, o => RemoveName);
+            this.AddOneToMany(o => o.Translations, name, o => o.CodeList, o => RemoveTranslation);
         }
 
-        public virtual void RemoveName(TCodeListNames name)
+        public virtual void RemoveTranslation(TCodeListTranslation name)
         {
-            this.RemoveOneToMany(o => o.Names, name, o => o.CodeList);
+            this.RemoveOneToMany(o => o.Translations, name, o => o.CodeList);
         }
 
         // Id can be changed via Code so we have to check CreatedDate

@@ -2,18 +2,19 @@ namespace CoreSharp.DataAccess
 {
     public interface ILocalizableCodeListLanguage
     {
-        string LanguageCode { get; set; }
+        string LanguageCode { get; }
 
         string Name { get; set; }
 
         object GetCodeList();
     }
 
-    public interface ILocalizableCodeListLanguage<TCodeList, TCodeListNames> : ILocalizableCodeListLanguage, IEntity
+    public interface ILocalizableCodeListLanguage<TLanguage, TCodeList, TCodeListTranslation> : ILocalizableCodeListLanguage, IEntity
+        where TLanguage : ICodeList
         where TCodeList : ICodeList
-        where TCodeListNames : ILocalizableCodeListLanguage<TCodeList, TCodeListNames>
+        where TCodeListTranslation : ILocalizableCodeListLanguage<TLanguage, TCodeList, TCodeListTranslation>
     {
-        TCodeList CodeList { get; set; } // TODO: remove setter after T4FluentHN is fixed
+        TCodeList CodeList { get; set; }
 
         void SetCodeList(TCodeList codeList);
 

@@ -5,13 +5,13 @@ using System.Reflection;
 using CoreSharp.Common.Exceptions;
 using CoreSharp.Cqrs.Events;
 using CoreSharp.DataAccess;
+using CoreSharp.DataAccess.Attributes;
 using CoreSharp.NHibernate.CodeList.Attributes;
 using CoreSharp.NHibernate.Events;
 using FluentNHibernate;
 using FluentNHibernate.MappingModel;
 using FluentNHibernate.MappingModel.ClassBased;
 using FluentNHibernate.MappingModel.Collections;
-using FluentNHibernate.MappingModel.Identity;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
 
@@ -20,6 +20,7 @@ namespace CoreSharp.NHibernate.CodeList.EventHandlers
     public class HibernateMappingsBuiltEventHandler : IEventHandler<MappingsBuiltEvent>
     {
         // TODO: configurable...COALESCE works everywhere but is slower than ISNULL which is available only for sql server
+        // TODO: COALESCE executes both expression and replacement - try with CASE
         private static readonly string _localizeFormula =
             "(SELECT COALESCE((SELECT curr.{0} FROM {1} curr WHERE curr.{5} = {7} AND curr.{6} = :{3}.{4})," +
             "(SELECT def.{0} FROM {1} def WHERE def.{5} = {7} AND def.{6} = :{3}.{2})))";

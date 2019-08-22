@@ -1,6 +1,6 @@
 using System;
 
-namespace CoreSharp.NHibernate.CodeList.Attributes
+namespace CoreSharp.DataAccess.Attributes
 {
     [AttributeUsage(AttributeTargets.Class)]
     public class CodeListConfigurationAttribute : Attribute

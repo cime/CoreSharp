@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,18 +28,18 @@ namespace CoreSharp.NHibernate.CodeList.MappingSteps
 
         public bool ShouldMap(Member member)
         {
-            if (!member.DeclaringType.IsGenericType)
+            if (!member.DeclaringType.IsGenericType || !member.DeclaringType.IsAssignableToGenericType(typeof(ILocalizableCodeList<,,>)))
             {
                 return false;
             }
 
-            var codeListType = member.DeclaringType.GetGenericArguments()[0];
+            var codeListType = member.DeclaringType.GetGenericArguments()[2];
 
             return
-                member.Name == "Names" &&
+                member.Name == "Translations" &&
                 typeof(ICodeList).IsAssignableFrom(codeListType) &&
                 !typeof(INonLocalizableCodeList).IsAssignableFrom(codeListType) &&
-                member.PropertyType.Namespace.In("System.Collections.Generic", "Iesi.Collections.Generic") &&
+                FluentNHibernate.Utils.Extensions.In(member.PropertyType.Namespace, "System.Collections.Generic", "Iesi.Collections.Generic") &&
                 !member.PropertyType.HasInterface(typeof(IDictionary)) &&
                 !member.PropertyType.ClosesInterface(typeof(IDictionary<,>)) &&
                 !member.PropertyType.Closes(typeof(IDictionary<,>));

@@ -9,28 +9,23 @@ namespace CoreSharp.NHibernate.CodeList
 {
     [Ignore]
     [Serializable]
-    public abstract class LocalizableCodeList<TCodeList, TCodeListNames> : VersionedEntity<string>, ILocalizableCodeList<TCodeList, TCodeListNames>
-        where TCodeListNames : class, ILocalizableCodeListLanguage<TCodeList, TCodeListNames>
-        where TCodeList : LocalizableCodeList<TCodeList, TCodeListNames>
+    public abstract class LocalizableCodeList<TLanguage, TCodeList, TCodeListTranslation> : VersionedEntity<string>, ILocalizableCodeList<TLanguage, TCodeList, TCodeListTranslation>
+        where TLanguage : ICodeList
+        where TCodeListTranslation : class, ILocalizableCodeListLanguage<TLanguage, TCodeList, TCodeListTranslation>
+        where TCodeList : LocalizableCodeList<TLanguage, TCodeList, TCodeListTranslation>
     {
-        private ISet<TCodeListNames> _names;
-
-        public virtual ISet<TCodeListNames> Names
-        {
-            get { return _names ?? (_names = new HashSet<TCodeListNames>()); }
-            protected set { _names = value; }
-        }
+        public virtual ISet<TCodeListTranslation> Translations { get; set; } = new HashSet<TCodeListTranslation>();
 
         public virtual bool Active { get; set; } = true;
 
-        public virtual void AddName(TCodeListNames name)
+        public virtual void AddTranslation(TCodeListTranslation name)
         {
-            this.AddOneToMany(o => o.Names, name, o => o.CodeList, o => RemoveName);
+            this.AddOneToMany(o => o.Translations, name, o => o.CodeList, o => RemoveTranslation);
         }
 
-        public virtual void RemoveName(TCodeListNames name)
+        public virtual void RemoveTranslation(TCodeListTranslation name)
         {
-            this.RemoveOneToMany(o => o.Names, name, o => o.CodeList);
+            this.RemoveOneToMany(o => o.Translations, name, o => o.CodeList);
         }
 
         // Id can be changed via Code so we have to check CreatedDate
