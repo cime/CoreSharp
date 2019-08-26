@@ -8,6 +8,7 @@ namespace CoreSharp.Validation
         public void Register(Container container)
         {
             container.Register<IValidatorFactory, ValidatorFactory>(Lifestyle.Singleton);
+            container.RegisterConditional(typeof(IValidator<>), typeof(Validator<>), Lifestyle.Singleton, o => !o.Handled);
         }
     }
 }

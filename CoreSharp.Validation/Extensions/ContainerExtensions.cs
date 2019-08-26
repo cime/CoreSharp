@@ -15,8 +15,6 @@ namespace SimpleInjector
             var assembly = typeof(T).GetTypeInfo().Assembly;
             RegisterFluentValidators(container, assembly);
             RegisterDomainValidators(container, assembly);
-
-            container.RegisterConditional(typeof(IValidator<>), typeof(Validator<>), Lifestyle.Singleton, o => !o.Handled);
         }
 
         private static void RegisterFluentValidators(Container container, Assembly assembly)

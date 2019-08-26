@@ -18,6 +18,16 @@ namespace CoreSharp.NHibernate.Conventions
                     instance.Table(tableAttr.Name);
                 }
 
+                if (!string.IsNullOrEmpty(tableAttr.Prefix))
+                {
+                    instance.Table($"{tableAttr.Prefix}{instance.TableName}");
+                }
+
+                if (!string.IsNullOrEmpty(tableAttr.Suffix))
+                {
+                    instance.Table($"{instance.TableName}{tableAttr.Suffix}");
+                }
+
                 if (tableAttr.View)
                 {
                     instance.ReadOnly();
