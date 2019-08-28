@@ -18,14 +18,16 @@ namespace CoreSharp.NHibernate.Conventions
                     instance.Table(tableAttr.Name);
                 }
 
+                //TODO: unquote, prepend/append, quote
+
                 if (!string.IsNullOrEmpty(tableAttr.Prefix))
                 {
-                    instance.Table($"{tableAttr.Prefix}{instance.TableName}");
+                    instance.Table($"`{tableAttr.Prefix}{instance.TableName.Trim('`')}`");
                 }
 
                 if (!string.IsNullOrEmpty(tableAttr.Suffix))
                 {
-                    instance.Table($"{instance.TableName}{tableAttr.Suffix}");
+                    instance.Table($"`{instance.TableName.Trim('`')}{tableAttr.Suffix}`");
                 }
 
                 if (tableAttr.View)
