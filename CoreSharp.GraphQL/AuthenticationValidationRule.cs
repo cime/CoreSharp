@@ -35,7 +35,7 @@ namespace CoreSharp.GraphQL
                 {
                     var fieldDef = context.TypeInfo.GetFieldDef();
                     if (fieldDef.RequiresPermissions() &&
-                        (!authenticated || !fieldDef.CanAccess(claims)))
+                        (!authenticated || (claims == null || !fieldDef.CanAccess(claims))))
                     {
                         context.ReportError(new ValidationError(
                             context.OriginalQuery,
