@@ -35,7 +35,7 @@ namespace CoreSharp.Breeze.Json
         {
             DefaultContractResolverStateNameTableField = typeof(DefaultContractResolver).GetField("_nameTable", BindingFlags.Instance | BindingFlags.NonPublic);
             var propertyNameTableType = typeof(DefaultContractResolver).Assembly.GetType(
-                "Newtonsoft.Json.Utilities.PropertyNameTable");
+                "Newtonsoft.Json.DefaultJsonNameTable");
             PropertyNameTableAddMethod = propertyNameTableType.GetMethod("Add");
 
             if (DefaultContractResolverStateNameTableField == null)
