@@ -26,11 +26,14 @@ namespace CoreSharp.Identity
 
         public Task<string> GetSecurityStampAsync(TUser user, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
 
-            return _session.Query<TUser>()
-                .Where(x => x.Id == user.Id)
-                .Select(x => x.SecurityStamp)
-                .SingleOrDefaultAsync(cancellationToken);
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            return Task.FromResult(user.SecurityStamp);
         }
     }
 }
