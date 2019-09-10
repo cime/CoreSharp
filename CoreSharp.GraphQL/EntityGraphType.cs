@@ -78,7 +78,7 @@ namespace CoreSharp.GraphQL
             throw new NotSupportedException($"Unsupported type of expression: {expression.GetType().Name}");
         }
 
-        protected virtual IEnumerable<PropertyInfo> GetRegisteredProperties()
+        private IEnumerable<PropertyInfo> GetRegisteredProperties()
         {
             return typeof(TSourceType)
                 .GetProperties(BindingFlags.Public | BindingFlags.Instance)

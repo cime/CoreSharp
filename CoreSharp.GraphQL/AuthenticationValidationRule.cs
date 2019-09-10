@@ -34,7 +34,7 @@ namespace CoreSharp.GraphQL
                 _.Match<Field>(fieldAst =>
                 {
                     var fieldDef = context.TypeInfo.GetFieldDef();
-                    if (fieldDef.RequiresPermissions() &&
+                    if (fieldDef?.RequiresPermissions() == true &&
                         (!authenticated || (claims == null || !fieldDef.CanAccess(claims))))
                     {
                         context.ReportError(new ValidationError(
