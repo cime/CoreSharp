@@ -39,6 +39,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreSharp.NHibernate.CodeLi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreSharp.NHibernate.Generator", "CoreSharp.NHibernate.Generator\CoreSharp.NHibernate.Generator.csproj", "{DF01EFC5-C7D0-4894-A5FE-E31D903EA934}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Analyzers", "Analyzers", "{AB4E90CD-F6FF-4713-AB40-7FF03826EED8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreSharp.Analyzer.NHibernate", "Analyzers\CoreSharp.Analyzer.NHibernate\CoreSharp.Analyzer.NHibernate.csproj", "{ACA1117E-80C4-4500-8D55-6323DCEC0DC9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -120,5 +124,12 @@ Global
 		{DF01EFC5-C7D0-4894-A5FE-E31D903EA934}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF01EFC5-C7D0-4894-A5FE-E31D903EA934}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DF01EFC5-C7D0-4894-A5FE-E31D903EA934}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACA1117E-80C4-4500-8D55-6323DCEC0DC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACA1117E-80C4-4500-8D55-6323DCEC0DC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACA1117E-80C4-4500-8D55-6323DCEC0DC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACA1117E-80C4-4500-8D55-6323DCEC0DC9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{ACA1117E-80C4-4500-8D55-6323DCEC0DC9} = {AB4E90CD-F6FF-4713-AB40-7FF03826EED8}
 	EndGlobalSection
 EndGlobal

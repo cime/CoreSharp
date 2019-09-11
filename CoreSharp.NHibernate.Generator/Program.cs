@@ -75,12 +75,12 @@ namespace CoreSharp.NHibernate.Generator
         {
             var sw = Stopwatch.StartNew();
 
-            Container.AppendToCollection(typeof(IVisitor), typeof(AutoPropertyVisitorVisitor));
-            Container.AppendToCollection(typeof(IVisitor), typeof(VirtualVisitor));
-            Container.AppendToCollection(typeof(IVisitor), typeof(CollectionInitializerVisitor));
-            Container.AppendToCollection(typeof(IVisitor), typeof(CollectionMethodsVisitor));
-            Container.AppendToCollection(typeof(IVisitor), typeof(CodeListVisitor));
-            Container.AppendToCollection(typeof(IVisitor), typeof(MembersOrderVisitor));
+            Container.Collection.Append(typeof(IVisitor), typeof(AutoPropertyVisitorVisitor));
+            Container.Collection.Append(typeof(IVisitor), typeof(VirtualVisitor));
+            Container.Collection.Append(typeof(IVisitor), typeof(CollectionInitializerVisitor));
+            Container.Collection.Append(typeof(IVisitor), typeof(CollectionMethodsVisitor));
+            Container.Collection.Append(typeof(IVisitor), typeof(CodeListVisitor));
+            Container.Collection.Append(typeof(IVisitor), typeof(MembersOrderVisitor));
 
             Console.WriteLine($"Loading Solution {solutionPath}...");
 
@@ -154,7 +154,7 @@ namespace CoreSharp.NHibernate.Generator
                                 {
                                     Name = symbol.Name,
                                     Symbol = symbol,
-                                    TableAttribute = symbol.GetAttributes().Where(x => x.AttributeClass.ToDisplayString() == "PointlessArhitecture.DataAccess.Attributes.TableAttribute").Select(x => new TableAttribute(x)).SingleOrDefault(),
+                                    TableAttribute = symbol.GetAttributes().Where(x => x.AttributeClass.ToDisplayString() == "CoreSharp.DataAccess.Attributes.TableAttribute").Select(x => new TableAttribute(x)).SingleOrDefault(),
                                     Properties = symbol.GetMembers().Where(x => x.Kind == SymbolKind.Property).Select((x) => new PropertyMetadata()
                                         {
                                             Name = x.Name,
