@@ -211,11 +211,7 @@ namespace CoreSharp.Analyzer.NHibernate.CodeFix
                             ForEachStatement(
                                 IdentifierName("var"),
                                 Identifier("item"),
-                                InvocationExpression(
-                                    MemberAccessExpression(
-                                        SyntaxKind.SimpleMemberAccessExpression,
                                         IdentifierName(propertyName),
-                                        IdentifierName("ToList"))),
                                 Block(
                                     SingletonList<StatementSyntax>(
                                         ExpressionStatement(
