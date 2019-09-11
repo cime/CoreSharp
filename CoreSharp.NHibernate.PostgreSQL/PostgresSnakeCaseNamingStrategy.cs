@@ -2,7 +2,7 @@ using System.Text;
 using NHibernate.Cfg;
 using NHibernate.Util;
 
-namespace CoreSharp.NHibernate.Postgresql
+namespace CoreSharp.NHibernate.PostgreSQL
 {
     public class PostgresSnakeCaseNamingStrategy : INamingStrategy
     {

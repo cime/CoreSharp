@@ -1,5 +1,5 @@
 using System.Linq;
-using CoreSharp.NHibernate.Conventions.Postgresql;
+using CoreSharp.NHibernate.PostgreSQL.Conventions;
 using FluentNHibernate.Cfg;
 
 namespace CoreSharp.NHibernate.PostgreSQL.Extensions

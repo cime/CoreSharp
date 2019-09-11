@@ -1,7 +1,7 @@
 ﻿using NHibernate.Cfg;
 using System;
 
-namespace CoreSharp.NHibernate.Postgresql
+namespace CoreSharp.NHibernate.PostgreSQL
 {
     public class PostgresPascalCaseNamingStrategy : INamingStrategy
     {
