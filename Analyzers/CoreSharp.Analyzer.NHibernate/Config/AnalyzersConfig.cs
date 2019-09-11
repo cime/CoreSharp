@@ -13,8 +13,7 @@ namespace CoreSharp.Analyzer.NHibernate.Config
         private static AnalyzersConfig _instance;
 
         public VirtualModifierAnalyzer VirtualModifierAnalyzer { get; set; } = new VirtualModifierAnalyzer();
-        public VirtualModifierAnalyzer PropertyOrderAnalyzer { get; set; } = new VirtualModifierAnalyzer();
-        public SynteticPropertyAnalyzer SynteticPropertyAnalyzer { get; set; } = new SynteticPropertyAnalyzer();
+        public PropertyOrderAnalyzer PropertyOrderAnalyzer { get; set; } = new PropertyOrderAnalyzer();
 
         [XmlArray("ValidTypes")]
         [XmlArrayItem("ValidType")]
@@ -22,7 +21,6 @@ namespace CoreSharp.Analyzer.NHibernate.Config
 
         public List<string> VirtualModifierAnalyzerValidTypes => new List<string>().Concat(ValidTypes ?? new List<string>()).Concat(VirtualModifierAnalyzer?.ValidTypes ?? new List<string>()).Distinct().ToList();
         public List<string> PropertyOrderAnalyzerValidTypes => new List<string>().Concat(ValidTypes ?? new List<string>()).Concat(PropertyOrderAnalyzer?.ValidTypes ?? new List<string>()).Distinct().ToList();
-        public List<string> SynteticPropertyAnalyzerValidTypes => new List<string>().Concat(ValidTypes ?? new List<string>()).Concat(SynteticPropertyAnalyzer?.ValidTypes ?? new List<string>()).Distinct().ToList();
 
         [DebuggerStepThrough]
         public static AnalyzersConfig Deserialize(string content)
@@ -49,13 +47,6 @@ namespace CoreSharp.Analyzer.NHibernate.Config
     }
 
     public class PropertyOrderAnalyzer
-    {
-        [XmlArray("ValidTypes")]
-        [XmlArrayItem("ValidType")]
-        public ValidTypes ValidTypes { get; set; }
-    }
-
-    public class SynteticPropertyAnalyzer
     {
         [XmlArray("ValidTypes")]
         [XmlArrayItem("ValidType")]
