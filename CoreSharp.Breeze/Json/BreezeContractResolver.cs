@@ -119,14 +119,18 @@ namespace CoreSharp.Breeze.Json
                 {
                     var propertyName = ResolvePropertyName(syntheticProp.Name);
 
-                    properties.Add(new JsonProperty
+                    // Skip manually added syntetic properties
+                    if (!properties.Any(x => x.PropertyName == propertyName))
                     {
-                        Readable = true,
-                        Writable = true,
-                        PropertyName = propertyName,
-                        PropertyType = syntheticProp.PkType.ReturnedClass,
-                        ValueProvider = new NHSyntheticPropertyValueProvider(syntheticProp)
-                    });
+                        properties.Add(new JsonProperty
+                        {
+                            Readable = true,
+                            Writable = true,
+                            PropertyName = propertyName,
+                            PropertyType = syntheticProp.PkType.ReturnedClass,
+                            ValueProvider = new NHSyntheticPropertyValueProvider(syntheticProp)
+                        });
+                    }
                 }
             }
 
