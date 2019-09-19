@@ -1,7 +1,7 @@
 using NHibernate;
 using ILoggerFactory = Microsoft.Extensions.Logging.ILoggerFactory;
 
-namespace CoreSharp.NHibernate.Logging
+namespace CoreSharp.NHibernate.Logging.Microsoft
 {
     public static class NHibernateLoggerProviderExtensions
     {

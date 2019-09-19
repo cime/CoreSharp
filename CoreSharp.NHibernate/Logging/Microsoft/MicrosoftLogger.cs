@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using NHibernate;
 
-namespace CoreSharp.NHibernate.Logging
+namespace CoreSharp.NHibernate.Logging.Microsoft
 {
     /// <inheritdoc />
     /// <summary>

@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Logging;
 using NHibernate;
 
-namespace CoreSharp.NHibernate.Logging
+namespace CoreSharp.NHibernate.Logging.Microsoft
 {
     /// <summary>
     /// Implementation of the <see cref="INHibernateLoggerFactory"/> interface
@@ -17,9 +17,9 @@ namespace CoreSharp.NHibernate.Logging
     /// </summary>
     public class MicrosoftLoggerFactory : INHibernateLoggerFactory
     {
-        private readonly Microsoft.Extensions.Logging.ILoggerFactory _factory;
+        private readonly global::Microsoft.Extensions.Logging.ILoggerFactory _factory;
 
-        public MicrosoftLoggerFactory(Microsoft.Extensions.Logging.ILoggerFactory factory)
+        public MicrosoftLoggerFactory(global::Microsoft.Extensions.Logging.ILoggerFactory factory)
         {
             _factory = factory;
         }

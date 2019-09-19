@@ -75,7 +75,7 @@ namespace CoreSharp.NHibernate.Generator.Visitors
             }
 
             // string Name property
-            if (node.ChildNodes().OfType<PropertyDeclarationSyntax>().All(x => x.GetIdentifierValue() != "Name"))
+            if (false && node.ChildNodes().OfType<PropertyDeclarationSyntax>().All(x => x.GetIdentifierValue() != "Name"))
             {
                 node = node.WithMembers(List<MemberDeclarationSyntax>(new[] {
                     PropertyDeclaration(
@@ -95,7 +95,7 @@ namespace CoreSharp.NHibernate.Generator.Visitors
                                         AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
                                             .WithSemicolonToken(Token(SyntaxKind.SemicolonToken))
                                     })))}.Union(node.Members)));
-                }
+            }
 
             return base.VisitClassDeclaration(node);
         }
