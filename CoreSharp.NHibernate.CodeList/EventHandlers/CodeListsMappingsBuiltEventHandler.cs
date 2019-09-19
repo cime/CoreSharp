@@ -17,7 +17,7 @@ using NHibernate.Dialect;
 
 namespace CoreSharp.NHibernate.CodeList.EventHandlers
 {
-    public class HibernateMappingsBuiltEventHandler : IEventHandler<MappingsBuiltEvent>
+    public class CodeListsMappingsBuiltEventHandler : IEventHandler<MappingsBuiltEvent>
     {
         // TODO: configurable...COALESCE works everywhere but is slower than ISNULL which is available only for sql server
         // TODO: COALESCE executes both expression and replacement - try with CASE
@@ -101,7 +101,7 @@ namespace CoreSharp.NHibernate.CodeList.EventHandlers
                     }
                     // Here the table name is already altered
                     var childMapping = lazyTypeMap.Value[names.ChildType];
-                    var childTableName = childMapping.TableName;
+                    var childTableName = $"{childMapping.Schema}.{childMapping.TableName}";
                     propMap.Set(o => o.Formula, Layer.UserSupplied,
                         string.Format(_localizeFormula,
                             attr.ColumnName ?? ConvertQuotes(GetColumnName(propMap.Name)),
@@ -172,12 +172,12 @@ namespace CoreSharp.NHibernate.CodeList.EventHandlers
             return col;
         }
 
-        private string GetColumnName(string name)
+        protected string GetColumnName(string name)
         {
             return NamingStrategy.ColumnName(name);
         }
 
-        private string ConvertQuotes(string name)
+        protected virtual string ConvertQuotes(string name)
         {
             if (name.StartsWith("`") || name.EndsWith("`"))
             {
@@ -216,7 +216,7 @@ namespace CoreSharp.NHibernate.CodeList.EventHandlers
             return false;
         }
 
-        private string GetTableName(ClassMapping classMap, CodeListConfigurationAttribute attr = null)
+        protected virtual string GetTableName(ClassMapping classMap, CodeListConfigurationAttribute attr = null)
         {
             attr = attr ?? classMap.Type.GetCustomAttribute<CodeListConfigurationAttribute>(false) ?? new CodeListConfigurationAttribute();
             var tableName = classMap.TableName.Trim('`').TrimStart(Dialect.OpenQuote).TrimEnd(Dialect.CloseQuote);
