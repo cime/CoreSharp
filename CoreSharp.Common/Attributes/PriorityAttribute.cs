@@ -4,10 +4,10 @@ namespace CoreSharp.Common.Attributes
 {
     public enum Priority
     {
-        Critical = -10000,
-        High = -1000,
+        Critical = 10000,
+        High = 1000,
         Normal = 0,
-        Low = 10000
+        Low = -10000
     }
 
     [AttributeUsage(AttributeTargets.Class)]
@@ -20,7 +20,7 @@ namespace CoreSharp.Common.Attributes
             Priority = (int)priority;
         }
 
-        public PriorityAttribute(short priority = 0)
+        public PriorityAttribute(int priority = 0)
         {
             Priority = priority;
         }
