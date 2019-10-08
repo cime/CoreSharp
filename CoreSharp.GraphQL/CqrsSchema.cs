@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -77,6 +79,13 @@ namespace CoreSharp.GraphQL
                 var commandType = genericArguments[0];
                 var resultType = genericArguments[1];
 
+                var isCollection = resultType != typeof(string) && typeof(IEnumerable).IsAssignableFrom(resultType);
+
+                if (isCollection)
+                {
+                    resultType = resultType.GetGenericArguments()[0];
+                }
+
                 var descriptionAttribute = commandType.GetCustomAttribute<DescriptionAttribute>();
                 var exposeAttribute = commandType.GetCustomAttribute<ExposeGraphQLAttribute>();
                 var authorizeAttribute = commandType.GetCustomAttribute<AuthorizeAttribute>();
@@ -107,7 +116,7 @@ namespace CoreSharp.GraphQL
                                 new FieldType()
                                 {
                                     Name = propertyInfo.Name.ToCamelCase(),
-                                    Type = propertyInfo.PropertyType.GetGraphTypeFromType(),
+                                    Type = propertyInfo.PropertyType.GetGraphTypeFromType(IsNullableProperty(propertyInfo)),
                                     Description = propertyInfo.GetCustomAttribute<DescriptionAttribute>()?.Description
                                 }
                             });
@@ -122,6 +131,15 @@ namespace CoreSharp.GraphQL
                     var returnObjectType = typeof(EntityGraphType<>).MakeGenericType(resultType);
                     resultGqlType = (IGraphType)Activator.CreateInstance(returnObjectType, null);
                     resultGqlType.Name = resultTypeName;
+
+                    if (isCollection)
+                    {
+                        var name = resultGqlType.Name;
+                        var listGqlType = (ListGraphType) Activator.CreateInstance(typeof(ListGraphType<>).MakeGenericType(returnObjectType), null);
+                        listGqlType.ResolvedType = resultGqlType;
+                        resultGqlType = (IGraphType) listGqlType;
+                        resultGqlType.Name = "ListOf" + name;
+                    }
 
                     if (authorizeAttribute != null)
                     {
@@ -189,6 +207,13 @@ namespace CoreSharp.GraphQL
                 var queryType = genericArguments[0];
                 var resultType = genericArguments[1];
 
+                var isCollection = resultType != typeof(string) && typeof(IEnumerable).IsAssignableFrom(resultType);
+
+                if (isCollection)
+                {
+                    resultType = resultType.GetGenericArguments()[0];
+                }
+
                 var descriptionAttribute = queryType.GetCustomAttribute<DescriptionAttribute>();
                 var exposeAttribute = queryType.GetCustomAttribute<ExposeGraphQLAttribute>();
                 var authorizeAttribute = queryType.GetCustomAttribute<AuthorizeAttribute>();
@@ -218,7 +243,7 @@ namespace CoreSharp.GraphQL
                             new FieldType()
                             {
                                 Name = GetNormalizedFieldName(propertyInfo.Name),
-                                Type = propertyInfo.PropertyType.GetGraphTypeFromType(),
+                                Type = propertyInfo.PropertyType.GetGraphTypeFromType(IsNullableProperty(propertyInfo)),
                                 Description = propertyInfo.GetCustomAttribute<DescriptionAttribute>()?.Description
                             }
                         });
@@ -233,6 +258,15 @@ namespace CoreSharp.GraphQL
                     var returnObjectType = typeof(EntityGraphType<>).MakeGenericType(resultType);
                     resultGqlType = (IGraphType)Activator.CreateInstance(returnObjectType, null);
                     resultGqlType.Name = resultTypeName;
+
+                    if (isCollection)
+                    {
+                        var name = resultGqlType.Name;
+                        var listGqlType = (ListGraphType) Activator.CreateInstance(typeof(ListGraphType<>).MakeGenericType(returnObjectType), null);
+                        listGqlType.ResolvedType = resultGqlType;
+                        resultGqlType = (IGraphType) listGqlType;
+                        resultGqlType.Name = "ListOf" + name;
+                    }
 
                     if (authorizeAttribute != null)
                     {
@@ -291,6 +325,17 @@ namespace CoreSharp.GraphQL
                 .Select(x => global::GraphQL.StringExtensions.ToPascalCase(x));
 
             return string.Join("", parts).ToCamelCase();
+        }
+
+        private static bool IsNullableProperty(PropertyInfo propertyInfo)
+        {
+            if (Attribute.IsDefined(propertyInfo, typeof(RequiredAttribute))) return false;
+            if (Attribute.IsDefined(propertyInfo, typeof(NotNullAttribute))) return false;
+            if (Attribute.IsDefined(propertyInfo, typeof(NotNullOrEmptyAttribute))) return false;
+
+            if (!propertyInfo.PropertyType.IsValueType) return true;
+
+            return propertyInfo.PropertyType.IsGenericType && propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>);
         }
     }
 }

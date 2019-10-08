@@ -89,7 +89,7 @@ namespace CoreSharp.GraphQL.AspNetCore
                 x.Query = gqlRequest.Query;
                 x.Inputs = gqlRequest.GetInputs();
                 x.UserContext = _userContextBuilder.BuildContext();
-                x.ValidationRules = new[] { new AuthenticationValidationRule() }.Concat(DocumentValidator.CoreRules());
+                x.ValidationRules = new[] { new AuthenticationValidationRule() }.Concat(DocumentValidator.CoreRules);
                 x.CancellationToken = context.RequestAborted;
                 x.ComplexityConfiguration = _complexityConfigurationFactory.GetComplexityConfiguration();
             });
