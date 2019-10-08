@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.DependencyInjection;
 using NHibernate;
 using NHibernate.Linq;
+using NHibernate.Extensions.Linq;
 
 namespace CoreSharp.Breeze.AspNetCore.Attributes
 {
@@ -69,8 +70,14 @@ namespace CoreSharp.Breeze.AspNetCore.Attributes
             {
                 Formatters = new FormatterCollection<IOutputFormatter>
                 {
-                    new JsonOutputFormatter(breezeConfig.GetJsonSerializerSettings(),
-                        context.HttpContext.RequestServices.GetRequiredService<ArrayPool<char>>())
+                    #if NETCOREAPP3_0
+                        new NewtonsoftJsonOutputFormatter(breezeConfig.GetJsonSerializerSettings(),
+                            context.HttpContext.RequestServices.GetRequiredService<ArrayPool<char>>(),
+                            context.HttpContext.RequestServices.GetRequiredService<MvcOptions>())
+                    #else
+                        new JsonOutputFormatter(breezeConfig.GetJsonSerializerSettings(),
+                            context.HttpContext.RequestServices.GetRequiredService<ArrayPool<char>>())
+                    #endif
                 }
             };
 
@@ -127,7 +134,14 @@ namespace CoreSharp.Breeze.AspNetCore.Attributes
         {
             var provider = queryable?.Provider as DefaultQueryProvider;
 
-            return provider?.Session as ISession;
+            if (provider != null)
+            {
+                return provider?.Session as ISession;
+            }
+
+            var provider2 = queryable?.Provider as IncludeQueryProvider;
+
+            return provider2?.Session as ISession;
         }
     }
 }
