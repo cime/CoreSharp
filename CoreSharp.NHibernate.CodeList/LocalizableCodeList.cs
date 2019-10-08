@@ -14,6 +14,8 @@ namespace CoreSharp.NHibernate.CodeList
         where TCodeListTranslation : class, ILocalizableCodeListLanguage<TLanguage, TCodeList, TCodeListTranslation>
         where TCodeList : LocalizableCodeList<TLanguage, TCodeList, TCodeListTranslation>
     {
+        private static readonly DateTime MinDate = new DateTime(1900, 1, 1, 0, 0, 0);
+
         public virtual ISet<TCodeListTranslation> Translations { get; set; } = new HashSet<TCodeListTranslation>();
 
         public virtual bool Active { get; set; } = true;
@@ -31,7 +33,7 @@ namespace CoreSharp.NHibernate.CodeList
         // Id can be changed via Code so we have to check CreatedDate
         public override bool IsTransient()
         {
-            return CreatedDate == DateTime.MinValue;
+            return CreatedDate < MinDate;
         }
     }
 }
