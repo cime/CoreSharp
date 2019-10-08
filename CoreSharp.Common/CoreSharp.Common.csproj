@@ -18,7 +18,7 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
-        <PackageReference Include="NGettext" Version="0.6.3" />
+        <PackageReference Include="NGettext" Version="0.6.4" />
         <PackageReference Include="SimpleInjector" Version="4.6.0" />
     </ItemGroup>
 

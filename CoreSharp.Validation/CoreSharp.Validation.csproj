@@ -15,7 +15,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="FluentValidation" Version="8.4.0" />
+        <PackageReference Include="FluentValidation" Version="8.5.0" />
         <PackageReference Include="SimpleInjector" Version="4.6.0" />
     </ItemGroup>
 
