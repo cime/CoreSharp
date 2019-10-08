@@ -38,23 +38,6 @@ namespace CoreSharp.NHibernate.Generator.Visitors
             _projectMetadata = projectMetadata;
         }
 
-        public override SyntaxNode VisitCompilationUnit(CompilationUnitSyntax node)
-        {
-            var compilationUnit = (CompilationUnitSyntax) base.VisitCompilationUnit(node);
-
-            if (_hasChanges)
-            {
-                var usings = compilationUnit.Usings;
-                if (!usings.Any(x => x.ToFullString().Contains("System.Linq;")))
-                {
-                    usings = usings.Add(UsingDirective(QualifiedName(IdentifierName("System"), IdentifierName("Linq"))));
-                }
-                compilationUnit = compilationUnit.WithUsings(SyntaxNodeExtensions.SortUsings(usings, true));
-            }
-
-            return compilationUnit;
-        }
-
         public override SyntaxNode VisitClassDeclaration(ClassDeclarationSyntax node)
         {
             if (!_documentMetadata.Classes.Any(x => x.Name == node.GetIdentifierValue()))
@@ -273,11 +256,7 @@ namespace CoreSharp.NHibernate.Generator.Visitors
                             ForEachStatement(
                                 IdentifierName("var"),
                                 Identifier("item"),
-                                InvocationExpression(
-                                    MemberAccessExpression(
-                                        SyntaxKind.SimpleMemberAccessExpression,
-                                        IdentifierName(propertyName),
-                                        IdentifierName("ToList"))),
+                                IdentifierName(propertyName),
                                 Block(
                                     SingletonList<StatementSyntax>(
                                         ExpressionStatement(
