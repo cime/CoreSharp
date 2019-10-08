@@ -1,17 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using NHibernate.Linq;
 
 namespace CoreSharp.Breeze.Query {
   public static class EntityQueryExtensions {
-    private static readonly MethodInfo IncludeMethod;
-
-    static EntityQueryExtensions()
-    {
-      IncludeMethod = typeof(global::NHibernate.Linq.LinqExtensions)
-          .GetMethods().First(m => m.Name == "Include" && !m.IsGenericMethod && m.GetParameters().Length == 2);
-    }
-
     public static IQueryable ApplyWhere(this EntityQuery eq, IQueryable queryable, Type eleType) {
       if (eq.WherePredicate != null) {
         queryable = QueryBuilder.ApplyWhere(queryable, eleType, eq.WherePredicate);
@@ -48,13 +41,13 @@ namespace CoreSharp.Breeze.Query {
     }
 
     public static IQueryable ApplyExpand(this EntityQuery eq, IQueryable queryable, Type eleType) {
-      if (eq.ExpandClause != null && IncludeMethod != null)
+      if (eq.ExpandClause != null)
       {
         var expands = eq.ExpandClause.PropertyPaths.Select(x => x.Replace("/", ".")).Where(x => !eq.ExpandClause.PropertyPaths.Any(e => e.StartsWith($"{x}."))).ToList();
 
         foreach (var expand in expands)
         {
-          queryable = (IQueryable)IncludeMethod.Invoke(null, new object[] { queryable, expand });
+          queryable = queryable.Include(expand);
         }
       }
       return queryable;
