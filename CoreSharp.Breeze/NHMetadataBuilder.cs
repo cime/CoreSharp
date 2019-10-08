@@ -525,7 +525,9 @@ namespace CoreSharp.Breeze
 
             var relatedEntityTypeName = relatedEntityType.Name;
 
-            var propertyType = relatedEntityType.GetProperty(propName, BindingFlags.Instance | BindingFlags.Public);
+            // TODO: get property's real name - it might not be equal to column name
+            var propertyName = columnNames[0].EndsWith("Id") ? columnNames[0].Substring(0, columnNames[0].Length - 2) : columnNames[0];
+            var propertyType = relatedEntityType.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public);
 
             if (propertyType?.DeclaringType != null)
             {

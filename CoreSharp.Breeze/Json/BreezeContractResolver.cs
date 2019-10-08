@@ -22,7 +22,7 @@ namespace CoreSharp.Breeze.Json
     /// </summary>
     public class BreezeContractResolver : DefaultContractResolver
     {
-        private Dictionary<Type, IClassMetadata> _entitiesMetadata = new Dictionary<Type, IClassMetadata>();
+        private ConcurrentDictionary<Type, IClassMetadata> _entitiesMetadata = new ConcurrentDictionary<Type, IClassMetadata>();
 
         private static readonly FieldInfo DefaultContractResolverStateNameTableField;
         private static readonly MethodInfo PropertyNameTableAddMethod;
