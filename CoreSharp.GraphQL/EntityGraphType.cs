@@ -24,7 +24,7 @@ namespace CoreSharp.GraphQL
         //where TSourceType : IEntity
     {
         // ReSharper disable once StaticMemberInGenericType
-        private static readonly Type BaseEntityType = typeof(IEntity);
+        // private static readonly Type BaseEntityType = typeof(IEntity);
 
         /// <summary>
         /// Creates a GraphQL type by specifying fields to exclude from registration.
@@ -106,10 +106,10 @@ namespace CoreSharp.GraphQL
                 return true;
             }
 
-            if (!BaseEntityType.IsAssignableFrom(propertyType))
+            /*if (!BaseEntityType.IsAssignableFrom(propertyType))
             {
                 return false;
-            }
+            }*/
 
             if (firstCall)
             {

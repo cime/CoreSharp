@@ -97,7 +97,7 @@ namespace CoreSharp.GraphQL
 
                 IInputObjectGraphType? inputGqlType = null;
 
-                var properties = commandType.GetProperties(BindingFlags.Instance | BindingFlags.Public);
+                var properties = commandType.GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => x.PropertyType != typeof(ResolveFieldContext));
 
                 if (properties.Any())
                 {
@@ -223,15 +223,13 @@ namespace CoreSharp.GraphQL
                     continue;
                 }
 
-                var properties = queryType.GetProperties(BindingFlags.Instance | BindingFlags.Public);
+                var properties = queryType.GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => x.PropertyType != typeof(ResolveFieldContext));
                 IInputObjectGraphType? inputGqlType = null;
 
                 if (properties.Any())
                 {
-                    var inputObjectType = typeof(InputObjectGraphType<>).MakeGenericType(queryType);
+                    var inputObjectType = typeof(AutoInputGraphType<>).MakeGenericType(queryType);
                     inputGqlType = (IInputObjectGraphType)Activator.CreateInstance(inputObjectType);
-
-                    inputGqlType.Name = queryType.Name;
                     inputGqlType.Description = descriptionAttribute?.Description;
 
                     var addFieldMethod = inputGqlType.GetType().GetMethod("AddField");
@@ -254,8 +252,8 @@ namespace CoreSharp.GraphQL
 
                 if (!GraphTypeTypeRegistry.Contains(resultType))
                 {
-                    var resultTypeName = resultType.Name;
-                    var returnObjectType = typeof(EntityGraphType<>).MakeGenericType(resultType);
+                    var resultTypeName = GetTypeName(resultType);
+                    var returnObjectType = typeof(AutoObjectGraphType<>).MakeGenericType(resultType);
                     resultGqlType = (IGraphType)Activator.CreateInstance(returnObjectType, null);
                     resultGqlType.Name = resultTypeName;
 
@@ -313,6 +311,19 @@ namespace CoreSharp.GraphQL
             }
         }
 
+        protected virtual string GetTypeName(Type type)
+        {
+            if (type.IsGenericType)
+            {
+                var genericTypeName = type.Name.Remove(type.Name.IndexOf('`'));
+                var genericParametersName = type.GetGenericArguments().Select(x => x.Name).ToList();
+
+                return genericTypeName + string.Join("", genericParametersName);
+            }
+
+            return type.Name;
+        }
+
         protected virtual string? GetNormalizedFieldName(string? value)
         {
             if (string.IsNullOrEmpty(value))
@@ -327,7 +338,7 @@ namespace CoreSharp.GraphQL
             return string.Join("", parts).ToCamelCase();
         }
 
-        private static bool IsNullableProperty(PropertyInfo propertyInfo)
+        protected virtual bool IsNullableProperty(PropertyInfo propertyInfo)
         {
             if (Attribute.IsDefined(propertyInfo, typeof(RequiredAttribute))) return false;
             if (Attribute.IsDefined(propertyInfo, typeof(NotNullAttribute))) return false;

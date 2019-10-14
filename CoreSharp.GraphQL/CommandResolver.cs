@@ -31,6 +31,16 @@ namespace CoreSharp.GraphQL
             var variableValue = context.Arguments?.ContainsKey("command") == true ? JsonConvert.SerializeObject(context.Arguments["command"], _jsonSerializerSettings) : "{}";
             var command = JsonConvert.DeserializeObject(variableValue, _commandType, _jsonSerializerSettings);
 
+            if (command != null)
+            {
+                var contextProperties = command.GetType().GetProperties().Where(x => x.PropertyType == typeof(ResolveFieldContext) && x.CanWrite).ToList();
+
+                foreach (var contextProperty in contextProperties)
+                {
+                    contextProperty.SetValue(command, context);
+                }
+            }
+
             var isAsync = _commandHandlerType.IsAssignableToGenericType(typeof(IAsyncCommandHandler<>)) ||
                           _commandHandlerType.IsAssignableToGenericType(typeof(IAsyncCommandHandler<,>));
 
