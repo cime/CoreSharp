@@ -10,6 +10,7 @@ using CoreSharp.Common.Attributes;
 using CoreSharp.Cqrs.Command;
 using CoreSharp.Cqrs.Query;
 using CoreSharp.GraphQL.Attributes;
+using CoreSharp.GraphQL.Configuration;
 using GraphQL;
 using GraphQL.Types;
 using GraphQL.Utilities;
@@ -21,14 +22,16 @@ namespace CoreSharp.GraphQL
     public abstract class CqrsSchema : Schema
     {
         private readonly Container _container;
+        private readonly IGraphQLConfiguration _configuration;
         private JsonSerializerSettings? _jsonSerializerSettings;
 
         public virtual bool AllowNullQuery => false;
         public virtual bool AllowNullCommand => false;
 
-        public CqrsSchema(Container container)
+        public CqrsSchema(Container container, IGraphQLConfiguration configuration, IServiceProvider provider) : base(provider)
         {
             _container = container;
+            _configuration = configuration;
 
             Query = new ObjectGraphType()
             {
@@ -44,7 +47,8 @@ namespace CoreSharp.GraphQL
 
         public virtual JsonSerializerSettings GetJsonSerializerSettings()
         {
-            if (_jsonSerializerSettings == null) {
+            if (_jsonSerializerSettings == null)
+            {
                 _jsonSerializerSettings = new JsonSerializerSettings()
                 {
                     ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
@@ -97,7 +101,7 @@ namespace CoreSharp.GraphQL
 
                 IInputObjectGraphType? inputGqlType = null;
 
-                var properties = commandType.GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => x.PropertyType != typeof(ResolveFieldContext));
+                var properties = commandType.GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => x.PropertyType != typeof(ResolveFieldContext)).ToList();
 
                 if (properties.Any())
                 {
@@ -128,8 +132,8 @@ namespace CoreSharp.GraphQL
                 if (!GraphTypeTypeRegistry.Contains(resultType))
                 {
                     var resultTypeName = resultType.Name;
-                    var returnObjectType = typeof(EntityGraphType<>).MakeGenericType(resultType);
-                    resultGqlType = (IGraphType)Activator.CreateInstance(returnObjectType, null);
+                    var returnObjectType = typeof(AutoObjectGraphType<>).MakeGenericType(resultType);
+                    resultGqlType = (IGraphType)_container.GetInstance(returnObjectType);
                     resultGqlType.Name = resultTypeName;
 
                     if (isCollection)
@@ -229,7 +233,7 @@ namespace CoreSharp.GraphQL
                 if (properties.Any())
                 {
                     var inputObjectType = typeof(AutoInputGraphType<>).MakeGenericType(queryType);
-                    inputGqlType = (IInputObjectGraphType)Activator.CreateInstance(inputObjectType);
+                    inputGqlType = (IInputObjectGraphType)_container.GetInstance(inputObjectType);
                     inputGqlType.Description = descriptionAttribute?.Description;
 
                     var addFieldMethod = inputGqlType.GetType().GetMethod("AddField");
@@ -254,7 +258,7 @@ namespace CoreSharp.GraphQL
                 {
                     var resultTypeName = GetTypeName(resultType);
                     var returnObjectType = typeof(AutoObjectGraphType<>).MakeGenericType(resultType);
-                    resultGqlType = (IGraphType)Activator.CreateInstance(returnObjectType, null);
+                    resultGqlType = (IGraphType)_container.GetInstance(returnObjectType);
                     resultGqlType.Name = resultTypeName;
 
                     if (isCollection)

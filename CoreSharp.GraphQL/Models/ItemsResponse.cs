@@ -102,7 +102,7 @@ namespace CoreSharp.GraphQL.Models
         {
             get
             {
-                return _page != null && (_page.Size * (_page.Number + 1)) < Count;
+                return _page != null && _page.Skip + _page.Take + 1 < Count;
             }
         }
 
@@ -110,7 +110,7 @@ namespace CoreSharp.GraphQL.Models
         {
             get
             {
-                return _page != null && _page.Number > 0;
+                return _page != null && _page.Skip > 0;
             }
         }
 

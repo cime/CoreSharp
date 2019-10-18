@@ -10,7 +10,7 @@ namespace System.Linq
         {
             if (page != null)
             {
-                queryable = queryable.Skip(page.Size * page.Number).Take(page.Size);
+                queryable = queryable.Skip(page.Skip).Take(page.Take);
             }
 
             return queryable;

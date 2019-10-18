@@ -6,6 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using CoreSharp.Common.Attributes;
+using CoreSharp.GraphQL.Configuration;
 using GraphQL;
 using GraphQL.Types;
 using GraphQL.Utilities;
@@ -14,9 +15,16 @@ using DefaultValueAttribute = CoreSharp.Common.Attributes.DefaultValueAttribute;
 namespace CoreSharp.GraphQL
 {
     public class AutoInputGraphType<TSourceType> : InputObjectGraphType<TSourceType>
+        where TSourceType : class
     {
-        public AutoInputGraphType()
+        private readonly IGraphQLConfiguration _configuration;
+        private readonly ITypeConfiguration _typeConfiguration;
+
+        public AutoInputGraphType(IGraphQLConfiguration configuration)
         {
+            _configuration = configuration;
+            _typeConfiguration = _configuration.GetModelConfiguration<TSourceType>();
+
             Name = GetTypeName(typeof(TSourceType)) + "Input";
 
             Metadata["Type"] = typeof(TSourceType);
@@ -25,9 +33,11 @@ namespace CoreSharp.GraphQL
 
             foreach (var propertyInfo in properties)
             {
+                var fieldConfiguration = _typeConfiguration.GetFieldConfiguration(propertyInfo.Name);
+
                 var field = Field(
                     type: propertyInfo.PropertyType.ToGraphType(),
-                    name: GetFieldName(propertyInfo),
+                    name: fieldConfiguration?.FieldName ?? GetFieldName(propertyInfo),
                     description: propertyInfo.Description(),
                     deprecationReason: propertyInfo.ObsoleteMessage()
                 );
@@ -86,25 +96,37 @@ namespace CoreSharp.GraphQL
         {
             return typeof(TSourceType)
                 .GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                .Where(p => IsEnabledForRegister(p.PropertyType, true));
+                .Where(p => IsEnabledForRegister(p, p.PropertyType, true));
         }
 
-        private static bool IsEnabledForRegister(Type propertyType, bool firstCall)
+        protected virtual bool IsEnabledForRegister(PropertyInfo propertyInfo, Type propertyType, bool firstCall)
         {
+            if (propertyInfo.GetCustomAttribute<IgnoreAttribute>() != null)
+            {
+                return false;
+            }
+
             if (propertyType == typeof(string)) return true;
 
             if (propertyType.IsValueType) return true; // TODO: requires discussion: Nullable<T>, enums, any struct
 
             if (GraphTypeTypeRegistry.Contains(propertyType)) return true;
 
+            if (propertyType == typeof(ResolveFieldContext)) return false;
+
             if (firstCall)
             {
                 var realType = GetRealType(propertyType);
                 if (realType != propertyType)
-                    return IsEnabledForRegister(realType, false);
+                    return IsEnabledForRegister(propertyInfo, realType, false);
             }
 
-            if (propertyType == typeof(ResolveFieldContext)) return false;
+            var fieldConfiguration = _typeConfiguration.GetFieldConfiguration(propertyInfo.Name);
+
+            if (fieldConfiguration?.Ignored == true || fieldConfiguration?.Input == false)
+            {
+                return false;
+            }
 
             if (!propertyType.IsValueType && propertyType.IsClass)
             {
@@ -131,7 +153,9 @@ namespace CoreSharp.GraphQL
 
             if (propertyType != typeof(string) && typeof(IEnumerable).IsAssignableFrom(propertyType))
             {
-                return propertyType.GetEnumerableElementType();
+                var genericArguments = propertyType.GetGenericArguments();
+
+                return genericArguments.Any() ? genericArguments.First() : typeof(object);
             }
 
             return propertyType;
