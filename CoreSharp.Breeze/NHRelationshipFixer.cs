@@ -3,9 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using CoreSharp.Breeze.Comparers;
 using CoreSharp.Breeze.Extensions;
 using NHibernate;
+using NHibernate.Engine;
 using NHibernate.Hql;
 using NHibernate.Metadata;
 using NHibernate.Persister.Entity;
@@ -191,33 +193,47 @@ namespace CoreSharp.Breeze
             //We have to set the properties from the client object
             var propNames = meta.PropertyNames;
             var propTypes = meta.PropertyTypes;
-
-            for (var i = 0; i < propNames.Length; i++)
+            
+            using (var childSession = _session.SessionWithOptions().Connection().OpenSession())
             {
-                var propType = propTypes[i];
-                var propName = propNames[i];
-                if (propType.IsAssociationType)
-                    continue;
-                if (propType.IsComponentType)
+                for (var i = 0; i < propNames.Length; i++)
                 {
-                    var compType = (ComponentType)propType;
-                    var compPropNames = compType.PropertyNames;
-                    var compPropTypes = compType.Subtypes;
-                    var component = GetPropertyValue(meta, entityInfo.Entity, propName);
-                    var compValues = compType.GetPropertyValues(component);
-                    for (var j = 0; j < compPropNames.Length; j++)
+                    var propType = propTypes[i];
+                    var propName = propNames[i];
+                    if (propType is IAssociationType associationType)
                     {
-                        var compPropType = compPropTypes[j];
-                        if (!compPropType.IsAssociationType) continue;
-                        compValues[j] = null;
+                        if (new[] { "Id", "Code"}.Any(x => entityInfo.UnmappedValuesMap.ContainsKey(propName + x)))
+                        {
+                            var associatedEntityName = associationType.GetAssociatedEntityName((ISessionFactoryImplementor) _session.SessionFactory);
+                            var associatedEntityMetadata = _session.SessionFactory.GetClassMetadata(associatedEntityName);
+                            var associatedEntityValue = GetPropertyValue(meta, entityInfo.Entity, propName);
+                            if (associatedEntityValue != null)
+                            {
+                                clientEntity.SetMemberValue(propName, childSession.Load(associatedEntityName, GetPropertyValue(associatedEntityMetadata,associatedEntityValue, null)));
+                            }
+                        }
                     }
-                    var clientCompVal = GetPropertyValue(meta, clientEntity, propName);
-                    compType.SetPropertyValues(clientCompVal, compValues);
-                }
-                else
-                {
-                    var val = meta.GetPropertyValue(entityInfo.Entity, propName);
-                    meta.SetPropertyValue(clientEntity, propName, val);
+                    else if (propType.IsComponentType)
+                    {
+                        var compType = (ComponentType)propType;
+                        var compPropNames = compType.PropertyNames;
+                        var compPropTypes = compType.Subtypes;
+                        var component = GetPropertyValue(meta, entityInfo.Entity, propName);
+                        var compValues = compType.GetPropertyValues(component);
+                        for (var j = 0; j < compPropNames.Length; j++)
+                        {
+                            var compPropType = compPropTypes[j];
+                            if (!compPropType.IsAssociationType) continue;
+                            compValues[j] = null;
+                        }
+                        var clientCompVal = GetPropertyValue(meta, clientEntity, propName);
+                        compType.SetPropertyValues(clientCompVal, compValues);
+                    }
+                    else
+                    {
+                        var val = meta.GetPropertyValue(entityInfo.Entity, propName);
+                        meta.SetPropertyValue(clientEntity, propName, val);
+                    }
                 }
             }
             // TODO: update unmapped properties
