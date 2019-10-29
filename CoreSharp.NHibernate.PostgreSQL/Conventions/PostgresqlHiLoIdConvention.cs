@@ -1,18 +1,25 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using CoreSharp.Common.Attributes;
 using CoreSharp.DataAccess.Attributes;
 using FluentNHibernate.Conventions;
+using FluentNHibernate.Conventions.Inspections;
 using FluentNHibernate.Conventions.Instances;
+using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NHibernate.Mapping;
 
 namespace CoreSharp.NHibernate.PostgreSQL.Conventions
 {
-    public class PostgresqlHiLoIdConvention : IIdConvention
+    [Priority(Priority.Low)]
+    public class PostgresqlHiLoIdConvention : IClassConvention, IIdConvention
     {
+        private readonly global::NHibernate.Cfg.Configuration _configuration;
+        private readonly INamingStrategy _namingStrategy;
         private const string NextHiValueColumnName = "next_hi_value";
         private const string TableColumnName = "entity";
         private static readonly string HiLoIdentityTableName = "public.hi_lo_identity"; // TODO: configurable schema
@@ -25,6 +32,19 @@ namespace CoreSharp.NHibernate.PostgreSQL.Conventions
                 typeof (PostgreSQL83Dialect).FullName,
                 typeof (PostgreSQLDialect).FullName
             };
+        private static readonly ConcurrentDictionary<Type, IClassInstance> ClassInstances = new ConcurrentDictionary<Type, IClassInstance>();
+        private static readonly ConcurrentDictionary<Type, string> FullNames = new ConcurrentDictionary<Type, string>();
+
+        public PostgresqlHiLoIdConvention(global::NHibernate.Cfg.Configuration configuration)
+        {
+            _configuration = configuration;
+            _namingStrategy = configuration.NamingStrategy;
+        }
+
+        public void Apply(IClassInstance instance)
+        {
+            ClassInstances[instance.EntityType] = instance;
+        }
 
         public void Apply(IIdentityInstance instance)
         {
@@ -41,8 +61,18 @@ namespace CoreSharp.NHibernate.PostgreSQL.Conventions
                 maxLo = hiLoAttribute.Size.ToString();
             }
 
+            var classInstance = ClassInstances.ContainsKey(instance.EntityType) ? ClassInstances[instance.EntityType] : null;
+            var fullName = GetFullName(classInstance);
+            FullNames[instance.EntityType] = fullName;
+
             instance.GeneratedBy.HiLo(HiLoIdentityTableName, NextHiValueColumnName, maxLo, builder =>
-                builder.AddParam("where", $"{TableColumnName} = '[{instance.EntityType.Name}]'"));
+                builder.AddParam("where", $"{TableColumnName} = '{fullName}'"));
+        }
+
+        public string GetFullName(IClassInstance classInstance)
+        {
+            return string.Join(".", new [] { _namingStrategy.TableName(((IClassInspector)classInstance).Schema ?? "public"), _namingStrategy.TableName(classInstance.TableName.TrimStart('`').TrimEnd('`')) }
+                .Where(x => !string.IsNullOrEmpty(x)));
         }
 
         public static void SchemaCreate(global::NHibernate.Cfg.Configuration config)
@@ -55,9 +85,11 @@ namespace CoreSharp.NHibernate.PostgreSQL.Conventions
             script.AppendFormat("CREATE INDEX ix_{0}_{1} ON {0} (Entity);", HiLoIdentityTableName.Replace("public.", ""), TableColumnName);
             script.AppendLine();
 
-            foreach (var entityName in config.ClassMappings.Select(m => m.MappedClass != null ? m.MappedClass.Name : m.Table.Name).Distinct())
+            var fullNames = FullNames.Values.ToList();
+
+            foreach (var entityName in fullNames)
             {
-                script.AppendFormat("INSERT INTO {0} ({1}, {2}) VALUES ('[{3}]', 0);", HiLoIdentityTableName, TableColumnName, NextHiValueColumnName, entityName);
+                script.AppendFormat("INSERT INTO {0} ({1}, {2}) VALUES ('{3}', 0);", HiLoIdentityTableName, TableColumnName, NextHiValueColumnName, entityName);
                 script.AppendLine();
             }
 
