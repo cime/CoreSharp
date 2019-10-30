@@ -193,7 +193,7 @@ namespace CoreSharp.Breeze
             //We have to set the properties from the client object
             var propNames = meta.PropertyNames;
             var propTypes = meta.PropertyTypes;
-            
+
             using (var childSession = _session.SessionWithOptions().Connection().OpenSession())
             {
                 for (var i = 0; i < propNames.Length; i++)
