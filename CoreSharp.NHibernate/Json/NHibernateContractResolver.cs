@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -13,6 +14,7 @@ namespace CoreSharp.NHibernate.Json
     public class NHibernateContractResolver : CamelCasePropertyNamesContractResolver
     {
         private static readonly Type EntityType = typeof(IEntity);
+        private static readonly Type EnumerableType = typeof(IEnumerable);
 
         protected override IList<JsonProperty> CreateProperties(Type type, MemberSerialization memberSerialization)
         {
@@ -22,7 +24,8 @@ namespace CoreSharp.NHibernate.Json
             foreach (var member in members)
             {
                 var property = CreateProperty(member, memberSerialization);
-                if (EntityType.IsAssignableFrom(property.PropertyType))
+                if (EntityType.IsAssignableFrom(property.PropertyType) ||
+                    (property.PropertyType != typeof(string) && EnumerableType.IsAssignableFrom(property.PropertyType)))
                 {
                     property.ShouldSerialize = (x) =>
                     {
@@ -34,6 +37,7 @@ namespace CoreSharp.NHibernate.Json
                         return NHibernateUtil.IsInitialized(x.GetMemberValue(member.Name));
                     };
                 }
+
                 properties.AddProperty(property);
             }
 
