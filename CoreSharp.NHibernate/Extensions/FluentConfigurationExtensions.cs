@@ -1,10 +1,14 @@
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
 using System.IO;
 using System.Linq;
 using CoreSharp.DataAccess;
 using CoreSharp.NHibernate.EventListeners;
 using CoreSharp.NHibernate.Interceptors;
 using FluentNHibernate.Cfg;
+using NHibernate.Connection;
 using NHibernate.Event;
 using NHibernate.Tool.hbm2ddl;
 using SimpleInjector;
@@ -81,14 +85,68 @@ namespace CoreSharp.NHibernate.Extensions
 
             return fluentConfiguration.Mappings(m =>
             {
-                if (Directory.Exists(path))
+                if (!Directory.Exists(path))
                 {
-                    Directory.Delete(path, true);
                     Directory.CreateDirectory(path);
+                }
 
-                    m.AutoMappings.ExportTo(path);
+                m.AutoMappings.ExportTo(path);
+            });
+        }
+
+        public static FluentConfiguration ExposeDbCommand(this FluentConfiguration fluentConfiguration, Action<IDbCommand, global::NHibernate.Cfg.Configuration> action)
+        {
+            fluentConfiguration.ExposeConfiguration(cfg =>
+            {
+                DbConnection connection = null;
+                IConnectionProvider provider = null;
+                IDbCommand command = null;
+
+                try
+                {
+                    provider = GetConnectionProvider(cfg);
+                    connection = provider.GetConnection();
+                    command = connection.CreateCommand();
+                    command.CommandType = CommandType.Text;
+
+                    action(command, cfg);
+                }
+                finally
+                {
+                    if (command != null)
+                    {
+                        command.Dispose();
+                    }
+
+                    if (connection != null)
+                    {
+                        provider.CloseConnection(connection);
+                        provider.Dispose();
+                    }
                 }
             });
+
+            return fluentConfiguration;
+        }
+
+        private static IConnectionProvider GetConnectionProvider(global::NHibernate.Cfg.Configuration config)
+        {
+            var settings = new Dictionary<string, string>();
+            var dialect = global::NHibernate.Dialect.Dialect.GetDialect(config.Properties);
+            foreach (var pair in dialect.DefaultProperties)
+            {
+                settings[pair.Key] = pair.Value;
+            }
+
+            if (config.Properties != null)
+            {
+                foreach (var pair2 in config.Properties)
+                {
+                    settings[pair2.Key] = pair2.Value;
+                }
+            }
+
+            return ConnectionProviderFactory.NewConnectionProvider(settings);
         }
 
         private static T[] Prepend<T>(this IEnumerable<T> collection, T instance)
