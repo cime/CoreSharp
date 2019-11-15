@@ -14,7 +14,7 @@ namespace CoreSharp.DataAccess.Extensions
 
         public static IQueryable<TSource> WhereIf<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, bool>> predicate, string value)
         {
-            return string.IsNullOrEmpty(value) ? source : source.Where(predicate);
+            return string.IsNullOrWhiteSpace(value) ? source : source.Where(predicate);
         }
 
         public static IQueryable<TSource> WhereIf<TSource, TType>(this IQueryable<TSource> source, Expression<Func<TSource, bool>> predicate, TType? value)
