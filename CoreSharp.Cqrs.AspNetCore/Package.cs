@@ -7,6 +7,7 @@ namespace CoreSharp.Cqrs.AspNetCore
         public void Register(Container container)
         {
             container.Register<ICqrsOptions>(() => new CqrsOptions(container), Lifestyle.Singleton);
+            container.Register<CqrsFormatterRegistry>(Lifestyle.Singleton);
         }
     }
 }

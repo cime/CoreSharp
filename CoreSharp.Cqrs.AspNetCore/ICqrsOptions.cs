@@ -16,7 +16,5 @@ namespace CoreSharp.Cqrs.AspNetCore
 
         IEnumerable<CommandInfo> GetCommandTypes();
         IEnumerable<QueryInfo> GetQueryTypes();
-
-        JsonSerializerSettings GetJsonSerializerSettings();
     }
 }

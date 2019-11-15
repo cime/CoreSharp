@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading.Tasks;
+using CoreSharp.Common.Attributes;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
@@ -17,23 +18,18 @@ namespace CoreSharp.Cqrs.AspNetCore
     {
         public static readonly string ContextKey = "CQRS";
 
-        private readonly JsonSerializerSettings _jsonSerializerSettings;
         private readonly Container _container;
+        private readonly CqrsFormatterRegistry _registry;
         private readonly ICqrsOptions _options;
 
         private readonly Dictionary<string, CommandInfo> _commandTypes;
         private readonly Dictionary<string, QueryInfo> _queryTypes;
 
-        private static readonly string ContentType = "application/json; charset=utf-8";
-
-        private dynamic DeserializeQuery(string json, Type queryType) => JsonConvert.DeserializeObject(json, queryType, _jsonSerializerSettings);
-        private object DeserializeCommand(string json, Type commandType) => JsonConvert.DeserializeObject(json, commandType, _jsonSerializerSettings);
-
-        public CqrsMiddleware(Container container, ICqrsOptions options)
+        public CqrsMiddleware(Container container, CqrsFormatterRegistry registry, ICqrsOptions options)
         {
             _container = container;
+            _registry = registry;
             _options = options;
-            _jsonSerializerSettings = options.GetJsonSerializerSettings();
 
             _commandTypes = options.GetCommandTypes().ToDictionary(
                 keySelector: options.GetCommandKey,
@@ -74,9 +70,10 @@ namespace CoreSharp.Cqrs.AspNetCore
             dynamic result = null;
 
             var info = _commandTypes[path];
+            var exposeAttribute = info.CommandType.GetCustomAttribute<ExposeAttribute>();
+            var formatter = _registry.GetFormatter(exposeAttribute.Formatter);
 
-            var commandData = await new StreamReader(context.Request.Body).ReadToEndAsync();
-            dynamic command = DeserializeCommand(commandData, info.CommandType);
+            var command = await formatter.DeserializeAsync(context.Request, info.CommandType);
 
             dynamic handler = _container.GetInstance(info.CommandHandlerType);
             context.Items[ContextKey] = new CqrsContext(context.Request.Path.Value, path, CqrsType.Command, info.CommandHandlerType);
@@ -106,9 +103,9 @@ namespace CoreSharp.Cqrs.AspNetCore
 
             CloseSession();
 
-            var json = result is string ? result : JsonConvert.SerializeObject(result, _jsonSerializerSettings);
+            var json = result is string ? result : await formatter.SerializeAsync(result);
 
-            context.Response.ContentType = ContentType;
+            context.Response.ContentType = formatter.ContentType;
             context.Response.StatusCode = (int)HttpStatusCode.OK;
 
             await HttpResponseWritingExtensions.WriteAsync(context.Response, json, context.RequestAborted);
@@ -123,14 +120,11 @@ namespace CoreSharp.Cqrs.AspNetCore
                 throw new QueryNotFoundException($"Query '{path}' not found");
             }
 
-            // GET operations get their data through the query string, while POST operations expect a JSON
-            // object being put in the body.
-            var queryData = context.Request.Method == HttpMethod.Get.Method
-                ? SerializationHelpers.ConvertQueryStringToJson(context.Request.QueryString.Value)
-                : await new StreamReader(context.Request.Body).ReadToEndAsync();
-
             var info = _queryTypes[path];
-            var query = DeserializeQuery(queryData, info.QueryType);
+            var exposeAttribute = info.QueryType.GetCustomAttribute<ExposeAttribute>();
+            var formatter = _registry.GetFormatter(exposeAttribute.Formatter);
+
+            var query = await formatter.DeserializeAsync(context.Request, info.QueryType);
 
             dynamic handler = _container.GetInstance(info.QueryHandlerType);
 
@@ -147,9 +141,9 @@ namespace CoreSharp.Cqrs.AspNetCore
                 result = handler.Handle(query);
             }
 
-            var json = result is string ? result : JsonConvert.SerializeObject(result, _jsonSerializerSettings);
+            var json = result is string ? result : await formatter.SerializeAsync(result);
 
-            context.Response.ContentType = ContentType;
+            context.Response.ContentType = formatter.ContentType;
             context.Response.StatusCode = (int)HttpStatusCode.OK;
 
             await HttpResponseWritingExtensions.WriteAsync(context.Response, json, context.RequestAborted);

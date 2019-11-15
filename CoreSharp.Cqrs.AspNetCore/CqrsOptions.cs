@@ -116,37 +116,5 @@ namespace CoreSharp.Cqrs.AspNetCore
                 .Where(x => x.GetCustomAttribute<ExposeAttribute>() != null)
                 .Select(t => new CommandInfo(t));
         }
-
-        public JsonSerializerSettings GetJsonSerializerSettings()
-        {
-            var contractResolver = _container.GetInstance<NHibernateContractResolver>();
-
-            var settings = new JsonSerializerSettings
-            {
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-                NullValueHandling = NullValueHandling.Include,
-                PreserveReferencesHandling = PreserveReferencesHandling.None,
-                TypeNameHandling = TypeNameHandling.None,
-                TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
-                ContractResolver = contractResolver,
-                /* Error handling is not needed anymore. NHibernateContractResolver will take care of non initialized properties*/
-                //FIX: Still errors occurs
-                Error = (sender, args) =>
-                {
-                    // When the NHibernate session is closed, NH proxies throw LazyInitializationException when
-                    // the serializer tries to access them.  We want to ignore those exceptions.
-                    var error = args.ErrorContext.Error;
-                    if (error is LazyInitializationException || error is ObjectDisposedException)
-                        args.ErrorContext.Handled = true;
-                }
-            };
-
-            if (!settings.Converters.Any(o => o is NHibernateProxyJsonConverter))
-            {
-                settings.Converters.Add(new NHibernateProxyJsonConverter());
-            }
-
-            return settings;
-        }
     }
 }
