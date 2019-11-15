@@ -202,7 +202,7 @@ namespace CoreSharp.Breeze
                     var propName = propNames[i];
                     if (propType is IAssociationType associationType)
                     {
-                        if (new[] { "Id", "Code"}.Any(x => entityInfo.UnmappedValuesMap.ContainsKey(propName + x)))
+                        if (entityInfo.UnmappedValuesMap != null && new[] { "Id", "Code"}.Any(x => entityInfo.UnmappedValuesMap.ContainsKey(propName + x)))
                         {
                             var associatedEntityName = associationType.GetAssociatedEntityName((ISessionFactoryImplementor) _session.SessionFactory);
                             var associatedEntityMetadata = _session.SessionFactory.GetClassMetadata(associatedEntityName);
