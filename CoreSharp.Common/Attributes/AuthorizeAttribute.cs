@@ -2,7 +2,7 @@
 
 namespace CoreSharp.Common.Attributes
 {
-    [AttributeUsage(AttributeTargets.Class)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public class AuthorizeAttribute : Attribute
     {
         public string? Permission { get; set; }

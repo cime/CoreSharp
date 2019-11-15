@@ -8,6 +8,8 @@ namespace CoreSharp.Common.Attributes
         public string? Uri { get; set; }
         public bool IsUriSet => !string.IsNullOrEmpty(Uri);
 
+        public string Formatter { get; set; }
+
         public ExposeAttribute()
         {
 
@@ -16,6 +18,12 @@ namespace CoreSharp.Common.Attributes
         public ExposeAttribute(string uri)
         {
             Uri = uri;
+        }
+
+        public ExposeAttribute(string uri, string formatter)
+        {
+            Uri = uri;
+            Formatter = formatter;
         }
     }
 }
