@@ -125,6 +125,7 @@ namespace CoreSharp.Breeze
         {
             var settings = CreateJsonSerializerSettings(contractResolver);
             settings.TypeNameHandling = TypeNameHandling.None;
+            settings.Converters.Add(new BreezeSavePayloadConverter());
 
             return settings;
         }

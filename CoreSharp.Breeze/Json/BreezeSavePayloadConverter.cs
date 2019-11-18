@@ -1,14 +1,15 @@
 using System;
+using FluentNHibernate.Utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace CoreSharp.Breeze.Json
 {
-    public class BreezePayloadConverter<T> : JsonConverter
+    public class BreezeSavePayloadConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof(object);
+            return objectType.HasInterface(typeof(IBreezeSavePayload));
         }
 
         public override bool CanWrite => false;
@@ -21,19 +22,10 @@ namespace CoreSharp.Breeze.Json
                 return token;
             }
 
-            var data = Activator.CreateInstance(typeof(T));
-            var dataProperty = typeof(T).GetProperty("Data");
+            var result = (IBreezeSavePayload)Activator.CreateInstance(objectType);
+            result.Payload = (JObject) token;
 
-            if (dataProperty != null)
-            {
-                dataProperty.SetValue(data, token);
-            }
-            else
-            {
-                throw new NotSupportedException($"BreezePayloadConverter requires {typeof(T).Namespace}.{typeof(T).Name} to have Data property of type JToken");
-            }
-
-            return data;
+            return result;
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
