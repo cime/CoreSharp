@@ -8,7 +8,7 @@ namespace CoreSharp.Cqrs.AspNetCore
     {
         string Name { get; }
         string ContentType { get; }
-        Task<dynamic> DeserializeAsync(HttpRequest request, Type returnType);
-        Task<string> SerializeAsync<T>(T obj);
+        ValueTask<T> DeserializeAsync<T>(HttpRequest request);
+        ValueTask<string> SerializeAsync<T>(T obj, HttpRequest request);
     }
 }

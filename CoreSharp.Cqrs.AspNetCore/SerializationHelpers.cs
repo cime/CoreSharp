@@ -9,7 +9,7 @@ namespace CoreSharp.Cqrs.AspNetCore
         public static string ConvertQueryStringToJson(string query)
         {
             var collection = HttpUtility.ParseQueryString(query);
-            var dictionary = collection.AllKeys.ToDictionary(key => key, key => collection[key]);
+            var dictionary = collection.AllKeys.Where(x => !string.IsNullOrWhiteSpace(x)).ToDictionary(key => key, key => collection[key]);
 
             return ConvertDictionaryToJson(dictionary);
         }

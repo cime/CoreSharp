@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http;
 using System.Reflection;
@@ -8,7 +10,6 @@ using System.Threading.Tasks;
 using CoreSharp.Common.Attributes;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
 using SimpleInjector;
 
 namespace CoreSharp.Cqrs.AspNetCore
@@ -22,8 +23,11 @@ namespace CoreSharp.Cqrs.AspNetCore
         private readonly CqrsFormatterRegistry _registry;
         private readonly ICqrsOptions _options;
 
-        private readonly Dictionary<string, CommandInfo> _commandTypes;
-        private readonly Dictionary<string, QueryInfo> _queryTypes;
+        private readonly Lazy<Dictionary<string, CommandInfo>> _commandTypes;
+        private readonly Lazy<Dictionary<string, QueryInfo>> _queryTypes;
+
+        private readonly ConcurrentDictionary<Type, dynamic> _deserializeMethods = new ConcurrentDictionary<Type, dynamic>();
+        private static readonly MethodInfo CreateDeserializeLambdaMethodInfo = typeof(CqrsMiddleware).GetMethod(nameof(CreateDeserializeLambda), BindingFlags.NonPublic | BindingFlags.Static);
 
         public CqrsMiddleware(Container container, CqrsFormatterRegistry registry, ICqrsOptions options)
         {
@@ -31,15 +35,15 @@ namespace CoreSharp.Cqrs.AspNetCore
             _registry = registry;
             _options = options;
 
-            _commandTypes = options.GetCommandTypes().ToDictionary(
+            _commandTypes = new Lazy<Dictionary<string, CommandInfo>>(() => options.GetCommandTypes().ToDictionary(
                 keySelector: options.GetCommandKey,
                 elementSelector: type => type,
-                comparer: StringComparer.OrdinalIgnoreCase);
+                comparer: StringComparer.OrdinalIgnoreCase));
 
-            _queryTypes = options.GetQueryTypes().ToDictionary(
+            _queryTypes = new Lazy<Dictionary<string, QueryInfo>>(() => options.GetQueryTypes().ToDictionary(
                 keySelector: options.GetQueryKey,
                 elementSelector: info => info,
-                comparer: StringComparer.OrdinalIgnoreCase);
+                comparer: StringComparer.OrdinalIgnoreCase));
         }
 
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
@@ -58,22 +62,40 @@ namespace CoreSharp.Cqrs.AspNetCore
             }
         }
 
+        private static Func<ICqrsFormatter, HttpRequest, ValueTask<T>> CreateDeserializeLambda<T>()
+        {
+            var methodInfo = typeof(ICqrsFormatter)
+                .GetMethod(nameof(ICqrsFormatter.DeserializeAsync), BindingFlags.Public | BindingFlags.Instance)
+                .MakeGenericMethod(typeof(T));
+            var formatterParameter = Expression.Parameter(typeof(ICqrsFormatter), "formatter");
+            var requestParameter = Expression.Parameter(typeof(HttpRequest), "request");
+            var call = Expression.Call(formatterParameter, methodInfo, requestParameter);
+
+            return Expression.Lambda<Func<ICqrsFormatter, HttpRequest, ValueTask<T>>>(call, formatterParameter, requestParameter).Compile();
+        }
+
         private async Task HandleCommand(HttpContext context, ICqrsOptions options)
         {
             var path = options.GetCommandPath(context.Request.Path.Value);
 
-            if (!_commandTypes.ContainsKey(path))
+            if (!_commandTypes.Value.ContainsKey(path))
             {
                 throw new CommandNotFoundException($"Command '{path}' not found");
             }
 
             dynamic result = null;
 
-            var info = _commandTypes[path];
+            var info = _commandTypes.Value[path];
             var exposeAttribute = info.CommandType.GetCustomAttribute<ExposeAttribute>();
             var formatter = _registry.GetFormatter(exposeAttribute.Formatter);
 
-            var command = await formatter.DeserializeAsync(context.Request, info.CommandType);
+            var deserializeMethod = _deserializeMethods.GetOrAdd(info.CommandType, (t) =>
+            {
+                var mi = CreateDeserializeLambdaMethodInfo.MakeGenericMethod(t);
+                return mi.Invoke(null, null);
+            });
+
+            dynamic command = await deserializeMethod(formatter, context.Request);
 
             dynamic handler = _container.GetInstance(info.CommandHandlerType);
             context.Items[ContextKey] = new CqrsContext(context.Request.Path.Value, path, CqrsType.Command, info.CommandHandlerType);
@@ -103,7 +125,7 @@ namespace CoreSharp.Cqrs.AspNetCore
 
             CloseSession();
 
-            var json = result is string ? result : await formatter.SerializeAsync(result);
+            var json = result is string ? result : await formatter.SerializeAsync(result, context.Request);
 
             context.Response.ContentType = formatter.ContentType;
             context.Response.StatusCode = (int)HttpStatusCode.OK;
@@ -115,16 +137,22 @@ namespace CoreSharp.Cqrs.AspNetCore
         {
             var path = options.GetQueryPath(context.Request.Path.Value);
 
-            if (!_queryTypes.ContainsKey(path))
+            if (!_queryTypes.Value.ContainsKey(path))
             {
                 throw new QueryNotFoundException($"Query '{path}' not found");
             }
 
-            var info = _queryTypes[path];
+            var info = _queryTypes.Value[path];
             var exposeAttribute = info.QueryType.GetCustomAttribute<ExposeAttribute>();
             var formatter = _registry.GetFormatter(exposeAttribute.Formatter);
 
-            var query = await formatter.DeserializeAsync(context.Request, info.QueryType);
+            var deserializeMethod = _deserializeMethods.GetOrAdd(info.QueryType, (t) =>
+            {
+                var mi = CreateDeserializeLambdaMethodInfo.MakeGenericMethod(t);
+                return mi.Invoke(null, null);
+            });
+
+            dynamic query = await deserializeMethod(formatter, context.Request);
 
             dynamic handler = _container.GetInstance(info.QueryHandlerType);
 
@@ -141,7 +169,7 @@ namespace CoreSharp.Cqrs.AspNetCore
                 result = handler.Handle(query);
             }
 
-            var json = result is string ? result : await formatter.SerializeAsync(result);
+            var json = result is string ? result : await formatter.SerializeAsync(result, context.Request);
 
             context.Response.ContentType = formatter.ContentType;
             context.Response.StatusCode = (int)HttpStatusCode.OK;
