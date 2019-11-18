@@ -10,6 +10,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using CoreSharp.Common.Attributes;
+using CoreSharp.DataAccess;
 using CoreSharp.GraphQL.Configuration;
 using DefaultValueAttribute = System.ComponentModel.DefaultValueAttribute;
 
@@ -72,6 +73,27 @@ namespace CoreSharp.GraphQL
 
                     field.DefaultValue = (propertyInfo.GetCustomAttributes(typeof(DefaultValueAttribute), false).FirstOrDefault() as DefaultValueAttribute)?.Value;
                     field.Metadata["PropertyInfo"] = propertyInfo;
+
+                    // Synthetic properties
+                    /*if (propertyInfo.PropertyType.IsAssignableToGenericType(typeof(IEntity<>)) &&
+                        !propertyInfo.PropertyType.DeclaringType.GetProperties(BindingFlags.Instance | BindingFlags.Public).Any(x => x.Name == propertyInfo.Name + "Id"))
+                    {
+                        var genericType = propertyInfo.PropertyType.GetInterfaces()
+                            .Single(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEntity<>))
+                            .GetGenericArguments()[0];
+
+                        var syntheticPropertyField = new FieldType
+                        {
+                            Type = genericType.GetGraphTypeFromType(IsNullableProperty(propertyInfo)),
+                            Resolver = new SyntheticPropertyResolver(propertyInfo),
+                            Name = (fieldConfiguration?.FieldName ?? GetFieldName(propertyInfo)) + "Id",
+                            Description = propertyInfo.Description(),
+                            DeprecationReason = propertyInfo.ObsoleteMessage()
+                        };
+                        syntheticPropertyField.Metadata["PropertyInfo"] = propertyInfo;
+
+                        AddField(syntheticPropertyField);
+                    }*/
                 }
             }
 

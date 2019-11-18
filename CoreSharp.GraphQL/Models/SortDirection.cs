@@ -1,6 +1,6 @@
 namespace CoreSharp.GraphQL.Models
 {
-    public enum Direction
+    public enum SortDirection
     {
         ASC,
         DESC

@@ -26,17 +26,17 @@ namespace CoreSharp.GraphQL.Models
 
         private readonly IQueryable<T> _queryable;
         private readonly Page _page;
-        private readonly IList<Order> _order;
+        private readonly IList<Sort> _order;
         private long _count = -1;
         public IList<T> Items { get; }
 
-        public ItemsResponse(ResolveFieldContext context, IQueryable<T> queryable, Page page, Order order)
-            : this(context, queryable, page, new[] {order})
+        public ItemsResponse(ResolveFieldContext context, IQueryable<T> queryable, Page page, Sort sort)
+            : this(context, queryable, page, new[] {sort})
         {
 
         }
 
-        public ItemsResponse(ResolveFieldContext context, IQueryable<T> queryable, Page page, IList<Order> order)
+        public ItemsResponse(ResolveFieldContext context, IQueryable<T> queryable, Page page, IList<Sort> order)
         {
             _queryable = queryable;
             _page = page;
@@ -61,14 +61,14 @@ namespace CoreSharp.GraphQL.Models
             Items = queryable.Page(_page).ToList();
         }
 
-        private IQueryable<T> ApplyOrderBy(IQueryable<T> queryable, IList<Order> order)
+        private IQueryable<T> ApplyOrderBy(IQueryable<T> queryable, IList<Sort> order)
         {
             if (order?.Any() == true)
             {
                 var isOrdered = IsOrdered(queryable);
                 foreach (var x in order)
                 {
-                    queryable = isOrdered ? ((IOrderedQueryable<T>) queryable).ThenBy($"{x.Field} {x.Direction}") : queryable.OrderBy($"{x.Field} {x.Direction}");
+                    queryable = isOrdered ? ((IOrderedQueryable<T>) queryable).ThenBy($"{x.Field} {x.SortDirection}") : queryable.OrderBy($"{x.Field} {x.SortDirection}");
 
                     isOrdered = true;
                 }

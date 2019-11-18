@@ -66,9 +66,12 @@ namespace CoreSharp.GraphQL
         {
             var registrations = _container.GetRootRegistrations();
             var registeredTypes = registrations.Select(x => x.Registration.ImplementationType).Distinct().ToList();
-            var commandHandlerTypes = registeredTypes.Where(x => x.GetCustomAttribute<DecoratorAttribute>() == null).Where(x =>
-                x.GetTypeInfo().IsAssignableToGenericType(typeof(ICommandHandler<,>)) ||
-                x.GetTypeInfo().IsAssignableToGenericType(typeof(IAsyncCommandHandler<,>))).ToList();
+            var commandHandlerTypes = registeredTypes
+                .Where(x => x.GetCustomAttribute<DecoratorAttribute>() == null)
+                .Where(x => x.GetCustomAttribute<ExposeGraphQLAttribute>() != null)
+                .Where(x =>
+            x.GetTypeInfo().IsAssignableToGenericType(typeof(ICommandHandler<,>)) ||
+            x.GetTypeInfo().IsAssignableToGenericType(typeof(IAsyncCommandHandler<,>))).ToList();
 
             RegisterCommands(commandHandlerTypes);
         }
@@ -194,9 +197,12 @@ namespace CoreSharp.GraphQL
         {
             var registrations = _container.GetRootRegistrations();
             var registeredTypes = registrations.Select(x => x.Registration.ImplementationType).Distinct().ToList();
-            var queryHandlerTypes = registeredTypes.Where(x => x.GetCustomAttribute<DecoratorAttribute>() == null).Where(x =>
-                x.GetTypeInfo().IsAssignableToGenericType(typeof(IQueryHandler<,>)) ||
-                x.GetTypeInfo().IsAssignableToGenericType(typeof(IAsyncQueryHandler<,>))).ToList();
+            var queryHandlerTypes = registeredTypes
+                .Where(x => x.GetCustomAttribute<DecoratorAttribute>() == null)
+                .Where(x => x.GetCustomAttribute<ExposeGraphQLAttribute>() != null)
+                .Where(x =>
+                    x.GetTypeInfo().IsAssignableToGenericType(typeof(IQueryHandler<,>)) ||
+                    x.GetTypeInfo().IsAssignableToGenericType(typeof(IAsyncQueryHandler<,>))).ToList();
 
             RegisterQueries(queryHandlerTypes);
         }

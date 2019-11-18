@@ -16,11 +16,11 @@ namespace System.Linq
             return queryable;
         }
 
-        public static IQueryable<T> OrderBy<T>(this IQueryable<T> queryable, Order order)
+        public static IQueryable<T> OrderBy<T>(this IQueryable<T> queryable, Sort sort)
         {
-            if (order != null)
+            if (sort != null)
             {
-                var orderBy = order.Field + " " + order.Direction;
+                var orderBy = sort.Field + " " + sort.SortDirection;
                 queryable = queryable.OrderBy(orderBy);
             }
 
