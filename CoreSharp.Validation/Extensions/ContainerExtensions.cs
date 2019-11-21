@@ -42,12 +42,14 @@ namespace SimpleInjector
             {
                 var typeInfo = x.GetTypeInfo();
 
-                return typeInfo.IsClass && !typeInfo.IsAbstract && typeInfo.IsAssignableToGenericType(typeof(IDomainValidator<>));
+                return typeInfo.IsClass && !typeInfo.IsAbstract &&
+                    (typeInfo.IsAssignableToGenericType(typeof(IDomainValidator<>)) ||
+                     typeInfo.IsAssignableToGenericType(typeof(IAsyncDomainValidator<>)));
             });
 
             foreach (var match in matches)
             {
-                var serviceType = match.GetGenericType(typeof(IDomainValidator<>));
+                var serviceType = match.GetGenericType(typeof(IDomainValidator<>)) ??  match.GetGenericType(typeof(IAsyncDomainValidator<>));
                 if (serviceType == null)
                 {
                     continue;

@@ -68,7 +68,7 @@ namespace CoreSharp.GraphQL.Models
                 var isOrdered = IsOrdered(queryable);
                 foreach (var x in order)
                 {
-                    queryable = isOrdered ? ((IOrderedQueryable<T>) queryable).ThenBy($"{x.Field} {x.SortDirection}") : queryable.OrderBy($"{x.Field} {x.SortDirection}");
+                    queryable = isOrdered ? ((IOrderedQueryable<T>) queryable).ThenBy($"{x.Field} {x.Direction}") : queryable.OrderBy($"{x.Field} {x.Direction}");
 
                     isOrdered = true;
                 }

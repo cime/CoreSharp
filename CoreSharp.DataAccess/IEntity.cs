@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace CoreSharp.DataAccess
+﻿namespace CoreSharp.DataAccess
 {
     public interface IEntity
     {

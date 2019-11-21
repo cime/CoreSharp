@@ -20,7 +20,7 @@ namespace System.Linq
         {
             if (sort != null)
             {
-                var orderBy = sort.Field + " " + sort.SortDirection;
+                var orderBy = sort.Field + " " + sort.Direction;
                 queryable = queryable.OrderBy(orderBy);
             }
 

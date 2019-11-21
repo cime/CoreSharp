@@ -17,6 +17,9 @@ namespace CoreSharp.Cqrs.AspNetCore
     {
         private readonly Container _container;
         private readonly Regex _pathValidationRegex = new Regex("^[a-z0-9/]{3,}$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private readonly Regex _commandNameSuffixRegex = new Regex("(?:AsyncCommand|CommandAsync|Command)$", RegexOptions.Compiled);
+        private readonly Regex _queryNameSuffixRegex = new Regex("(?:AsyncQuery|QueryAsync|Query)$", RegexOptions.Compiled);
+        private readonly Regex _queryNamePrefixRegex = new Regex("^Get", RegexOptions.Compiled);
 
         public string CommandsPath { get; set; } = "/api/command/";
         public string QueriesPath { get; set; } = "/api/query/";
@@ -26,15 +29,14 @@ namespace CoreSharp.Cqrs.AspNetCore
             _container = container;
         }
 
-        public string GetCommandKey(CommandInfo type)
+        public string GetCommandKey(CommandInfo info)
         {
-            var exposeAttribute = type.CommandType.GetCustomAttribute<ExposeAttribute>();
-
-            var key = exposeAttribute.IsUriSet ? exposeAttribute.Uri.Replace("//", "/").TrimEnd('/') : type.CommandType.Name.Replace("Command", string.Empty);
+            var exposeAttribute = info.CommandType.GetCustomAttribute<ExposeAttribute>();
+            var key = exposeAttribute.IsUriSet ? exposeAttribute.Uri.Replace("//", "/").TrimEnd('/') : GetCommandNameFromType(info.CommandType);
 
             if (!_pathValidationRegex.IsMatch(key))
             {
-                throw new FormatException($"Invalid path '{key}' for command '{type.CommandType.Namespace}.{type.CommandType.Name}'");
+                throw new FormatException($"Invalid path '{key}' for command '{info.CommandType.Namespace}.{info.CommandType.Name}'");
             }
 
             return key;
@@ -44,7 +46,7 @@ namespace CoreSharp.Cqrs.AspNetCore
         {
             var exposeAttribute = info.QueryType.GetCustomAttribute<ExposeAttribute>();
 
-            var key = exposeAttribute.IsUriSet ? exposeAttribute.Uri.Replace("//", "/").TrimEnd('/') : info.QueryType.Name.Replace("Query", string.Empty);
+            var key = exposeAttribute.IsUriSet ? exposeAttribute.Uri.Replace("//", "/").TrimEnd('/') : GetQueryNameFromType(info.QueryType);
 
             if (!_pathValidationRegex.IsMatch(key))
             {
@@ -52,6 +54,18 @@ namespace CoreSharp.Cqrs.AspNetCore
             }
 
             return key;
+        }
+
+        private string GetCommandNameFromType(Type type)
+        {
+            return _commandNameSuffixRegex.Replace(type.Name, string.Empty);
+        }
+
+        private string GetQueryNameFromType(Type type)
+        {
+            var queryName = _queryNameSuffixRegex.Replace(type.Name, string.Empty);
+
+            return _queryNamePrefixRegex.Replace(queryName, String.Empty);
         }
 
         public string GetQueryPath(string path)

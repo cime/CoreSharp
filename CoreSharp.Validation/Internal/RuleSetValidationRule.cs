@@ -14,13 +14,25 @@ namespace CoreSharp.Validation.Internal
         private static readonly ConcurrentDictionary<string[], RuleSetValidationRule> Instances =
             new ConcurrentDictionary<string[], RuleSetValidationRule>();
 
+        private static readonly RuleSetValidationRule DefaultRuleSetValidationRule = new RuleSetValidationRule();
+
         public static IValidationRule GetRule(string[] ruleSets)
         {
+            if (ruleSets == null)
+            {
+                return DefaultRuleSetValidationRule;
+            }
+
             return Instances.GetOrAdd(ruleSets, o => new RuleSetValidationRule(o));
         }
 
         static RuleSetValidationRule()
         {
+        }
+
+        public RuleSetValidationRule()
+        {
+            RuleSets = new string [0];
         }
 
         private RuleSetValidationRule(string[] ruleSets)

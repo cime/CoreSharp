@@ -5,6 +5,6 @@ namespace CoreSharp.GraphQL.Models
         public static SortDirection DefaultSortDirection = SortDirection.ASC;
 
         public string Field { get; set; }
-        public SortDirection SortDirection { get; set; } = DefaultSortDirection;
+        public SortDirection Direction { get; set; } = DefaultSortDirection;
     }
 }

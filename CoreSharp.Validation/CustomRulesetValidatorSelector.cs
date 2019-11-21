@@ -13,6 +13,11 @@ namespace CoreSharp.Validation
     {
         readonly HashSet<string> _rulesetsToExecute;
 
+        public CustomRulesetValidatorSelector()
+        {
+            _rulesetsToExecute = new HashSet<string>();
+        }
+
         /// <summary>
         /// Creates a new instance of the RulesetValidatorSelector.
         /// </summary>

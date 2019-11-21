@@ -68,7 +68,6 @@ namespace CoreSharp.GraphQL
             var registeredTypes = registrations.Select(x => x.Registration.ImplementationType).Distinct().ToList();
             var commandHandlerTypes = registeredTypes
                 .Where(x => x.GetCustomAttribute<DecoratorAttribute>() == null)
-                .Where(x => x.GetCustomAttribute<ExposeGraphQLAttribute>() != null)
                 .Where(x =>
             x.GetTypeInfo().IsAssignableToGenericType(typeof(ICommandHandler<,>)) ||
             x.GetTypeInfo().IsAssignableToGenericType(typeof(IAsyncCommandHandler<,>))).ToList();
@@ -85,6 +84,11 @@ namespace CoreSharp.GraphQL
                 var genericArguments = genericType.GetGenericArguments();
                 var commandType = genericArguments[0];
                 var resultType = genericArguments[1];
+
+                if (commandType.GetCustomAttribute<ExposeGraphQLAttribute>() == null)
+                {
+                    continue;
+                }
 
                 var isCollection = resultType != typeof(string) && typeof(IEnumerable).IsAssignableFrom(resultType);
 
@@ -108,9 +112,8 @@ namespace CoreSharp.GraphQL
 
                 if (properties.Any())
                 {
-                    var inputObjectType = typeof(InputObjectGraphType<>).MakeGenericType(commandType);
-                    inputGqlType = (IInputObjectGraphType)Activator.CreateInstance(inputObjectType);
-                    inputGqlType.Name = commandType.Name;
+                    var inputObjectType = typeof(AutoInputGraphType<>).MakeGenericType(commandType);
+                    inputGqlType = (IInputObjectGraphType)_container.GetInstance(inputObjectType);
                     inputGqlType.Description = descriptionAttribute?.Description;
 
                     var addFieldMethod = inputGqlType.GetType().GetMethod("AddField");
@@ -199,7 +202,6 @@ namespace CoreSharp.GraphQL
             var registeredTypes = registrations.Select(x => x.Registration.ImplementationType).Distinct().ToList();
             var queryHandlerTypes = registeredTypes
                 .Where(x => x.GetCustomAttribute<DecoratorAttribute>() == null)
-                .Where(x => x.GetCustomAttribute<ExposeGraphQLAttribute>() != null)
                 .Where(x =>
                     x.GetTypeInfo().IsAssignableToGenericType(typeof(IQueryHandler<,>)) ||
                     x.GetTypeInfo().IsAssignableToGenericType(typeof(IAsyncQueryHandler<,>))).ToList();
@@ -216,6 +218,11 @@ namespace CoreSharp.GraphQL
                 var genericArguments = genericType.GetGenericArguments();
                 var queryType = genericArguments[0];
                 var resultType = genericArguments[1];
+
+                if (queryType.GetCustomAttribute<ExposeGraphQLAttribute>() == null)
+                {
+                    continue;
+                }
 
                 var isCollection = resultType != typeof(string) && typeof(IEnumerable).IsAssignableFrom(resultType);
 

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Newtonsoft.Json;
 
 namespace CoreSharp.Cqrs.AspNetCore
 {
@@ -8,7 +7,7 @@ namespace CoreSharp.Cqrs.AspNetCore
         string CommandsPath { get; set; }
         string QueriesPath { get; set; }
 
-        string GetCommandKey(CommandInfo type);
+        string GetCommandKey(CommandInfo info);
         string GetQueryKey(QueryInfo info);
 
         string GetCommandPath(string path);
