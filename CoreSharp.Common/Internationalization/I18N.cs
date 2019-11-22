@@ -10,6 +10,11 @@ namespace CoreSharp.Common.Internationalization
         private static readonly CultureInfo EnglishCulture = new CultureInfo("en-US");
         private static readonly Dictionary<CultureInfo, ICatalog> Catalogs = new Dictionary<CultureInfo, ICatalog>();
 
+        static I18N()
+        {
+            Catalogs.Add(EnglishCulture, new Catalog());
+        }
+
         public static void AddCatalog(CultureInfo cultureInfo, ICatalog catalog)
         {
             if (cultureInfo == null)
