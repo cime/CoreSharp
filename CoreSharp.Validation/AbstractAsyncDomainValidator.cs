@@ -3,6 +3,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using FluentValidation;
 using FluentValidation.Results;
+using static CoreSharp.Common.Internationalization.I18N;
 
 namespace CoreSharp.Validation
 {
@@ -16,7 +17,10 @@ namespace CoreSharp.Validation
 
         public abstract Task<ValidationFailure> ValidateAsync(TChild model, ValidationContext context);
 
-        public abstract Task<bool> CanValidateAsync(TChild model, ValidationContext context);
+        public virtual Task<bool> CanValidateAsync(TChild model, ValidationContext context)
+        {
+            return Task.FromResult(true);
+        }
 
         public virtual Task BeforeValidationAsync(TRoot root, ValidationContext context)
         {
@@ -44,12 +48,12 @@ namespace CoreSharp.Validation
                 ? propertyExp.Compile()(child)
                 : null;
 
-            return new ValidationFailure(propertyExp.GetFullPropertyName(), errorMessage, attemptedValue);
+            return new ValidationFailure(propertyExp.GetFullPropertyName(), _(errorMessage), attemptedValue);
         }
 
         protected ValidationFailure Failure(string errorMessage, ValidationContext context)
         {
-            return new ValidationFailure(context.PropertyChain.ToString(), errorMessage, context.InstanceToValidate);
+            return new ValidationFailure(context.PropertyChain.ToString(), _(errorMessage), context.InstanceToValidate);
         }
 
         protected ValidationFailure Success => null;

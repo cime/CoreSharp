@@ -2,23 +2,24 @@
 using System.Linq.Expressions;
 using FluentValidation;
 using FluentValidation.Results;
+using static CoreSharp.Common.Internationalization.I18N;
 
 namespace CoreSharp.Validation
 {
     public abstract class AbstractDomainValidator<TModel> : AbstractDomainValidator<TModel, TModel>
-        where TModel : class
-    { 
+    {
     }
 
     public abstract class AbstractDomainValidator<TRoot, TChild> : IDomainValidator<TRoot, TChild>
-        where TRoot : class
-        where TChild : class
     {
         public virtual string[] RuleSets { get; }
 
         public abstract ValidationFailure Validate(TChild model, ValidationContext context);
 
-        public abstract bool CanValidate(TChild model, ValidationContext context);
+        public virtual bool CanValidate(TChild model, ValidationContext context)
+        {
+            return true;
+        }
 
         public virtual void BeforeValidation(TRoot root, ValidationContext context)
         {
@@ -45,12 +46,12 @@ namespace CoreSharp.Validation
                 ? propertyExp.Compile()(child)
                 : null;
 
-            return new ValidationFailure(propertyExp.GetFullPropertyName(), errorMessage, attemptedValue);
+            return new ValidationFailure(propertyExp.GetFullPropertyName(), _(errorMessage), attemptedValue);
         }
 
         protected ValidationFailure Failure(string errorMessage, ValidationContext context)
         {
-            return new ValidationFailure(context.PropertyChain.ToString(), errorMessage, context.InstanceToValidate);
+            return new ValidationFailure(context.PropertyChain.ToString(), _(errorMessage), context.InstanceToValidate);
         }
 
         protected ValidationFailure Success => null;
