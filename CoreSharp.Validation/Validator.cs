@@ -1,11 +1,11 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using CoreSharp.Common.Attributes;
 using CoreSharp.Validation.Attributes;
+using CoreSharp.Validation.Extensions;
 using FluentValidation;
 using FluentValidation.Internal;
 using FluentValidation.Results;
@@ -43,7 +43,6 @@ namespace CoreSharp.Validation
         private void AddAttributeValidation()
         {
             var type = typeof(TModel);
-
             var ignoreAttrsAttr = type.GetTypeInfo().GetCustomAttributes(typeof(IgnoreValidationAttributesAttribute), true)
                 .FirstOrDefault() as IgnoreValidationAttributesAttribute;
             var ignoreProps = ignoreAttrsAttr != null
@@ -56,176 +55,7 @@ namespace CoreSharp.Validation
                 //Add validation from attributes
                 foreach (var attr in attrs.OfType<ValidationAttribute>())
                 {
-                    IPropertyValidator propValidator = null;
-                    #region NotNullAttribute
-
-                    if (attr is NotNullAttribute)
-                    {
-                        propValidator = new NotNullValidator();
-                    }
-
-                    #endregion
-                    #region EmailAttribute
-
-                    if (attr is EmailAttribute)
-                    {
-                        propValidator = new EmailValidator();
-                    }
-
-                    #endregion
-                    #region EnumAttribute
-
-                    var enumAttr = attr as EnumAttribute;
-                    if (enumAttr != null)
-                    {
-                        propValidator = new EnumValidator(enumAttr.Type);
-                    }
-
-                    #endregion
-                    #region NotEmptyAttribute
-
-                    var notEmptyAttr = attr as NotEmptyAttribute;
-                    if (notEmptyAttr != null)
-                    {
-                        propValidator = new NotEmptyValidator(notEmptyAttr.DefaultValue ?? prop.PropertyType.GetDefaultValue());
-                    }
-
-                    #endregion
-                    #region NotNullOrEmptyAttribute
-
-                    var notNullOrEmptyAttr = attr as NotNullOrEmptyAttribute;
-                    if (notNullOrEmptyAttr != null)
-                    {
-                        propValidator = new NotEmptyValidator(prop.PropertyType.GetDefaultValue());
-                        AddAttributePropertyValidator(new NotNullValidator(), prop, attr.IncludePropertyName);
-                    }
-
-                    #endregion
-                    #region EqualAttribute
-
-                    AddComparisonValidator(attr as EqualAttribute, type, prop,
-                        o => new EqualValidator(o),
-                        (func, info) => new EqualValidator(func, info));
-
-                    #endregion
-                    #region LengthAttribute
-
-                    var lengthAttr = attr as LengthAttribute;
-                    if (lengthAttr != null)
-                    {
-                        propValidator = new LengthValidator(lengthAttr.Min, lengthAttr.Max);
-                    }
-
-                    #endregion
-                    #region NotEqualAttribute
-
-                    AddComparisonValidator(attr as NotEqualAttribute, type, prop,
-                        o => new NotEqualValidator(o),
-                        (func, info) => new NotEqualValidator(func, info));
-
-                    #endregion
-                    #region RegularExpressionAttribute
-
-                    var regexAttr = attr as RegularExpressionAttribute;
-                    if (regexAttr != null)
-                    {
-                        propValidator = new RegularExpressionValidator(regexAttr.Expression, regexAttr.RegexOptions);
-                    }
-
-                    #endregion
-                    #region CreditCardAttribute
-
-                    if (attr is CreditCardAttribute)
-                    {
-                        propValidator = new CreditCardValidator();
-                    }
-
-                    #endregion
-                    #region ScalePrecisionAttribute
-
-                    var scalePrecisionAttr = attr as ScalePrecisionAttribute;
-                    if (scalePrecisionAttr != null)
-                    {
-                        propValidator = new ScalePrecisionValidator(scalePrecisionAttr.Scale, scalePrecisionAttr.Precision);
-                    }
-
-                    #endregion
-                    #region ExactLengthAttribute
-
-                    var exctLenAttr = attr as ExactLengthAttribute;
-                    if (exctLenAttr != null)
-                    {
-                        propValidator = new ExactLengthValidator(exctLenAttr.Length);
-                    }
-
-                    #endregion
-                    #region ExclusiveBetweenAttribute
-
-                    var exclusiveBetweenAttribute = attr as ExclusiveBetweenAttribute;
-                    if (exclusiveBetweenAttribute != null)
-                    {
-                        if (exclusiveBetweenAttribute.From != null && exclusiveBetweenAttribute.To != null &&
-                            exclusiveBetweenAttribute.From.GetType() != exclusiveBetweenAttribute.To.GetType())
-                        {
-                            var fromConverted = Convert.ChangeType(exclusiveBetweenAttribute.From, exclusiveBetweenAttribute.To.GetType());
-
-                            propValidator = new ExclusiveBetweenValidator(fromConverted as IComparable, exclusiveBetweenAttribute.To as IComparable);
-                        }
-                        else
-                        {
-                            propValidator = new ExclusiveBetweenValidator(exclusiveBetweenAttribute.From as IComparable, exclusiveBetweenAttribute.To as IComparable);
-                        }
-                    }
-
-                    #endregion
-                    #region ExclusiveBetweenAttribute
-
-                    var inclusiveBetweenAttribute = attr as InclusiveBetweenAttribute;
-                    if (inclusiveBetweenAttribute != null)
-                    {
-                        if (inclusiveBetweenAttribute.From != null && inclusiveBetweenAttribute.To != null &&
-                            inclusiveBetweenAttribute.From.GetType() != inclusiveBetweenAttribute.To.GetType())
-                        {
-                            var fromConverted = Convert.ChangeType(inclusiveBetweenAttribute.From, inclusiveBetweenAttribute.To.GetType());
-
-                            propValidator = new InclusiveBetweenValidator(fromConverted as IComparable, inclusiveBetweenAttribute.To as IComparable);
-                        }
-                        else
-                        {
-                            propValidator = new InclusiveBetweenValidator(inclusiveBetweenAttribute.From as IComparable, inclusiveBetweenAttribute.To as IComparable);
-                        }
-                    }
-
-                    #endregion
-                    #region GreaterThanAttribute
-
-                    AddComparisonValidator(attr as GreaterThanAttribute, type, prop,
-                        o => new GreaterThanValidator(o as IComparable),
-                        (func, info) => new GreaterThanValidator(func, info));
-
-                    #endregion
-                    #region GreaterThanOrEqualAttribute
-
-                    AddComparisonValidator(attr as GreaterThanOrEqualAttribute, type, prop,
-                        o => new GreaterThanOrEqualValidator(o as IComparable),
-                        (func, info) => new GreaterThanOrEqualValidator(func, info));
-
-                    #endregion
-                    #region LessThanOrEqualAttribute
-
-                    AddComparisonValidator(attr as LessThanOrEqualAttribute, type, prop,
-                        o => new LessThanOrEqualValidator(o as IComparable),
-                        (func, info) => new LessThanOrEqualValidator(func, info));
-
-                    #endregion
-                    #region LessThanAttribute
-
-                    AddComparisonValidator(attr as LessThanAttribute, type, prop,
-                        o => new LessThanValidator(o as IComparable),
-                        (func, info) => new LessThanValidator(func, info));
-
-                    #endregion
-
+                    var propValidator = CreatePropertyValidator(attr, type, prop);
                     if (propValidator == null)
                     {
                         continue;
@@ -236,31 +66,112 @@ namespace CoreSharp.Validation
             }
         }
 
-        private void AddComparisonValidator<T>(T attr, Type type, PropertyInfo prop, Func<object, IComparisonValidator> ctor1Fun,
+        private IPropertyValidator CreatePropertyValidator(ValidationAttribute validationAttribute, Type type, PropertyInfo prop)
+        {
+            switch (validationAttribute)
+            {
+                case NotNullAttribute _:
+                    return prop.PropertyType == typeof(string)
+                        ? (IPropertyValidator)new NotEmptyValidator(null)
+                        : new NotNullValidator();
+                case EmailAttribute _:
+                    return new EmailValidator();
+                case EnumAttribute enumAttr:
+                    return new EnumValidator(enumAttr.Type);
+                case EqualAttribute equalAttr:
+                    return CreateComparisonValidator(equalAttr, type, prop,
+                        o => new EqualValidator(o),
+                        (func, info) => new EqualValidator(func, info));
+                case NotEqualAttribute notEqualAttr:
+                    return CreateComparisonValidator(notEqualAttr, type, prop,
+                        o => new NotEqualValidator(o),
+                        (func, info) => new NotEqualValidator(func, info));
+                case LengthAttribute lengthAttr:
+                    return lengthAttr.IsMinSet()
+                        ? new LengthValidator(lengthAttr.Min, lengthAttr.Max)
+                        : new MaximumLengthValidator(lengthAttr.Max);
+                case RegularExpressionAttribute regexAttr:
+                    return new RegularExpressionValidator(regexAttr.Expression, regexAttr.RegexOptions);
+                case CreditCardAttribute _:
+                    return new CreditCardValidator();
+                case ScalePrecisionAttribute scalePrecisionAttr:
+                    return new ScalePrecisionValidator(scalePrecisionAttr.Scale, scalePrecisionAttr.Precision);
+                case ExactLengthAttribute exactLengthAttr:
+                    return new ExactLengthValidator(exactLengthAttr.Length);
+                case ExclusiveBetweenAttribute exclusiveBetweenAttribute:
+                    return CreateBetweenValidator(exclusiveBetweenAttribute.From, exclusiveBetweenAttribute.To,
+                        (from, to) => new ExclusiveBetweenValidator(from, to));
+                case InclusiveBetweenAttribute inclusiveBetweenAttribute:
+                    return CreateBetweenValidator(inclusiveBetweenAttribute.From, inclusiveBetweenAttribute.To,
+                        (from, to) => new InclusiveBetweenValidator(from, to));
+                case GreaterThanAttribute greaterThanAttr:
+                    return CreateComparisonValidator(greaterThanAttr, type, prop,
+                        o => new GreaterThanValidator(o as IComparable),
+                        (func, info) => new GreaterThanValidator(func, info));
+                case GreaterThanOrEqualAttribute greaterThanOrEqualsAttr:
+                    return CreateComparisonValidator(greaterThanOrEqualsAttr, type, prop,
+                        o => new GreaterThanOrEqualValidator(o as IComparable),
+                        (func, info) => new GreaterThanOrEqualValidator(func, info));
+                case LessThanOrEqualAttribute lessThanOrEqualsAttr:
+                    return CreateComparisonValidator(lessThanOrEqualsAttr, type, prop,
+                        o => new LessThanOrEqualValidator(o as IComparable),
+                        (func, info) => new LessThanOrEqualValidator(func, info));
+                case LessThanAttribute lessThanAttr:
+                    return CreateComparisonValidator(lessThanAttr, type, prop,
+                        o => new LessThanValidator(o as IComparable),
+                        (func, info) => new LessThanValidator(func, info));
+                default:
+                    return null;
+            }
+        }
+
+        private IPropertyValidator CreateBetweenValidator(object from, object to, Func<IComparable, IComparable, IPropertyValidator> createFunc)
+        {
+            if (from != null && to != null && from.GetType() != to.GetType())
+            {
+                var fromConverted = Convert.ChangeType(from, to.GetType());
+                return createFunc(fromConverted as IComparable, to as IComparable);
+            }
+            else
+            {
+                return createFunc(from as IComparable, to as IComparable);
+            }
+        }
+
+        private IComparisonValidator CreateComparisonValidator<T>(
+            T attr,
+            Type type,
+            PropertyInfo prop,
+            Func<object, IComparisonValidator> ctor1Fun,
             Func<Func<object, object>, MemberInfo, IComparisonValidator> ctor2Fun)
             where T : ComparisonAttribute
         {
-            if (attr == null) return;
-            IComparisonValidator propValidator = null;
+            if (attr == null)
+            {
+                return null;
+            }
 
+            IComparisonValidator propValidator = null;
             if (attr.CompareToValue != null)
             {
-                propValidator = ctor1Fun(attr.CompareToValue);
+                return ctor1Fun(attr.CompareToValue);
             }
+
             if (attr.ComparsionProperty != null)
             {
-                if (propValidator != null)
-                    AddAttributePropertyValidator(propValidator, prop, attr.IncludePropertyName);
-
                 var propInfo = type.GetProperty(attr.ComparsionProperty);
                 if (propInfo == null)
-                    throw new ArgumentException(string.Format("ComparisonProperty '{0}' of {1} in type '{2}' was not found",
-                        attr.ComparsionProperty, typeof(T), type));
+                {
+                    throw new ArgumentException($"ComparisonProperty '{attr.ComparsionProperty}' of {typeof(T)} in type '{type}' was not found");
+                }
 
                 Func<object, object> fun = propInfo.GetValue;
                 propValidator = ctor2Fun(fun, propInfo);
             }
-            AddAttributePropertyValidator(propValidator, prop, attr.IncludePropertyName);
+
+            return propValidator;
+
+            //AddAttributePropertyValidator(propValidator, prop, attr.IncludePropertyName);
         }
 
         private void AddAttributePropertyValidator(IPropertyValidator propValidator, PropertyInfo prop, bool includePropertyName)
@@ -273,7 +184,8 @@ namespace CoreSharp.Validation
             var rule = CreateRule(typeof(TModel), prop.Name);
             rule.RuleSets = new [] { ruleSet};
             rule.AddValidator(propValidator);
-            //rule.SetL10NMessage(includePropertyName);
+            var message = propValidator.GetMessageId(includePropertyName);
+            rule.MessageBuilder = ctx => ctx.MessageFormatter.BuildMessage(message);
             AddRule(rule);
         }
 
@@ -285,7 +197,9 @@ namespace CoreSharp.Validation
 
             var propInfo = body.Member as PropertyInfo;
             if (propInfo == null)
+            {
                 throw new NullReferenceException("propInfo");
+            }
 
             var createRuleMethod = typeof(PropertyRule)
                 .GetMethods(BindingFlags.Static | BindingFlags.Public)

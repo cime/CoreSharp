@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace CoreSharp.Common.Attributes
 {
@@ -21,7 +21,7 @@ namespace CoreSharp.Common.Attributes
 
         public bool IsMinSet()
         {
-            return Min != int.MinValue;
+            return Min > 0;
         }
     }
 }

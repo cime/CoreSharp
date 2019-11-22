@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -359,7 +359,6 @@ namespace CoreSharp.GraphQL
         {
             if (Attribute.IsDefined(propertyInfo, typeof(RequiredAttribute))) return false;
             if (Attribute.IsDefined(propertyInfo, typeof(NotNullAttribute))) return false;
-            if (Attribute.IsDefined(propertyInfo, typeof(NotNullOrEmptyAttribute))) return false;
 
             if (!propertyInfo.PropertyType.IsValueType) return true;
 

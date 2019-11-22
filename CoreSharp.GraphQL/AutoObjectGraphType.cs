@@ -1,4 +1,4 @@
-using GraphQL;
+﻿using GraphQL;
 using GraphQL.Types;
 using GraphQL.Utilities;
 using System;
@@ -138,7 +138,6 @@ namespace CoreSharp.GraphQL
         {
             if (Attribute.IsDefined(propertyInfo, typeof(RequiredAttribute))) return false;
             if (Attribute.IsDefined(propertyInfo, typeof(NotNullAttribute))) return false;
-            if (Attribute.IsDefined(propertyInfo, typeof(NotNullOrEmptyAttribute))) return false;
 
             if (!propertyInfo.PropertyType.IsValueType) return true;
 

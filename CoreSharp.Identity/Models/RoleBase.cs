@@ -10,10 +10,10 @@ namespace CoreSharp.Identity.Models
         where TRolePermission : RolePermissionBase<TRole, TRolePermission, TPermission>
         where TRole : RoleBase<TRole, TRolePermission, TPermission>
     {
-        [NotNullOrEmpty]
+        [NotNull]
         public virtual string Name { get; set; }
 
-        [NotNullOrEmpty]
+        [NotNull]
         public virtual string NormalizedName { get; set; }
 
         [Include]
