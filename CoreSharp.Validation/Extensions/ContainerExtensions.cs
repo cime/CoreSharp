@@ -1,9 +1,10 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using CoreSharp.Validation;
+using CoreSharp.Validation.Internal;
 using FluentValidation;
-using SimpleInjector.Advanced;
 
 // ReSharper disable once CheckNamespace
 namespace SimpleInjector
@@ -30,6 +31,7 @@ namespace SimpleInjector
                 {
                     continue;
                 }
+
                 var registration = Lifestyle.Singleton.CreateRegistration(match.ValidatorType, container);
                 container.AddRegistration(match.ValidatorType, registration);
                 container.AddRegistration(serviceType, registration);
@@ -38,27 +40,65 @@ namespace SimpleInjector
 
         private static void RegisterDomainValidators(Container container, Assembly assembly)
         {
-            var matches = assembly.GetExportedTypes().Where(x =>
-            {
-                var typeInfo = x.GetTypeInfo();
+            var matches = assembly.GetExportedTypes()
+                .Where(t => t.IsClass && !t.IsAbstract && IsDomainValidator(t))
+                .Select(t => new
+                {
+                    Implementation = t,
+                    Services = t.GetInterfaces().Where(i => IsGenericDomainValidator(i))
+                });
 
-                return typeInfo.IsClass && !typeInfo.IsAbstract &&
-                    (typeInfo.IsAssignableToGenericType(typeof(IDomainValidator<>)) ||
-                     typeInfo.IsAssignableToGenericType(typeof(IAsyncDomainValidator<>)));
-            });
-
+            Registration registration;
+            var genericDomainValidatorTypes = new List<Type>();
             foreach (var match in matches)
             {
-                var serviceType = match.GetGenericType(typeof(IDomainValidator<>)) ??  match.GetGenericType(typeof(IAsyncDomainValidator<>));
-                if (serviceType == null)
+                if (match.Implementation.IsGenericType)
                 {
+                    var args = match.Implementation.GetGenericArguments();
+                    if (args.Length > 2)
+                    {
+                        throw new NotSupportedException(
+                                $"Domain validators with more that two generic arguments are not supported. Invalid domain validator: {match.Implementation}" +
+                                "Hint: make the validator as an abstract type or modify the type to contain two generic arguments or less");
+                    }
+
+                    container.Register(match.Implementation, match.Implementation);
+                    // Register the implementation as we will need the registration when adding root/child producers
+                    // Open generic registrations cannot be retrieved with GetCurrentRegistrations so we have to store
+                    // them separately
+                    genericDomainValidatorTypes.Add(match.Implementation);
+                    foreach (var serviceType in match.Services)
+                    {
+                        container.Collection.Append(serviceType, match.Implementation);
+                    }
+
                     continue;
                 }
 
-                var registration = Lifestyle.Scoped.CreateRegistration(match, container);
-                container.AddRegistration(match, registration);
-                container.Collection.Append(serviceType, registration);
+                registration = Lifestyle.Transient.CreateRegistration(match.Implementation, container);
+                container.AddRegistration(match.Implementation, registration);
+                foreach (var serviceType in match.Services)
+                {
+                    container.Collection.Append(serviceType, registration);
+                }
             }
+
+            var metadata = new RegisteredValidationAssemblyMetadata(assembly, genericDomainValidatorTypes);
+            container.Collection.AppendInstance(metadata);
+        }
+
+        private static bool IsGenericDomainValidator(Type type)
+        {
+            return
+                type.IsAssignableToGenericType(typeof(IDomainValidator<,>)) ||
+                type.IsAssignableToGenericType(typeof(IAsyncDomainValidator<,>));
+        }
+
+        private static bool IsDomainValidator(Type type)
+        {
+            return
+                typeof(IDomainValidator).IsAssignableFrom(type) ||
+                typeof(IAsyncDomainValidator).IsAssignableFrom(type);
         }
     }
 }

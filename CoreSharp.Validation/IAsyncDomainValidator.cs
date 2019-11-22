@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using FluentValidation;
 using FluentValidation.Results;
 
@@ -6,6 +6,8 @@ namespace CoreSharp.Validation
 {
     public interface IAsyncDomainValidator
     {
+        Task BeforeValidationAsync(object model, ValidationContext context);
+
         Task<ValidationFailure> ValidateAsync(object model, ValidationContext context);
 
         Task<bool> CanValidateAsync(object model, ValidationContext context);
@@ -13,10 +15,16 @@ namespace CoreSharp.Validation
         string[] RuleSets { get; }
     }
 
-    public interface IAsyncDomainValidator<TModel> : IAsyncDomainValidator
+    public interface IAsyncDomainValidator<TModel> : IAsyncDomainValidator<TModel, TModel>
     {
-        Task<ValidationFailure> ValidateAsync(TModel model, ValidationContext context);
+    }
 
-        Task<bool> CanValidateAsync(TModel model, ValidationContext context);
+    public interface IAsyncDomainValidator<TRoot, TChild> : IAsyncDomainValidator
+    {
+        Task BeforeValidationAsync(TRoot root, ValidationContext context);
+
+        Task<ValidationFailure> ValidateAsync(TChild child, ValidationContext context);
+
+        Task<bool> CanValidateAsync(TChild child, ValidationContext context);
     }
 }

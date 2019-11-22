@@ -22,21 +22,21 @@ namespace CoreSharp.Identity.Models
         where TPermission : PermissionBase
         where TRolePermission : RolePermissionBase<TRole, TRolePermission, TPermission>
     {
-        [NotNullOrEmpty]
+        [NotNull]
         [Unique]
         [Length(50)]
         public virtual string UserName { get; set; }
 
-        [NotNullOrEmpty]
+        [NotNull]
         [Unique]
         [Length(50)]
         public virtual string NormalizedUserName { get; set; }
 
-        [NotNullOrEmpty]
+        [NotNull]
         [Email]
         public virtual string Email { get; set; }
 
-        [NotNullOrEmpty]
+        [NotNull]
         [Email]
         public virtual string NormalizedEmail { get; set; }
 

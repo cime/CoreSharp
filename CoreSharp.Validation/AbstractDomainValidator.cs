@@ -1,36 +1,56 @@
-using System;
+﻿using System;
 using System.Linq.Expressions;
 using FluentValidation;
 using FluentValidation.Results;
 
 namespace CoreSharp.Validation
 {
-    public abstract class AbstractDomainValidator<TModel> : IDomainValidator<TModel>
+    public abstract class AbstractDomainValidator<TModel> : AbstractDomainValidator<TModel, TModel>
+        where TModel : class
+    { 
+    }
+
+    public abstract class AbstractDomainValidator<TRoot, TChild> : IDomainValidator<TRoot, TChild>
+        where TRoot : class
+        where TChild : class
     {
-        public ValidationFailure Validate(object model, ValidationContext context)
+        public virtual string[] RuleSets { get; }
+
+        public abstract ValidationFailure Validate(TChild model, ValidationContext context);
+
+        public abstract bool CanValidate(TChild model, ValidationContext context);
+
+        public virtual void BeforeValidation(TRoot root, ValidationContext context)
         {
-            return Validate((TModel) model, context);
         }
 
-        public bool CanValidate(object model, ValidationContext context)
+        ValidationFailure IDomainValidator.Validate(object model, ValidationContext context)
         {
-            return CanValidate((TModel)model, context);
+            return Validate((TChild)model, context);
         }
 
-        public string[] RuleSets { get; set; }
-
-        public abstract ValidationFailure Validate(TModel model, ValidationContext context);
-
-        public abstract bool CanValidate(TModel model, ValidationContext context);
-
-        protected ValidationFailure Failure(Expression<Func<TModel, object>> propertyExp, string errorMessage)
+        bool IDomainValidator.CanValidate(object model, ValidationContext context)
         {
-            return new ValidationFailure(propertyExp.GetFullPropertyName(), errorMessage);
+            return CanValidate((TChild)model, context);
         }
 
-        protected ValidationFailure Failure(string errorMessage)
+        void IDomainValidator.BeforeValidation(object model, ValidationContext context)
         {
-            return new ValidationFailure("", errorMessage);
+            BeforeValidation((TRoot)model, context);
+        }
+
+        protected ValidationFailure Failure(Expression<Func<TChild, object>> propertyExp, string errorMessage, ValidationContext context)
+        {
+            var attemptedValue = context.InstanceToValidate is TChild child
+                ? propertyExp.Compile()(child)
+                : null;
+
+            return new ValidationFailure(propertyExp.GetFullPropertyName(), errorMessage, attemptedValue);
+        }
+
+        protected ValidationFailure Failure(string errorMessage, ValidationContext context)
+        {
+            return new ValidationFailure(context.PropertyChain.ToString(), errorMessage, context.InstanceToValidate);
         }
 
         protected ValidationFailure Success => null;

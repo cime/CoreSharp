@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using FluentValidation;
@@ -6,32 +6,50 @@ using FluentValidation.Results;
 
 namespace CoreSharp.Validation
 {
-    public abstract class AbstractAsyncDomainValidator<TModel> : IAsyncDomainValidator<TModel>
+    public abstract class AbstractAsyncDomainValidator<TModel> : AbstractAsyncDomainValidator<TModel, TModel>
     {
-        public Task<ValidationFailure> ValidateAsync(object model, ValidationContext context)
+    }
+
+    public abstract class AbstractAsyncDomainValidator<TRoot, TChild> : IAsyncDomainValidator<TRoot, TChild>
+    {
+        public virtual string[] RuleSets { get; }
+
+        public abstract Task<ValidationFailure> ValidateAsync(TChild model, ValidationContext context);
+
+        public abstract Task<bool> CanValidateAsync(TChild model, ValidationContext context);
+
+        public virtual Task BeforeValidationAsync(TRoot root, ValidationContext context)
         {
-            return ValidateAsync((TModel) model, context);
+            return Task.CompletedTask;
         }
 
-        public Task<bool> CanValidateAsync(object model, ValidationContext context)
+        Task<ValidationFailure> IAsyncDomainValidator.ValidateAsync(object model, ValidationContext context)
         {
-            return CanValidateAsync((TModel)model, context);
+            return ValidateAsync((TChild)model, context);
         }
 
-        public string[] RuleSets { get; set; }
-
-        public abstract Task<ValidationFailure> ValidateAsync(TModel model, ValidationContext context);
-
-        public abstract Task<bool> CanValidateAsync(TModel model, ValidationContext context);
-
-        protected ValidationFailure Failure(Expression<Func<TModel, object>> propertyExp, string errorMessage)
+        Task<bool> IAsyncDomainValidator.CanValidateAsync(object model, ValidationContext context)
         {
-            return new ValidationFailure(propertyExp.GetFullPropertyName(), errorMessage);
+            return CanValidateAsync((TChild)model, context);
         }
 
-        protected ValidationFailure Failure(string errorMessage)
+        Task IAsyncDomainValidator.BeforeValidationAsync(object model, ValidationContext context)
         {
-            return new ValidationFailure("", errorMessage);
+            return BeforeValidationAsync((TRoot)model, context);
+        }
+
+        protected ValidationFailure Failure(Expression<Func<TChild, object>> propertyExp, string errorMessage, ValidationContext context)
+        {
+            var attemptedValue = context.InstanceToValidate is TChild child
+                ? propertyExp.Compile()(child)
+                : null;
+
+            return new ValidationFailure(propertyExp.GetFullPropertyName(), errorMessage, attemptedValue);
+        }
+
+        protected ValidationFailure Failure(string errorMessage, ValidationContext context)
+        {
+            return new ValidationFailure(context.PropertyChain.ToString(), errorMessage, context.InstanceToValidate);
         }
 
         protected ValidationFailure Success => null;

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -9,7 +9,7 @@ using FluentValidation.Validators;
 
 namespace CoreSharp.Validation.Internal
 {
-internal class DomainValidatorsValidator : IValidationRule
+    internal class DomainValidatorsValidator : IValidationRule
     {
         private readonly Func<ValidationContext, IEnumerable<IDomainValidator>> _rulesFunc;
         private readonly Func<ValidationContext, IEnumerable<IAsyncDomainValidator>> _asyncRulesFunc;
