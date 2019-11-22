@@ -93,7 +93,7 @@ namespace CoreSharp.NHibernate.CodeList.EventHandlers
                             o => typeof(ILocalizableCodeListLanguage).IsAssignableFrom(o.ChildType));
                     if (names == null)
                     {
-                        throw new CoreSharpException("FilterCurrentLanguage must be applied on a type that implements ICodeListLoc<,>");
+                        throw new CoreSharpException("FilterCurrentLanguage must be applied on a type that implements ILocalizableCodeListLanguage");
                     }
                     if (!lazyTypeMap.Value.ContainsKey(names.ChildType))
                     {

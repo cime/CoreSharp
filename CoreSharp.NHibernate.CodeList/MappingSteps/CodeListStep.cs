@@ -33,7 +33,8 @@ namespace CoreSharp.NHibernate.CodeList.MappingSteps
                 return false;
             }
 
-            var codeListType = member.DeclaringType.GetGenericArguments()[2];
+            var interfaceType =  member.DeclaringType.GetGenericType(typeof(ILocalizableCodeList<,,>));
+            var codeListType = interfaceType.GetGenericArguments()[1];
 
             return
                 member.Name == "Translations" &&
