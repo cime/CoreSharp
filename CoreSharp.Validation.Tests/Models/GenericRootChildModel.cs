@@ -41,7 +41,12 @@ namespace CoreSharp.Tests.Validation.Models
     {
         public override ValidationFailure Validate(TChild child, ValidationContext context)
         {
-            return string.IsNullOrEmpty(child.Name) ? Failure("Name should not be empty", context) :  Success;
+            if (child.Name == "Invalid")
+            {
+                return Failure("Invalid name", context);
+            }
+
+            return string.IsNullOrEmpty(child.Name) ? Failure(o => o.Name, "Should not be empty", context) :  Success;
         }
 
         public override bool CanValidate(TChild child, ValidationContext context)
