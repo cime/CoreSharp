@@ -101,7 +101,7 @@ namespace CoreSharp.NHibernate.CodeList.EventHandlers
                     }
                     // Here the table name is already altered
                     var childMapping = lazyTypeMap.Value[names.ChildType];
-                    var childTableName = $"{childMapping.Schema}.{childMapping.TableName}";
+                    var childTableName = string.IsNullOrEmpty(childMapping.Schema) ? childMapping.TableName : $"{childMapping.Schema}.{childMapping.TableName}";
                     propMap.Set(o => o.Formula, Layer.UserSupplied,
                         string.Format(_localizeFormula,
                             attr.ColumnName ?? ConvertQuotes(GetColumnName(propMap.Name)),
