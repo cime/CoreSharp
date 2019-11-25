@@ -11,7 +11,7 @@ namespace CoreSharp.NHibernate.CodeList
     [Serializable]
     public abstract class LocalizableCodeList<TLanguage, TCodeList, TCodeListTranslation> : VersionedEntity<string>, ILocalizableCodeList<TLanguage, TCodeList, TCodeListTranslation>
         where TLanguage : ICodeList
-        where TCodeListTranslation : class, ILocalizableCodeListLanguage<TLanguage, TCodeList, TCodeListTranslation>
+        where TCodeListTranslation : class, ILocalizableCodeListTranslation<TLanguage, TCodeList, TCodeListTranslation>
         where TCodeList : LocalizableCodeList<TLanguage, TCodeList, TCodeListTranslation>
     {
         private static readonly DateTime MinDate = new DateTime(1900, 1, 1, 0, 0, 0);

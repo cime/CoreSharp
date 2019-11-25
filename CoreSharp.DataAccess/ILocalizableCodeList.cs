@@ -5,7 +5,7 @@ namespace CoreSharp.DataAccess
     public interface ILocalizableCodeList<TLanguage, TCodeList, TCodeListTranslation> : ICodeList
         where TLanguage : ICodeList
         where TCodeList : ILocalizableCodeList<TLanguage, TCodeList, TCodeListTranslation>
-        where TCodeListTranslation : ILocalizableCodeListLanguage<TLanguage, TCodeList, TCodeListTranslation>
+        where TCodeListTranslation : ILocalizableCodeListTranslation<TLanguage, TCodeList, TCodeListTranslation>
     {
         ISet<TCodeListTranslation> Translations { get; set; }
 

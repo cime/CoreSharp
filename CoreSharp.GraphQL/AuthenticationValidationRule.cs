@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using CoreSharp.GraphQL.Extensions;
 using GraphQL.Language.AST;
 using GraphQL.Validation;
@@ -45,6 +46,11 @@ namespace CoreSharp.GraphQL
                     }
                 });
             });
+        }
+
+        public async Task<INodeVisitor> ValidateAsync(ValidationContext context)
+        {
+            return Validate(context);
         }
     }
 }

@@ -8,15 +8,15 @@ namespace CoreSharp.NHibernate.CodeList
 {
     [Ignore]
     [Serializable]
-    public abstract class LocalizableCodeListLanguage<TLanguage, TCodeList, TCodeListTranslation> : Entity, ILocalizableCodeListLanguage<TLanguage, TCodeList, TCodeListTranslation>
+    public abstract class LocalizableCodeListTranslation<TLanguage, TCodeList, TCodeListTranslation> : Entity, ILocalizableCodeListTranslation<TLanguage, TCodeList, TCodeListTranslation>
         where TLanguage : ICodeList
         where TCodeList : class, ILocalizableCodeList<TLanguage, TCodeList, TCodeListTranslation>
-        where TCodeListTranslation : class, ILocalizableCodeListLanguage<TLanguage, TCodeList, TCodeListTranslation>
+        where TCodeListTranslation : class, ILocalizableCodeListTranslation<TLanguage, TCodeList, TCodeListTranslation>
     {
         public virtual TCodeList CodeList { get; set; }
 
-        [Formula("LanguageCode")]
-        public virtual string LanguageCode { get; }
+        [Formula("LanguageId")]
+        public virtual string LanguageId { get; }
         public virtual TLanguage Language { get; set; }
 
         public virtual string Name { get; set; }
