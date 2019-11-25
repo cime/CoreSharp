@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq.Expressions;
+using CoreSharp.Validation.Internal;
 using FluentValidation;
 using FluentValidation.Results;
-using static CoreSharp.Common.Internationalization.I18N;
 
 namespace CoreSharp.Validation
 {
@@ -40,18 +40,14 @@ namespace CoreSharp.Validation
             BeforeValidation((TRoot)model, context);
         }
 
-        protected ValidationFailure Failure(Expression<Func<TChild, object>> propertyExp, string errorMessage, ValidationContext context)
+        protected ValidationFailure Failure<TProperty>(Expression<Func<TChild, TProperty>> propertyExp, string errorMessage, ValidationContext context)
         {
-            var attemptedValue = context.InstanceToValidate is TChild child
-                ? propertyExp.Compile()(child)
-                : null;
-
-            return new ValidationFailure(propertyExp.GetFullPropertyName(), _(errorMessage), attemptedValue);
+            return DomainValidationContext.CreateValidationFailure(propertyExp, errorMessage, context);
         }
 
         protected ValidationFailure Failure(string errorMessage, ValidationContext context)
         {
-            return new ValidationFailure(context.PropertyChain.ToString(), _(errorMessage), context.InstanceToValidate);
+            return DomainValidationContext.CreateValidationFailure(errorMessage, context);
         }
 
         protected ValidationFailure Success => null;

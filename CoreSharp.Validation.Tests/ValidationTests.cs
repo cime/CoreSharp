@@ -366,8 +366,8 @@ namespace CoreSharp.Tests.Validation
         {
             var child1 = new ConcreteGenericChildChild();
             var child2 = new ConcreteGenericChildChild2();
-            var child3 = new ConcreteGenericChildChild {Name = "Test"};
-            var child4 = new ConcreteGenericChildChild2();
+            var child3 = new ConcreteGenericChildChild { Name = "Test" };
+            var child4 = new ConcreteGenericChildChild2 { Name = "Invalid" };
             var model = new GenericChildParent
             {
                 Children = new List<GenericChildChild>
@@ -379,19 +379,8 @@ namespace CoreSharp.Tests.Validation
                 Relation = child4
             };
             var validator = _baseTest.Container.GetInstance<IValidator<GenericChildParent>>();
-
             var valResult = validator.Validate(model);
-            Assert.False(valResult.IsValid);
-            Assert.Equal(3, valResult.Errors.Count);
-            Assert.Equal("Name should not be empty", valResult.Errors[0].ErrorMessage);
-            Assert.Equal("Children[0]", valResult.Errors[0].PropertyName);
-            Assert.Equal(child1, valResult.Errors[0].AttemptedValue);
-            Assert.Equal("Name should not be empty", valResult.Errors[1].ErrorMessage);
-            Assert.Equal("Children[1]", valResult.Errors[1].PropertyName);
-            Assert.Equal(child2, valResult.Errors[1].AttemptedValue);
-            Assert.Equal("Name should not be empty", valResult.Errors[2].ErrorMessage);
-            Assert.Equal("Relation", valResult.Errors[2].PropertyName);
-            Assert.Equal(child4, valResult.Errors[2].AttemptedValue);
+            AssertValidationResult(valResult, child1, child2, child4);
 
             var childValidator = _baseTest.Container.GetInstance<IValidator<GenericChildChild>>();
             valResult = childValidator.Validate(child1);
@@ -404,7 +393,7 @@ namespace CoreSharp.Tests.Validation
             var child1 = new ConcreteGenericRootChildChild();
             var child2 = new ConcreteGenericRootChildChild2();
             var child3 = new ConcreteGenericRootChildChild { Name = "Test" };
-            var child4 = new ConcreteGenericRootChildChild2();
+            var child4 = new ConcreteGenericRootChildChild2 { Name = "Invalid" };
             var model = new GenericRootChildParent
             {
                 Children = new List<GenericRootChildChild>
@@ -416,19 +405,8 @@ namespace CoreSharp.Tests.Validation
                 Relation = child4
             };
             var validator = _baseTest.Container.GetInstance<IValidator<GenericRootChildParent>>();
-
             var valResult = validator.Validate(model);
-            Assert.False(valResult.IsValid);
-            Assert.Equal(3, valResult.Errors.Count);
-            Assert.Equal("Name should not be empty", valResult.Errors[0].ErrorMessage);
-            Assert.Equal("Children[0]", valResult.Errors[0].PropertyName);
-            Assert.Equal(child1, valResult.Errors[0].AttemptedValue);
-            Assert.Equal("Name should not be empty", valResult.Errors[1].ErrorMessage);
-            Assert.Equal("Children[1]", valResult.Errors[1].PropertyName);
-            Assert.Equal(child2, valResult.Errors[1].AttemptedValue);
-            Assert.Equal("Name should not be empty", valResult.Errors[2].ErrorMessage);
-            Assert.Equal("Relation", valResult.Errors[2].PropertyName);
-            Assert.Equal(child4, valResult.Errors[2].AttemptedValue);
+            AssertValidationResult(valResult, child1, child2, child4);
 
             var childValidator = _baseTest.Container.GetInstance<IValidator<GenericRootChildChild>>();
             valResult = childValidator.Validate(child1);
@@ -441,7 +419,7 @@ namespace CoreSharp.Tests.Validation
             var child1 = new GenericRootModel();
             var child2 = new GenericRootModel();
             var child3 = new GenericRootModel { Name = "Test" };
-            var child4 = new GenericRootModel();
+            var child4 = new GenericRootModel { Name = "Invalid" };
             var model = new GenericRootModel
             {
                 Children = new List<GenericRootModel>
@@ -453,26 +431,53 @@ namespace CoreSharp.Tests.Validation
                 Relation = child4
             };
             var validator = _baseTest.Container.GetInstance<IValidator<GenericRootModel>>();
-
             var valResult = validator.Validate(model);
+
             Assert.False(valResult.IsValid);
             Assert.Equal(4, valResult.Errors.Count);
-            Assert.Equal("Name should not be empty", valResult.Errors[0].ErrorMessage);
-            Assert.Equal("Children[0]", valResult.Errors[0].PropertyName);
-            Assert.Equal(child1, valResult.Errors[0].AttemptedValue);
-            Assert.Equal("Name should not be empty", valResult.Errors[1].ErrorMessage);
-            Assert.Equal("Children[1]", valResult.Errors[1].PropertyName);
-            Assert.Equal(child2, valResult.Errors[1].AttemptedValue);
-            Assert.Equal("Name should not be empty", valResult.Errors[2].ErrorMessage);
-            Assert.Equal("Relation", valResult.Errors[2].PropertyName);
-            Assert.Equal(child4, valResult.Errors[2].AttemptedValue);
-            Assert.Equal("Name should not be empty", valResult.Errors[3].ErrorMessage);
-            Assert.Equal("", valResult.Errors[3].PropertyName);
-            Assert.Equal(model, valResult.Errors[3].AttemptedValue);
+
+            AssertNameNotEmptyError(valResult.Errors[0], child1);
+            AssertNameNotEmptyError(valResult.Errors[1], child2);
+            AssertNotEmptyInstanceError(valResult.Errors[2], "Relation", "Invalid name", child4);
+            AssertNameNotEmptyError(valResult.Errors[3], model);
 
             var childValidator = _baseTest.Container.GetInstance<IValidator<GenericRootModel>>();
             valResult = childValidator.Validate(child1);
             Assert.False(valResult.IsValid);
+        }
+
+        private void AssertValidationResult(ValidationResult valResult, dynamic child1, dynamic child2, dynamic child3)
+        {
+            Assert.False(valResult.IsValid);
+            Assert.Equal(3, valResult.Errors.Count);
+
+            AssertNameNotEmptyError(valResult.Errors[0], child1);
+            AssertNameNotEmptyError(valResult.Errors[1], child2);
+            AssertNotEmptyInstanceError(valResult.Errors[2], "Relation", "Invalid name", child3);
+        }
+
+        private void AssertNameNotEmptyError(ValidationFailure validationFailure, dynamic model)
+        {
+            // Test property error
+            Assert.Equal("Should not be empty", validationFailure.ErrorMessage);
+            Assert.Equal("Name", validationFailure.PropertyName);
+            Assert.IsAssignableFrom<IValidationContext>(validationFailure.CustomState);
+            var context = (IValidationContext) validationFailure.CustomState;
+            Assert.Equal(model.Name, context.PropertyValue);
+            Assert.Equal(model, context.InstanceToValidate);
+            Assert.Equal(model.Name, validationFailure.AttemptedValue);
+        }
+
+        private void AssertNotEmptyInstanceError(ValidationFailure validationFailure, string propertyName, string errorMessage, dynamic model)
+        {
+            // Test instance error
+            Assert.Equal(errorMessage, validationFailure.ErrorMessage);
+            Assert.Equal(propertyName, validationFailure.PropertyName);
+            Assert.Equal(model, validationFailure.AttemptedValue);
+            Assert.IsAssignableFrom<IValidationContext>(validationFailure.CustomState);
+            var context = (IValidationContext)validationFailure.CustomState;
+            Assert.Null(context.PropertyValue);
+            Assert.Equal(model, context.InstanceToValidate);
         }
     }
 }
