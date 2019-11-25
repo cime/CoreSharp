@@ -8,7 +8,6 @@ using CoreSharp.DataAccess;
 using CoreSharp.DataAccess.Attributes;
 using CoreSharp.NHibernate.CodeList.Attributes;
 using CoreSharp.NHibernate.Events;
-using FluentNHibernate;
 using FluentNHibernate.MappingModel;
 using FluentNHibernate.MappingModel.ClassBased;
 using NHibernate.Cfg;

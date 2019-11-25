@@ -5,8 +5,6 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
 using CoreSharp.DataAccess;
 using CoreSharp.NHibernate.Decorators;
 using NHibernate.Intercept;
@@ -290,77 +288,6 @@ namespace NHibernate
             return isDirty ? oldState[index] : currentState[index];
         }
 
-        /// <summary>
-        /// Batch fetch entities
-        /// </summary>
-        /// <typeparam name="TEntity">Entity type</typeparam>
-        /// <typeparam name="TValue">Parameter type</typeparam>
-        /// <param name="session">ISession</param>
-        /// <param name="property"></param>
-        /// <param name="values"></param>
-        /// <param name="batchSize">Batch size, default = 500</param>
-        /// <returns></returns>
-        public static IList<TEntity> BatchFetch<TEntity, TValue>(this ISession session, Expression<Func<TEntity, TValue>> property, IList<TValue> values, int batchSize = 500)
-            where TEntity : class, IEntity
-        {
-            if (property == null)
-            {
-                throw new ArgumentNullException(nameof(property));
-            }
-
-            if (values == null)
-            {
-                throw new ArgumentNullException(nameof(values));
-            }
-
-            var meProperty = property.Body as MemberExpression;
-            if (meProperty == null || meProperty.Expression != property.Parameters[0] ||
-                meProperty.Member.MemberType != MemberTypes.Property)
-            {
-                throw new Exception("property");
-            }
-
-            var entities = new List<TEntity>();
-            var propertyName = meProperty.Member.Name;
-
-            values = values.Distinct().ToList();
-
-            for (var i = 0; i < values.Count; i += batchSize)
-            {
-                var pe = Expression.Parameter(typeof(TEntity));
-                var me = Expression.Property(pe, propertyName);
-                var ce = Expression.Constant(values.Skip(i).Take(batchSize));
-                var call = Expression.Call(typeof (Enumerable), "Contains", new[] {me.Type}, ce, me);
-                var lambda = Expression.Lambda<Func<TEntity, bool>>(call, pe);
-
-                var w = session.Query<TEntity>().Where(lambda).ToList();
-                if (w.Count > 0)
-                {
-                    entities = entities.Union(w).ToList();
-                }
-            }
-
-            return entities;
-        }
-
-        public static IList<TEntity> BatchFetch<TEntity>(this ISession session, int batchSize = 500)
-            where TEntity : class, IEntity
-        {
-            var entities = new List<TEntity>();
-
-            List<TEntity> batch;
-            var i = 0;
-            do
-            {
-                batch = session.Query<TEntity>().Skip(i * batchSize).Take(batchSize).ToList();
-                entities = entities.Union(batch).ToList();
-                i++;
-            } while (batch.Count > 0);
-
-            return entities.Distinct().ToList();
-        }
-
-
         private static readonly ConcurrentDictionary<System.Type, string> TableNamesCache = new  ConcurrentDictionary<System.Type, string>();
 
         public static string GetTableName<T>(this ISession session)
@@ -446,6 +373,28 @@ namespace NHibernate
                     yield return ((T)key);
                 }
             }
+        }
+
+        public static T LoadIf<T>(this ISession session, object id)
+            where T : IEntity
+        {
+            if (id is string str && string.IsNullOrWhiteSpace(str))
+            {
+                return default(T);
+            }
+
+            return id == null ? default(T) : session.Load<T>(id);
+        }
+
+        public static T GetIf<T>(this ISession session, object id)
+            where T : IEntity
+        {
+            if (id is string str && string.IsNullOrWhiteSpace(str))
+            {
+                return default(T);
+            }
+
+            return id == null ? default(T) : session.Get<T>(id);
         }
     }
 }
