@@ -47,7 +47,9 @@ namespace CoreSharp.NHibernate.Extensions
 
             return fluentConfiguration.ExposeConfiguration(cfg =>
             {
-                new SchemaExport(cfg).Execute(true, true, false);
+                var schemaExport = new SchemaExport(cfg);
+                schemaExport.Drop(true, true);
+                schemaExport.Create(true, true);
             });
         }
 
