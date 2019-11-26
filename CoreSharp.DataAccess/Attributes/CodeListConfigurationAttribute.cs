@@ -7,14 +7,11 @@ namespace CoreSharp.DataAccess.Attributes
     {
         public CodeListConfigurationAttribute()
         {
-            CodeLength = 20;
-            CodeListPrefix = true;
+            IdLength = 20;
         }
 
-        public int CodeLength { get; set; }
+        public int IdLength { get; set; }
 
         public int? NameLength { get; set; }
-
-        public bool CodeListPrefix { get; set; }
     }
 }

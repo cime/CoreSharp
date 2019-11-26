@@ -5,7 +5,6 @@ using System.Reflection;
 using CoreSharp.Common.Exceptions;
 using CoreSharp.Cqrs.Events;
 using CoreSharp.DataAccess;
-using CoreSharp.DataAccess.Attributes;
 using CoreSharp.NHibernate.CodeList.Attributes;
 using CoreSharp.NHibernate.Events;
 using FluentNHibernate.MappingModel;
@@ -31,18 +30,10 @@ namespace CoreSharp.NHibernate.CodeList.EventHandlers
         {
             var type = classMapBase.Type;
 
-            var codeListAttr = type.GetCustomAttribute<CodeListConfigurationAttribute>(false) ?? new CodeListConfigurationAttribute();
-
             var classMap = classMapBase as ClassMapping;
             if (classMap == null)
             {
                 return;
-            }
-
-            //Add Table prefix
-            if (codeListAttr.CodeListPrefix)
-            {
-                classMap.Set(o => o.TableName, Layer.UserSupplied, GetTableName(classMap, codeListAttr));
             }
 
             if (typeof(ILocalizableCodeListTranslation).IsAssignableFrom(type))
@@ -81,14 +72,6 @@ namespace CoreSharp.NHibernate.CodeList.EventHandlers
                             ConvertQuotes(GetColumnName("Id"))));
                 }
             }
-
-            if (!codeListAttr.NameLength.HasValue)
-            {
-                return;
-            }
-            var nameProp = classMap.Properties.First(o => o.Name == "Name");
-            var nameCol = nameProp.Columns.First();
-            nameCol.Set(o => o.Length, Layer.UserSupplied, codeListAttr.NameLength.Value);
         }
 
         protected string GetColumnName(string name)
@@ -122,26 +105,6 @@ namespace CoreSharp.NHibernate.CodeList.EventHandlers
             {
                 Apply(classMap, lazyTypeMap);
             }
-        }
-
-        protected virtual string GetTableName(ClassMapping classMap, CodeListConfigurationAttribute attr = null)
-        {
-            attr = attr ?? classMap.Type.GetCustomAttribute<CodeListConfigurationAttribute>(false) ?? new CodeListConfigurationAttribute();
-            var tableName = classMap.TableName.Trim('`').TrimStart(Dialect.OpenQuote).TrimEnd(Dialect.CloseQuote);
-            if (!attr.CodeListPrefix)
-            {
-                return ConvertQuotes(NamingStrategy.TableName(tableName));
-            }
-            if (tableName.EndsWith("CodeList"))
-            {
-                tableName = tableName.Substring(0, tableName.IndexOf("CodeList", StringComparison.InvariantCulture));
-                tableName = "CodeList" + tableName;
-            }
-            else if (!tableName.StartsWith("CodeList"))
-            {
-                tableName = "CodeList" + tableName;
-            }
-            return ConvertQuotes(NamingStrategy.TableName(tableName));
         }
     }
 }
