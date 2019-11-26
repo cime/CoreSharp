@@ -28,17 +28,10 @@ namespace CoreSharp.NHibernate.CodeList.EventHandlers
 
         public void Apply(ClassMappingBase classMapBase, Lazy<Dictionary<Type, ClassMapping>> lazyTypeMap)
         {
-            var type = classMapBase.Type;
-
             var classMap = classMapBase as ClassMapping;
             if (classMap == null)
             {
                 return;
-            }
-
-            if (typeof(ILocalizableCodeListTranslation).IsAssignableFrom(type))
-            {
-                return; // for localization table we set only the table name
             }
 
             foreach (var propMap in classMap.Properties)
@@ -59,7 +52,7 @@ namespace CoreSharp.NHibernate.CodeList.EventHandlers
                     }
                     // Here the table name is already altered
                     var childMapping = lazyTypeMap.Value[names.ChildType];
-                    var childTableName = string.IsNullOrEmpty(childMapping.Schema) ? childMapping.TableName : $"{childMapping.Schema}.{childMapping.TableName}";
+                    var childTableName = string.IsNullOrEmpty(childMapping.Schema) ? childMapping.TableName : $"{GetTableName(childMapping.Schema)}.{GetTableName(childMapping.TableName)}";
                     propMap.Set(o => o.Formula, Layer.UserSupplied,
                         string.Format(_localizeFormula,
                             attr.ColumnName ?? ConvertQuotes(GetColumnName(propMap.Name)),
@@ -77,6 +70,11 @@ namespace CoreSharp.NHibernate.CodeList.EventHandlers
         protected string GetColumnName(string name)
         {
             return NamingStrategy.ColumnName(name);
+        }
+
+        protected string GetTableName(string name)
+        {
+            return NamingStrategy.TableName(name);
         }
 
         protected virtual string ConvertQuotes(string name)
@@ -99,9 +97,8 @@ namespace CoreSharp.NHibernate.CodeList.EventHandlers
 
             var classes = e.Mappings.SelectMany(o => o.Classes);
             var codeListClasses = classes.Where(x => typeof(ICodeList).IsAssignableFrom(x.Type));
-            var translationsClasses = classes.Where(x => typeof(ILocalizableCodeListTranslation).IsAssignableFrom(x.Type));
 
-            foreach (var classMap in translationsClasses.Union(codeListClasses))
+            foreach (var classMap in codeListClasses)
             {
                 Apply(classMap, lazyTypeMap);
             }

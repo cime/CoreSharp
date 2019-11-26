@@ -42,9 +42,7 @@ namespace CoreSharp.NHibernate.SQLServer.Extensions
 
                 foreach (var schema in schemas)
                 {
-                    command.CommandText = $@"IF NOT EXISTS(SELECT * FROM sys.schemas WHERE name = N'{schema}') 
-                        EXEC('CREATE SCHEMA [{schema}]');
-                    GO";
+                    command.CommandText = $"IF NOT EXISTS(SELECT * FROM sys.schemas  WHERE name = N'{schema}') EXEC('CREATE SCHEMA [{schema}]');";
                     command.ExecuteNonQuery();
                 }
             });
