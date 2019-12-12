@@ -20,19 +20,39 @@ namespace SimpleInjector
         /// <param name="container">SimpleInjector container</param>
         public static void RegisterCommandHandlers(this Container container)
         {
+            RegisterCommandHandlers(container, container.Options.DefaultLifestyle);
+        }
+
+        public static void RegisterCommandHandlers(this Container container, Lifestyle lifestyle)
+        {
             foreach (var dependentAssembly in typeof(ICommandHandler<>).Assembly.GetDependentAssemblies())
             {
-                RegisterCommandHandlersFromAssembly(container, dependentAssembly);
+                RegisterCommandHandlersFromAssembly(container, dependentAssembly, lifestyle);
             }
         }
 
         public static void RegisterCommandHandlersFromAssemblyOf<T>(this Container container)
         {
-            RegisterCommandHandlersFromAssembly(container, typeof(T).GetTypeInfo().Assembly);
+            RegisterCommandHandlersFromAssemblyOf<T>(container, container.Options.DefaultLifestyle);
+        }
+
+        public static void RegisterCommandHandlersFromAssemblyOf<T>(this Container container, Lifestyle lifestyle)
+        {
+            RegisterCommandHandlersFromAssembly(container, typeof(T).GetTypeInfo().Assembly, lifestyle);
         }
 
         public static void RegisterCommandHandlersFromAssembly(this Container container, Assembly assembly)
         {
+            RegisterCommandHandlersFromAssembly(container, assembly, container.Options.DefaultLifestyle);
+        }
+
+        public static void RegisterCommandHandlersFromAssembly(this Container container, Assembly assembly, Lifestyle lifestyle)
+        {
+            if (lifestyle == null)
+            {
+                throw new ArgumentNullException(nameof(lifestyle));
+            }
+
             var types = assembly.DefinedTypes.Where(x => x.IsClass && !x.IsAbstract && !x.IsGenericType &&
             (
                 x.IsAssignableToGenericType(typeof(ICommandHandler<>)) ||
@@ -44,24 +64,9 @@ namespace SimpleInjector
             foreach (var o in types.Select(t => new { Implementation = t, Services = t.ImplementedInterfaces }))
             {
                 var type = o.Implementation.AsType();
-                var attr = o.Implementation.GetCustomAttribute<LifetimeAttribute>() ?? new LifetimeAttribute(Lifetime.Transient);
+                var attr = o.Implementation.GetCustomAttribute<LifetimeAttribute>();
 
-                Registration registration;
-
-                switch (attr.Lifetime)
-                {
-                    case Lifetime.Singleton:
-                        registration = Lifestyle.Singleton.CreateRegistration(type, container);
-                        break;
-                    case Lifetime.Scoped:
-                        registration = Lifestyle.Scoped.CreateRegistration(type, container);
-                        break;
-                    case Lifetime.Transient:
-                        registration = Lifestyle.Transient.CreateRegistration(type, container);
-                        break;
-                    default:
-                        throw new CoreSharpException($"Invalid {nameof(Lifetime)} value: {attr.Lifetime}");
-                }
+                var registration = (attr?.Lifestyle ?? lifestyle).CreateRegistration(type, container);
 
                 container.AddRegistration(type, registration);
 
@@ -78,21 +83,36 @@ namespace SimpleInjector
         /// <param name="container">SimpleInjector container</param>
         public static void RegisterQueryHandlers(this Container container)
         {
+            RegisterQueryHandlers(container, container.Options.DefaultLifestyle);
+        }
+
+        public static void RegisterQueryHandlers(this Container container, Lifestyle lifestyle)
+        {
             foreach (var dependentAssembly in typeof(IQueryHandler<,>).Assembly.GetDependentAssemblies())
             {
-                RegisterQueryHandlersFromAssembly(container, dependentAssembly);
+                RegisterQueryHandlersFromAssembly(container, dependentAssembly, lifestyle);
             }
         }
 
         public static void RegisterQueryHandlersFromAssemblyOf<T>(this Container container)
         {
-            var assembly = typeof(T).GetTypeInfo().Assembly;
-
-            RegisterQueryHandlersFromAssembly(container, assembly);
+            RegisterQueryHandlersFromAssemblyOf<T>(container, container.Options.DefaultLifestyle);
         }
 
-        public static void RegisterQueryHandlersFromAssembly(this Container container, Assembly assembly)
+        public static void RegisterQueryHandlersFromAssemblyOf<T>(this Container container, Lifestyle lifestyle)
         {
+            var assembly = typeof(T).GetTypeInfo().Assembly;
+
+            RegisterQueryHandlersFromAssembly(container, assembly, lifestyle);
+        }
+
+        public static void RegisterQueryHandlersFromAssembly(this Container container, Assembly assembly, Lifestyle lifestyle)
+        {
+            if (lifestyle == null)
+            {
+                throw new ArgumentNullException(nameof(lifestyle));
+            }
+
             var types = assembly.DefinedTypes.Where(x => x.IsClass && !x.IsAbstract && !x.IsGenericType &&
                                                          (
                                                              x.IsAssignableToGenericType(typeof(IQueryHandler<,>)) ||
@@ -102,24 +122,9 @@ namespace SimpleInjector
             foreach (var o in types.Select(t => new { Implementation = t, Services = t.ImplementedInterfaces }))
             {
                 var type = o.Implementation.AsType();
-                var attr = o.Implementation.GetCustomAttribute<LifetimeAttribute>() ?? new LifetimeAttribute(Lifetime.Transient);
+                var attr = o.Implementation.GetCustomAttribute<LifetimeAttribute>();
 
-                Registration registration;
-
-                switch (attr.Lifetime)
-                {
-                    case Lifetime.Singleton:
-                        registration = Lifestyle.Singleton.CreateRegistration(type, container);
-                        break;
-                    case Lifetime.Scoped:
-                        registration = Lifestyle.Scoped.CreateRegistration(type, container);
-                        break;
-                    case Lifetime.Transient:
-                        registration = Lifestyle.Transient.CreateRegistration(type, container);
-                        break;
-                    default:
-                        throw new CoreSharpException($"Invalid {nameof(Lifetime)} value: {attr.Lifetime}");
-                }
+                var registration = (attr?.Lifestyle ?? lifestyle).CreateRegistration(type, container);
 
                 container.AddRegistration(type, registration);
 
@@ -136,21 +141,36 @@ namespace SimpleInjector
         /// <param name="container">SimpleInjector container</param>
         public static void RegisterEventHandlers(this Container container)
         {
+            RegisterEventHandlers(container, container.Options.DefaultLifestyle);
+        }
+
+        public static void RegisterEventHandlers(this Container container, Lifestyle lifestyle)
+        {
             foreach (var dependentAssembly in typeof(IEventHandler<>).Assembly.GetDependentAssemblies())
             {
-                RegisterCommandHandlersFromAssembly(container, dependentAssembly);
+                RegisterCommandHandlersFromAssembly(container, dependentAssembly, lifestyle);
             }
         }
 
         public static void RegisterEventHandlersFromAssemblyOf<T>(this Container container)
         {
-            var assembly = typeof(T).GetTypeInfo().Assembly;
-
-            RegisterEventHandlersFromAssembly(container, assembly);
+            RegisterEventHandlersFromAssemblyOf<T>(container, container.Options.DefaultLifestyle);
         }
 
-        public static void RegisterEventHandlersFromAssembly(this Container container, Assembly assembly)
+        public static void RegisterEventHandlersFromAssemblyOf<T>(this Container container, Lifestyle lifestyle)
         {
+            var assembly = typeof(T).GetTypeInfo().Assembly;
+
+            RegisterEventHandlersFromAssembly(container, assembly, lifestyle);
+        }
+
+        public static void RegisterEventHandlersFromAssembly(this Container container, Assembly assembly, Lifestyle lifestyle)
+        {
+            if (lifestyle == null)
+            {
+                throw new ArgumentNullException(nameof(lifestyle));
+            }
+
             var types = assembly.DefinedTypes.Where(x => x.IsClass && !x.IsAbstract && !x.IsGenericType &&
                 (
                     x.IsAssignableToGenericType(typeof(IEventHandler<>)) ||
@@ -160,24 +180,9 @@ namespace SimpleInjector
             foreach (var o in types.Select(t => new { Implementation = t, Services = t.ImplementedInterfaces }))
             {
                 var type = o.Implementation.AsType();
-                var attr = o.Implementation.GetCustomAttribute<LifetimeAttribute>() ?? new LifetimeAttribute(Lifetime.Singleton);
+                var attr = o.Implementation.GetCustomAttribute<LifetimeAttribute>();
 
-                Registration registration;
-
-                switch (attr.Lifetime)
-                {
-                    case Lifetime.Singleton:
-                        registration = Lifestyle.Singleton.CreateRegistration(type, container);
-                        break;
-                    case Lifetime.Scoped:
-                        registration = Lifestyle.Scoped.CreateRegistration(type, container);
-                        break;
-                    case Lifetime.Transient:
-                        registration = Lifestyle.Transient.CreateRegistration(type, container);
-                        break;
-                    default:
-                        throw new CoreSharpException($"Invalid {nameof(Lifetime)} value: {attr.Lifetime}");
-                }
+                var registration = (attr?.Lifestyle ?? lifestyle).CreateRegistration(type, container);
 
                 container.AddRegistration(type, registration);
 
@@ -199,6 +204,13 @@ namespace SimpleInjector
             RegisterEventHandlers(container);
         }
 
+        public static void RegisterCqrs(this Container container, Lifestyle lifestyle)
+        {
+            RegisterCommandHandlers(container, lifestyle);
+            RegisterQueryHandlers(container, lifestyle);
+            RegisterEventHandlers(container, lifestyle);
+        }
+
         /// <summary>
         /// Registers all command, query and event handlers from assembly of <typeparamref name="T" />
         /// </summary>
@@ -208,6 +220,13 @@ namespace SimpleInjector
             RegisterCommandHandlersFromAssemblyOf<T>(container);
             RegisterQueryHandlersFromAssemblyOf<T>(container);
             RegisterEventHandlersFromAssemblyOf<T>(container);
+        }
+
+        public static void RegisterCqrsFromAssemblyOf<T>(this Container container, Lifestyle lifestyle)
+        {
+            RegisterCommandHandlersFromAssemblyOf<T>(container, lifestyle);
+            RegisterQueryHandlersFromAssemblyOf<T>(container, lifestyle);
+            RegisterEventHandlersFromAssemblyOf<T>(container, lifestyle);
         }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using CoreSharp.Common.Exceptions;
 
 // ReSharper disable once CheckNamespace
 namespace SimpleInjector
@@ -15,6 +17,24 @@ namespace SimpleInjector
         public LifetimeAttribute(Lifetime lifetime)
         {
             Lifetime = lifetime;
+        }
+
+        public Lifestyle Lifestyle
+        {
+            get
+            {
+                switch (Lifetime)
+                {
+                    case Lifetime.Singleton:
+                        return Lifestyle.Singleton;
+                    case Lifetime.Scoped:
+                        return Lifestyle.Scoped;
+                    case Lifetime.Transient:
+                        return Lifestyle.Transient;
+                    default:
+                        throw new CoreSharpException($"Invalid {nameof(Lifetime)} value: {Lifetime}");
+                }
+            }
         }
     }
 }
