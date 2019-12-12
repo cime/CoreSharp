@@ -11,9 +11,11 @@ using FluentNHibernate.MappingModel;
 using FluentNHibernate.MappingModel.ClassBased;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
+using SimpleInjector;
 
 namespace CoreSharp.NHibernate.CodeList.EventHandlers
 {
+    [Lifetime(Lifetime.Singleton)]
     public class CodeListsMappingsBuiltEventHandler : IEventHandler<MappingsBuiltEvent>
     {
         // TODO: configurable...COALESCE works everywhere but is slower than ISNULL which is available only for sql server
