@@ -12,9 +12,11 @@ using CoreSharp.Validation;
 using FluentValidation;
 using FluentValidation.Internal;
 using FluentValidation.Validators;
+using SimpleInjector;
 
 namespace CoreSharp.Breeze.Internal
 {
+    [Lifetime(Lifetime.Singleton)]
     internal class BreezeMetadataValidators : IEventHandler<BreezeMetadataBuiltEvent>
     {
         private readonly IValidatorFactory _validatorFactory;
