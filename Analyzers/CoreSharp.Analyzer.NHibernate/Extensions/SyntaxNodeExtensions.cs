@@ -18,7 +18,7 @@ namespace CoreSharp.Analyzer.NHibernate.Extensions
 
         public static bool IsVirtual(this SyntaxNode node)
         {
-            return HasKeyword(node, SyntaxKind.VirtualKeyword);
+            return HasKeyword(node, SyntaxKind.VirtualKeyword) || HasKeyword(node, SyntaxKind.OverrideKeyword);
         }
 
         public static bool IsPublic(this SyntaxNode node)
