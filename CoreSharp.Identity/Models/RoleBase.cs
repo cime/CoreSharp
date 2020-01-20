@@ -5,7 +5,7 @@ using CoreSharp.NHibernate;
 
 namespace CoreSharp.Identity.Models
 {
-    public abstract class RoleBase<TRole, TRolePermission, TPermission> : Entity, IRole
+    public abstract class RoleBase<TRole, TRolePermission, TPermission> : VersionedEntity, IRole
         where TPermission : PermissionBase
         where TRolePermission : RolePermissionBase<TRole, TRolePermission, TPermission>
         where TRole : RoleBase<TRole, TRolePermission, TPermission>
