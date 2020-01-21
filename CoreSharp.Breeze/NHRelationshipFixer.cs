@@ -371,8 +371,16 @@ namespace CoreSharp.Breeze
                     var compType = (ComponentType) propType;
                     var componentVal = GetPropertyValue(meta, entityInfo.Entity, propName);
                     var dbComponentVal = GetPropertyValue(meta, dbEntity, propName);
-                    var compPropsVal = compType.GetPropertyValues(componentVal);
-                    compType.SetPropertyValues(dbComponentVal, compPropsVal);
+
+                    if (dbComponentVal == null)
+                    {
+                        dbEntity.SetMemberValue(propName, componentVal);
+                    }
+                    else
+                    {
+                        var compPropsVal = compType.GetPropertyValues(componentVal);
+                        compType.SetPropertyValues(dbComponentVal, compPropsVal);
+                    }
                 }
                 else
                 {
