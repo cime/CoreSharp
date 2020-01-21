@@ -1,29 +1,33 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.0;netstandard2.0</TargetFrameworks>
-    <PackageId>CoreSharp.GraphQL.AspNetCore</PackageId>
-    <PackageVersion>0.1.5</PackageVersion>
-    <Authors>cime</Authors>
-    <Description>GraphQL CQRS integration and extension</Description>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <Copyright>Copyright 2019 (c) cime. All rights reserved.</Copyright>
-    <PackageTags>Core# GraphQL CQRS AspNetCore</PackageTags>
-    <PackageProjectUrl>https://github.com/cime/CoreSharp</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/cime/CoreSharp/blob/master/LICENSE</PackageLicenseUrl>
-    <RepositoryUrl>https://github.com/cime/CoreSharp</RepositoryUrl>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFrameworks>netcoreapp3.1;netcoreapp3.0;netstandard2.0</TargetFrameworks>
+        <PackageId>CoreSharp.GraphQL.AspNetCore</PackageId>
+        <PackageVersion>0.1.6</PackageVersion>
+        <Authors>cime</Authors>
+        <Description>GraphQL CQRS integration and extension</Description>
+        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+        <Copyright>Copyright 2019 (c) cime. All rights reserved.</Copyright>
+        <PackageTags>Core# GraphQL CQRS AspNetCore</PackageTags>
+        <PackageProjectUrl>https://github.com/cime/CoreSharp</PackageProjectUrl>
+        <PackageLicenseUrl>https://github.com/cime/CoreSharp/blob/master/LICENSE</PackageLicenseUrl>
+        <RepositoryUrl>https://github.com/cime/CoreSharp</RepositoryUrl>
+    </PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+        <FrameworkReference Include="Microsoft.AspNetCore.App"/>
+    </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
-  </ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
+        <FrameworkReference Include="Microsoft.AspNetCore.App"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\CoreSharp.GraphQL\CoreSharp.GraphQL.csproj" />
-  </ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+        <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\CoreSharp.GraphQL\CoreSharp.GraphQL.csproj"/>
+    </ItemGroup>
 
 </Project>

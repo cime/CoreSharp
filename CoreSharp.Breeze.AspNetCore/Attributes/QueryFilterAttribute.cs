@@ -70,7 +70,7 @@ namespace CoreSharp.Breeze.AspNetCore.Attributes
             {
                 Formatters = new FormatterCollection<IOutputFormatter>
                 {
-                    #if NETCOREAPP3_0
+                    #if NETCOREAPP3_1 || NETCOREAPP3_0
                         new NewtonsoftJsonOutputFormatter(breezeConfig.GetJsonSerializerSettings(),
                             context.HttpContext.RequestServices.GetRequiredService<ArrayPool<char>>(),
                             context.HttpContext.RequestServices.GetRequiredService<MvcOptions>())
