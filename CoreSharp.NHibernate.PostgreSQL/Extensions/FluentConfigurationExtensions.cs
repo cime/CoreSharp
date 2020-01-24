@@ -1,13 +1,50 @@
 using System.Linq;
 using System.Reflection;
+using CoreSharp.DataAccess;
 using CoreSharp.NHibernate.Extensions;
 using CoreSharp.NHibernate.PostgreSQL.Conventions;
 using FluentNHibernate.Cfg;
+using FluentNHibernate.Conventions.Inspections;
+using FluentNHibernate.Conventions.Instances;
+using FluentNHibernate.Mapping;
+using NHibernate.Cfg;
+using NHibernate.Mapping;
 
 namespace CoreSharp.NHibernate.PostgreSQL.Extensions
 {
     public static class FluentConfigurationExtensions
     {
+        private static string GetFullName(Table table, INamingStrategy namingStrategy)
+        {
+            return string.Join(".", new [] { namingStrategy.TableName(table.Schema ?? "public"), namingStrategy.TableName(table.Name.TrimStart('`').TrimEnd('`')) }
+                .Where(x => !string.IsNullOrEmpty(x)));
+        }
+
+        public static FluentConfiguration InsertPostgreSQLHiLoValues(this FluentConfiguration fluentConfiguration, bool execute = true)
+        {
+            if (!execute)
+            {
+                return fluentConfiguration;
+            }
+
+            return fluentConfiguration.ExposeDbCommand((command, cfg) =>
+            {
+                var hiLoTable = PostgresqlHiLoIdConvention.HiLoIdentityTableName;
+                var entityColumn = PostgresqlHiLoIdConvention.TableColumnName;
+                var valueColumn = PostgresqlHiLoIdConvention.NextHiValueColumnName;
+                var tables = cfg.ClassMappings.Where(x => !typeof(ICodeList).IsAssignableFrom(x.MappedClass)).Select(x => x.Table).Where(x => !string.IsNullOrEmpty(x.Name))
+                    .Distinct()
+                    .Select(x => GetFullName(x, cfg.NamingStrategy))
+                    .ToList();
+
+                foreach (var tableFullName in tables)
+                {
+                    command.CommandText = $"INSERT INTO {hiLoTable} ({entityColumn}, {valueColumn}) SELECT '{tableFullName}', 0 WHERE NOT EXISTS (SELECT 1 FROM {hiLoTable} WHERE {entityColumn} = '{tableFullName}');";
+                    command.ExecuteNonQuery();
+                }
+            });
+        }
+
         public static FluentConfiguration CreatePostgreSQLSchemas(this FluentConfiguration fluentConfiguration)
         {
             return fluentConfiguration.ExposeDbCommand((command, cfg) =>

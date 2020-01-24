@@ -20,9 +20,9 @@ namespace CoreSharp.NHibernate.PostgreSQL.Conventions
     {
         private readonly global::NHibernate.Cfg.Configuration _configuration;
         private readonly INamingStrategy _namingStrategy;
-        private const string NextHiValueColumnName = "next_hi_value";
-        private const string TableColumnName = "entity";
-        private static readonly string HiLoIdentityTableName = "public.hi_lo_identity"; // TODO: configurable schema
+        internal const string NextHiValueColumnName = "next_hi_value";
+        internal const string TableColumnName = "entity";
+        internal static readonly string HiLoIdentityTableName = "public.hi_lo_identity"; // TODO: configurable schema
         private static readonly string MaxLo = "1000";
         private static readonly Type[] ValidTypes = new [] { typeof(int), typeof(long), typeof(uint), typeof(ulong) };
         private static readonly HashSet<string> ValidDialects = new HashSet<string>
@@ -82,7 +82,9 @@ namespace CoreSharp.NHibernate.PostgreSQL.Conventions
             script.AppendLine();
             script.AppendFormat("ALTER TABLE {0} ADD COLUMN {1} VARCHAR(128) NOT NULL;", HiLoIdentityTableName, TableColumnName);
             script.AppendLine();
-            script.AppendFormat("CREATE INDEX ix_{0}_{1} ON {0} (Entity);", HiLoIdentityTableName.Replace("public.", ""), TableColumnName);
+            script.AppendFormat("CREATE INDEX ix_{0}_{1} ON {0} ({1});", HiLoIdentityTableName.Replace("public.", ""), TableColumnName);
+            script.AppendLine();
+            script.AppendFormat("CREATE UNIQUE INDEX ux_{0}_{1} ON {0} (entity);", HiLoIdentityTableName.Replace("public.", ""), TableColumnName);
             script.AppendLine();
 
             var fullNames = FullNames.Values.ToList();
