@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using CoreSharp.Breeze.Comparers;
 using CoreSharp.Breeze.Extensions;
 using NHibernate;
@@ -35,6 +36,8 @@ namespace CoreSharp.Breeze
         private bool _removeMode;
         private readonly Dictionary<EntityInfo, object> _clientEntityObjects = new Dictionary<EntityInfo, object>();
         private readonly IBreezeConfigurator _breezeConfigurator;
+
+        private readonly Regex _removeIdSuffixRegex = new Regex("Id$", RegexOptions.Compiled);
 
         /// <summary>
         /// Create new instance with the given saveMap and fkMap.  Since the saveMap is unique per save,
@@ -451,10 +454,13 @@ namespace CoreSharp.Breeze
             EntityInfo childEntityInfo, IClassMetadata childMeta)
         {
             var fk = FindForeignKey(propertyName, childMeta);
+            var childPersister = childMeta as AbstractEntityPersister;
+            // TODO: workaround for naming conventions where column/fk name != property name
+            fk = childPersister.GetPropertyColumnNames(_removeIdSuffixRegex.Replace(fk, "")).Single();
+
             var parentMeta = _session.SessionFactory.GetClassMetadata(manyToOneType.ReturnedClass);
             var propNames = parentMeta.PropertyNames;
             var propTypes = parentMeta.PropertyTypes;
-            var childPersister = childMeta as AbstractEntityPersister;
             if (childPersister == null)
             {
                 return false;
