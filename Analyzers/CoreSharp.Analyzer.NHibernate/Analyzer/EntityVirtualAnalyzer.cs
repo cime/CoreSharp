@@ -31,7 +31,7 @@ namespace CoreSharp.Analyzer.NHibernate.Analyzer
 
                 var node = nodeContext.Node;
 
-                if (node.IsPublic() && !node.IsVirtual())
+                if (node.IsPublic() && !node.IsStatic() && !node.IsVirtual())
                 {
                     nodeContext.ReportDiagnostic(Diagnostic.Create(Rule, node.GetLocation()));
                 }

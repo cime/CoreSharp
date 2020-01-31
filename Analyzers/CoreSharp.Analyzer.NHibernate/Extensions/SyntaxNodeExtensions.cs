@@ -31,6 +31,11 @@ namespace CoreSharp.Analyzer.NHibernate.Extensions
             return HasKeyword(node, SyntaxKind.PrivateKeyword);
         }
 
+        public static bool IsStatic(this SyntaxNode node)
+        {
+            return HasKeyword(node, SyntaxKind.StaticKeyword);
+        }
+
         public static SyntaxToken GetTokenWithKeyword(this SyntaxNode node, SyntaxKind kind)
         {
             return node.DescendantTokens().FirstOrDefault(x => x.Kind() == kind);
