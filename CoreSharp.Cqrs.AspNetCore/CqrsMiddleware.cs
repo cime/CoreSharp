@@ -125,12 +125,24 @@ namespace CoreSharp.Cqrs.AspNetCore
 
             CloseSession();
 
-            var json = result is string ? result : await formatter.SerializeAsync(result, context.Request);
+            string json = null;
+
+            if (result != null)
+            {
+                json = result is string ? result : await formatter.SerializeAsync(result, context.Request);
+            }
 
             context.Response.ContentType = formatter.ContentType;
-            context.Response.StatusCode = (int)HttpStatusCode.OK;
 
-            await HttpResponseWritingExtensions.WriteAsync(context.Response, json, context.RequestAborted);
+            if (json != null)
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.OK;
+                await HttpResponseWritingExtensions.WriteAsync(context.Response, json, context.RequestAborted);
+            }
+            else
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.NoContent;
+            }
         }
 
         private async Task HandleQuery(HttpContext context, ICqrsOptions options)
@@ -169,12 +181,24 @@ namespace CoreSharp.Cqrs.AspNetCore
                 result = handler.Handle(query);
             }
 
-            var json = result is string ? result : await formatter.SerializeAsync(result, context.Request);
+            string json = null;
+
+            if (result != null)
+            {
+                json = result is string ? result : await formatter.SerializeAsync(result, context.Request);
+            }
 
             context.Response.ContentType = formatter.ContentType;
-            context.Response.StatusCode = (int)HttpStatusCode.OK;
 
-            await HttpResponseWritingExtensions.WriteAsync(context.Response, json, context.RequestAborted);
+            if (json != null)
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.OK;
+                await HttpResponseWritingExtensions.WriteAsync(context.Response, json, context.RequestAborted);
+            }
+            else
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.NoContent;
+            }
         }
 
         private void CloseSession()

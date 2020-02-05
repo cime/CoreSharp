@@ -4,8 +4,8 @@ namespace CoreSharp.Cqrs.Query
 {
     public interface IQueryProcessor
     {
-        TResult Process<TResult>(IQuery<TResult> query);
+        TResult Handle<TResult>(IQuery<TResult> query);
 
-        Task<TResult> ProcessAsync<TResult>(IAsyncQuery<TResult> query);
+        Task<TResult> HandleAsync<TResult>(IAsyncQuery<TResult> query);
     }
 }
