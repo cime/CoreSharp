@@ -16,17 +16,26 @@ namespace CoreSharp.Cqrs.Query
         public TResult Handle<TResult>(IQuery<TResult> query)
         {
             var handlerType = typeof(IQueryHandler<,>).MakeGenericType(query.GetType(), typeof(TResult));
-            var handler = (IQueryHandler<IQuery<TResult>, TResult>)_container.GetInstance(handlerType);
+            dynamic handler = _container.GetInstance(handlerType);
 
-            return handler.Handle(query);
+            var result = (TResult) handler.Handle((dynamic) query);
+
+            return result;
+        }
+
+        public Task<TResult> HandleAsync<TResult>(IAsyncQuery<TResult> query, CancellationToken cancellationToken)
+        {
+            var handlerType = typeof(IAsyncQueryHandler<,>).MakeGenericType(query.GetType(), typeof(TResult));
+            dynamic handler = _container.GetInstance(handlerType);
+
+            var result = (Task<TResult>) handler.HandleAsync((dynamic) query, (dynamic) cancellationToken);
+
+            return result;
         }
 
         public Task<TResult> HandleAsync<TResult>(IAsyncQuery<TResult> query)
         {
-            var handlerType = typeof(IAsyncQueryHandler<,>).MakeGenericType(query.GetType(), typeof(TResult));
-            var handler = (IAsyncQueryHandler <IAsyncQuery<TResult>, TResult>)_container.GetInstance(handlerType);
-
-            return handler.HandleAsync((dynamic)query, CancellationToken.None);
+            return HandleAsync(query, CancellationToken.None);
         }
     }
 }

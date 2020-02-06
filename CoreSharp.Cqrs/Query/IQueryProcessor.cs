@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace CoreSharp.Cqrs.Query
 {
@@ -7,5 +8,6 @@ namespace CoreSharp.Cqrs.Query
         TResult Handle<TResult>(IQuery<TResult> query);
 
         Task<TResult> HandleAsync<TResult>(IAsyncQuery<TResult> query);
+        Task<TResult> HandleAsync<TResult>(IAsyncQuery<TResult> query, CancellationToken cancellationToken);
     }
 }
