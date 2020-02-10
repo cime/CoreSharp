@@ -1,4 +1,4 @@
-namespace CoreSharp.Validation
+﻿namespace CoreSharp.Validation
 {
     public class ValidationRuleSet
     {
@@ -8,15 +8,17 @@ namespace CoreSharp.Validation
         public const string Update = "Update";
         public const string Attribute = "Attribute";
 
-        public static string[] AttributeInsertUpdate => Combine("Attribute", "Insert", "Update");
+        public static string[] AttributeInsert => Combine(Attribute, Insert);
 
-        public static string[] AttributeInsert => Combine("Attribute", "Insert");
+        public static string[] AttributeInsertDefault => Combine(Attribute, Insert, Default);
 
-        public static string[] AttributeUpdate => Combine("Update", "Attribute");
+        public static string[] AttributeInsertUpdate => Combine(Attribute, Insert, Update);
 
-        public static string[] AttributeInsertUpdateDefault => Combine("default", "Attribute", "Insert", "Update");
+        public static string[] AttributeInsertUpdateDefault => Combine(Attribute, Insert, Update, Default);
 
-        public static string[] InsertUpdate => Combine("Update", "Insert");
+        public static string[] AttributeUpdate => Combine(Attribute, Update);
+
+        public static string[] AttributeUpdateDefault => Combine(Attribute, Update, Default);
 
         public static string[] Combine(params string[] rules)
         {
