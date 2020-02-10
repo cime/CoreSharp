@@ -39,6 +39,7 @@ namespace CoreSharp.Tests.Validation
             Assert.False(result.IsValid);
             Assert.Equal(2, result.Errors.Count);
             Assert.Equal("Nickname", result.Errors[0].PropertyName);
+            Assert.IsAssignableFrom<IValidationContext>(result.Errors[0].CustomState);
             Assert.Equal("Must be between 5 and 10 characters. You entered 4 characters.", result.Errors[0].ErrorMessage);
             Assert.Equal("Nickname2", result.Errors[1].PropertyName);
             Assert.Equal("'Nickname2' must be between 5 and 10 characters. You entered 4 characters.", result.Errors[1].ErrorMessage);
@@ -69,6 +70,7 @@ namespace CoreSharp.Tests.Validation
             Assert.False(result.IsValid);
             Assert.Equal(2, result.Errors.Count);
             Assert.Equal("Name", result.Errors[0].PropertyName);
+            Assert.IsAssignableFrom<IValidationContext>(result.Errors[0].CustomState);
             Assert.Equal("Must not be empty.", result.Errors[0].ErrorMessage);
             Assert.Equal("Name2", result.Errors[1].PropertyName);
             Assert.Equal("'Name2' must not be empty.", result.Errors[1].ErrorMessage);
@@ -88,8 +90,10 @@ namespace CoreSharp.Tests.Validation
             Assert.False(result.IsValid);
             Assert.Equal(2, result.Errors.Count);
             Assert.Equal("CardNumber", result.Errors[0].PropertyName);
+            Assert.IsAssignableFrom<IValidationContext>(result.Errors[0].CustomState);
             Assert.Equal("Is not a valid credit card number.", result.Errors[0].ErrorMessage);
             Assert.Equal("CardNumber2", result.Errors[1].PropertyName);
+            Assert.IsAssignableFrom<IValidationContext>(result.Errors[1].CustomState);
             Assert.Equal("'Card Number2' is not a valid credit card number.", result.Errors[1].ErrorMessage);
         }
 
@@ -107,8 +111,10 @@ namespace CoreSharp.Tests.Validation
             Assert.False(result.IsValid);
             Assert.Equal(2, result.Errors.Count);
             Assert.Equal("Email", result.Errors[0].PropertyName);
+            Assert.IsAssignableFrom<IValidationContext>(result.Errors[0].CustomState);
             Assert.Equal("Is not a valid email address.", result.Errors[0].ErrorMessage);
             Assert.Equal("Email2", result.Errors[1].PropertyName);
+            Assert.IsAssignableFrom<IValidationContext>(result.Errors[1].CustomState);
             Assert.Equal("'Email2' is not a valid email address.", result.Errors[1].ErrorMessage);
         }
 
@@ -128,6 +134,7 @@ namespace CoreSharp.Tests.Validation
             Assert.False(result.IsValid);
             Assert.Equal(4, result.Errors.Count);
             Assert.Equal("Name", result.Errors[0].PropertyName);
+            Assert.IsAssignableFrom<IValidationContext>(result.Errors[0].CustomState);
             Assert.Equal("Must be equal to 'CompareValue'.", result.Errors[0].ErrorMessage);
             Assert.Equal("Name2", result.Errors[1].PropertyName);
             Assert.Equal("'Name2' must be equal to 'CompareValue'.", result.Errors[1].ErrorMessage);
@@ -153,6 +160,7 @@ namespace CoreSharp.Tests.Validation
             Assert.False(result.IsValid);
             Assert.Equal(4, result.Errors.Count);
             Assert.Equal("Name", result.Errors[0].PropertyName);
+            Assert.IsAssignableFrom<IValidationContext>(result.Errors[0].CustomState);
             Assert.Equal("Must not be equal to 'CompareValue'.", result.Errors[0].ErrorMessage);
             Assert.Equal("Name2", result.Errors[1].PropertyName);
             Assert.Equal("'Name2' must not be equal to 'CompareValue'.", result.Errors[1].ErrorMessage);
@@ -176,6 +184,7 @@ namespace CoreSharp.Tests.Validation
             Assert.False(result.IsValid);
             Assert.Equal(2, result.Errors.Count);
             Assert.Equal("Name", result.Errors[0].PropertyName);
+            Assert.IsAssignableFrom<IValidationContext>(result.Errors[0].CustomState);
             Assert.Equal("Must be 5 characters in length. You entered 3 characters.", result.Errors[0].ErrorMessage);
             Assert.Equal("Name2", result.Errors[1].PropertyName);
             Assert.Equal("'Name2' must be 5 characters in length. You entered 3 characters.", result.Errors[1].ErrorMessage);
@@ -195,6 +204,7 @@ namespace CoreSharp.Tests.Validation
             Assert.False(result.IsValid);
             Assert.Equal(2, result.Errors.Count);
             Assert.Equal("Value", result.Errors[0].PropertyName);
+            Assert.IsAssignableFrom<IValidationContext>(result.Errors[0].CustomState);
             Assert.Equal("Must be greater than '10'.", result.Errors[0].ErrorMessage);
             Assert.Equal("Value2", result.Errors[1].PropertyName);
             Assert.Equal("'Value2' must be greater than '10'.", result.Errors[1].ErrorMessage);
@@ -214,6 +224,7 @@ namespace CoreSharp.Tests.Validation
             Assert.False(result.IsValid);
             Assert.Equal(2, result.Errors.Count);
             Assert.Equal("Value", result.Errors[0].PropertyName);
+            Assert.IsAssignableFrom<IValidationContext>(result.Errors[0].CustomState);
             Assert.Equal("Must be greater than or equal to '10'.", result.Errors[0].ErrorMessage);
             Assert.Equal("Value2", result.Errors[1].PropertyName);
             Assert.Equal("'Value2' must be greater than or equal to '10'.", result.Errors[1].ErrorMessage);
@@ -233,6 +244,7 @@ namespace CoreSharp.Tests.Validation
             Assert.False(result.IsValid);
             Assert.Equal(2, result.Errors.Count);
             Assert.Equal("Value", result.Errors[0].PropertyName);
+            Assert.IsAssignableFrom<IValidationContext>(result.Errors[0].CustomState);
             Assert.Equal("Must be less than '10'.", result.Errors[0].ErrorMessage);
             Assert.Equal("Value2", result.Errors[1].PropertyName);
             Assert.Equal("'Value2' must be less than '10'.", result.Errors[1].ErrorMessage);
@@ -252,6 +264,7 @@ namespace CoreSharp.Tests.Validation
             Assert.False(result.IsValid);
             Assert.Equal(2, result.Errors.Count);
             Assert.Equal("Value", result.Errors[0].PropertyName);
+            Assert.IsAssignableFrom<IValidationContext>(result.Errors[0].CustomState);
             Assert.Equal("Must be less than or equal to '10'.", result.Errors[0].ErrorMessage);
             Assert.Equal("Value2", result.Errors[1].PropertyName);
             Assert.Equal("'Value2' must be less than or equal to '10'.", result.Errors[1].ErrorMessage);
@@ -271,6 +284,7 @@ namespace CoreSharp.Tests.Validation
             Assert.False(result.IsValid);
             Assert.Equal(2, result.Errors.Count);
             Assert.Equal("Name", result.Errors[0].PropertyName);
+            Assert.IsAssignableFrom<IValidationContext>(result.Errors[0].CustomState);
             Assert.Equal("Is not in the correct format.", result.Errors[0].ErrorMessage);
             Assert.Equal("Name2", result.Errors[1].PropertyName);
             Assert.Equal("'Name2' is not in the correct format.", result.Errors[1].ErrorMessage);

@@ -28,10 +28,18 @@ namespace CoreSharp.Validation.Internal
             _validator = (AbstractValidator<TModel>)validator;
             _cache = cache;
 
-            var abstractValidator = (AbstractValidator<TModel>)validator;
-            cache.RegisterValidator(abstractValidator);
-            var addRuleMethod = abstractValidator.GetType().GetMethod("AddRule", BindingFlags.Instance | BindingFlags.NonPublic);
-            addRuleMethod.Invoke(abstractValidator, new object[] { new DomainValidatorsValidator(GetRulesToValidate, GetAsyncRulesToValidate) });
+            SetValidatorContextAsCustomState(_validator);
+            cache.RegisterValidator(_validator);
+            var addRuleMethod = _validator.GetType().GetMethod("AddRule", BindingFlags.Instance | BindingFlags.NonPublic);
+            addRuleMethod.Invoke(_validator, new object[] { new DomainValidatorsValidator(GetRulesToValidate, GetAsyncRulesToValidate) });
+        }
+
+        private void SetValidatorContextAsCustomState(IEnumerable<IValidationRule> rules)
+        {
+            foreach (var propertyRule in rules.OfType<PropertyRule>().Where(o => o.CurrentValidator.Options.CustomStateProvider == null))
+            {
+                propertyRule.CurrentValidator.Options.CustomStateProvider = o => o;
+            }
         }
 
         public ValidationResult Validate(object instance)
