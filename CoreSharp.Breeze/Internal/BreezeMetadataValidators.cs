@@ -143,7 +143,7 @@ namespace CoreSharp.Breeze.Internal
                         var convertedVals = ConvertToFluentValidators(dataProperty, structuralType);
 
                         var propertyRules = allPropertyRules[dataProperty.NameOnServer]
-                            .Where(pr => pr.RuleSets == null || ValidationRuleSet.AttributeInsertUpdateDefault.Intersect(pr.RuleSets).Any());
+                            .Where(pr => pr.RuleSets == null || ValidationRuleSet.InsertUpdate.Intersect(pr.RuleSets).Any());
 
                         foreach (var propertyRule in propertyRules)
                         {

@@ -1,22 +1,21 @@
-namespace CoreSharp.Validation
+﻿namespace CoreSharp.Validation
 {
     public class ValidationRuleSet
     {
+        private const string InsertRule = "Insert";
+        private const string UpdateRule = "Update";
+
         public const string Default = "default";
-        public const string Delete = "Delete";
-        public const string Insert = "Insert";
-        public const string Update = "Update";
+
         public const string Attribute = "Attribute";
 
-        public static string[] AttributeInsertUpdate => Combine("Attribute", "Insert", "Update");
+        public const string Delete = "Delete";
 
-        public static string[] AttributeInsert => Combine("Attribute", "Insert");
+        public static string[] Insert => Combine(Attribute, InsertRule, Default);
 
-        public static string[] AttributeUpdate => Combine("Update", "Attribute");
+        public static string[] InsertUpdate => Combine(Attribute, InsertRule, UpdateRule, Default);
 
-        public static string[] AttributeInsertUpdateDefault => Combine("default", "Attribute", "Insert", "Update");
-
-        public static string[] InsertUpdate => Combine("Update", "Insert");
+        public static string[] Update => Combine(Attribute, UpdateRule, Default);
 
         public static string[] Combine(params string[] rules)
         {
