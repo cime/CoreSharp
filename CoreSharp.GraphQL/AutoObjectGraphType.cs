@@ -38,12 +38,15 @@ namespace CoreSharp.GraphQL
 
             Name = GetTypeName(typeof(TSourceType));
             Metadata["Type"] = typeof(TSourceType);
+            var typePermissions = typeof(TSourceType).GetCustomAttribute<AuthorizeAttribute>()?.Permissions;
+            Metadata[GraphQLExtensions.PermissionsKey] = typePermissions;
 
             var properties = GetRegisteredProperties().ToList();
 
             foreach (var propertyInfo in properties)
             {
                 var fieldConfiguration = _typeConfiguration.GetFieldConfiguration(propertyInfo.Name);
+                var propertyPermissions = propertyInfo.GetCustomAttribute<AuthorizeAttribute>()?.Permissions;
 
                 if (propertyInfo.PropertyType != typeof(string) &&
                     typeof(IEnumerable).IsAssignableFrom(propertyInfo.PropertyType))
@@ -61,6 +64,14 @@ namespace CoreSharp.GraphQL
 
                     field.DefaultValue = (propertyInfo.GetCustomAttributes(typeof(DefaultValueAttribute), false).FirstOrDefault() as DefaultValueAttribute)?.Value;
                     field.Metadata["PropertyInfo"] = propertyInfo;
+
+                    if (propertyPermissions != null)
+                    {
+                        foreach (var permission in propertyPermissions)
+                        {
+                            field.RequirePermission(permission);
+                        }
+                    }
                 }
                 else
                 {
@@ -73,6 +84,14 @@ namespace CoreSharp.GraphQL
 
                     field.DefaultValue = (propertyInfo.GetCustomAttributes(typeof(DefaultValueAttribute), false).FirstOrDefault() as DefaultValueAttribute)?.Value;
                     field.Metadata["PropertyInfo"] = propertyInfo;
+
+                    if (propertyPermissions != null)
+                    {
+                        foreach (var permission in propertyPermissions)
+                        {
+                            field.RequirePermission(permission);
+                        }
+                    }
 
                     // Synthetic properties
                     /*if (propertyInfo.PropertyType.IsAssignableToGenericType(typeof(IEntity<>)) &&

@@ -23,7 +23,7 @@ namespace CoreSharp.GraphQL
                         context.ReportError(new ValidationError(
                             context.OriginalQuery,
                             "auth-required",
-                            $"Authorization is required to access {op.Name}.",
+                            $"Authorization is required to access '{op.Name}'.",
                             op));
                     }
                 });
@@ -41,7 +41,7 @@ namespace CoreSharp.GraphQL
                         context.ReportError(new ValidationError(
                             context.OriginalQuery,
                             "auth-required",
-                            $"You are not authorized to run this query.",
+                            $"Authorization is required to access '{fieldDef.Name}'.",
                             fieldAst));
                     }
                 });

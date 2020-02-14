@@ -131,7 +131,11 @@ namespace CoreSharp.GraphQL
                                 {
                                     Name = propertyInfo.Name.ToCamelCase(),
                                     Type = propertyInfo.PropertyType.GetGraphTypeFromType(IsNullableProperty(propertyInfo)),
-                                    Description = propertyInfo.GetCustomAttribute<DescriptionAttribute>()?.Description
+                                    Description = propertyInfo.GetCustomAttribute<DescriptionAttribute>()?.Description,
+                                    Metadata = new Dictionary<string, object>()
+                                    {
+                                        [GraphQLExtensions.PermissionsKey] = propertyInfo.GetCustomAttribute<AuthorizeAttribute>()?.Permissions
+                                    }
                                 }
                             });
                     }
@@ -252,7 +256,11 @@ namespace CoreSharp.GraphQL
                             {
                                 Name = GetNormalizedFieldName(propertyInfo.Name),
                                 Type = propertyInfo.PropertyType.GetGraphTypeFromType(IsNullableProperty(propertyInfo)),
-                                Description = propertyInfo.GetCustomAttribute<DescriptionAttribute>()?.Description
+                                Description = propertyInfo.GetCustomAttribute<DescriptionAttribute>()?.Description,
+                                Metadata = new Dictionary<string, object>()
+                                {
+                                    [GraphQLExtensions.PermissionsKey] = propertyInfo.GetCustomAttribute<AuthorizeAttribute>()?.Permissions
+                                }
                             }
                         });
                     }
