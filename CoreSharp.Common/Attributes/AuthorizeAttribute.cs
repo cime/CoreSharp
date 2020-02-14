@@ -5,16 +5,16 @@ namespace CoreSharp.Common.Attributes
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public class AuthorizeAttribute : Attribute
     {
-        public string? Permission { get; set; }
+        public string[] Permissions { get; set; }
 
         public AuthorizeAttribute()
         {
 
         }
 
-        public AuthorizeAttribute(string permission)
+        public AuthorizeAttribute(params string[] permission)
         {
-            Permission = permission;
+            Permissions = permission;
         }
     }
 }

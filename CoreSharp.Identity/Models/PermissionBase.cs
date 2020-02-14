@@ -13,6 +13,7 @@ namespace CoreSharp.Identity.Models
         [Unique("FullName")]
         public virtual string Name { get; set; }
 
+        [NotNull]
         [Unique("FullName")]
         public virtual string Namespace { get; set; }
 
@@ -24,9 +25,7 @@ namespace CoreSharp.Identity.Models
         {
             get
             {
-                return !string.IsNullOrEmpty(Namespace)
-                    ? string.Format("{0}.{1}.{2}", Module, Namespace, Name)
-                    : string.Format("{0}.{1}", Module, Name);
+                return string.Format("{0}.{1}.{2}", Module, Namespace, Name);
             }
         }
     }

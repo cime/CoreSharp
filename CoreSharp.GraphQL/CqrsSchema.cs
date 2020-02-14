@@ -21,6 +21,10 @@ namespace CoreSharp.GraphQL
 {
     public abstract class CqrsSchema : Schema
     {
+        private readonly Regex _commandNameSuffixRegex = new Regex("(?:AsyncCommand|CommandAsync|Command)$", RegexOptions.Compiled);
+        private readonly Regex _queryNameSuffixRegex = new Regex("(?:AsyncQuery|QueryAsync|Query)$", RegexOptions.Compiled);
+        private readonly Regex _queryNamePrefixRegex = new Regex("^Get", RegexOptions.Compiled);
+
         private readonly Container _container;
         private readonly IGraphQLConfiguration _configuration;
         private JsonSerializerSettings? _jsonSerializerSettings;
@@ -148,7 +152,7 @@ namespace CoreSharp.GraphQL
                         var listGqlType = (ListGraphType) Activator.CreateInstance(typeof(ListGraphType<>).MakeGenericType(returnObjectType), null);
                         listGqlType.ResolvedType = resultGqlType;
                         resultGqlType = (IGraphType) listGqlType;
-                        resultGqlType.Name = "ListOf" + name;
+                        // resultGqlType.Name = "ListOf" + name;
                     }
 
                     if (authorizeAttribute != null)
@@ -158,12 +162,16 @@ namespace CoreSharp.GraphQL
                         if (permissions == null)
                         {
                             permissions = new List<string>();
+
                             resultGqlType.Metadata[GraphQLExtensions.PermissionsKey] = permissions;
                         }
 
-                        if (!string.IsNullOrWhiteSpace(authorizeAttribute.Permission))
+                        if (authorizeAttribute.Permissions != null)
                         {
-                            permissions.Add(authorizeAttribute.Permission);
+                            foreach (var authorizeAttributePermission in authorizeAttribute.Permissions)
+                            {
+                                permissions.Add(authorizeAttributePermission);
+                            }
                         }
                     }
                 }
@@ -177,7 +185,7 @@ namespace CoreSharp.GraphQL
                     arguments.Add(argument);
                 }
 
-                var mutationName = exposeAttribute.IsFieldNameSet ? exposeAttribute.FieldName : new Regex("Command$").Replace(commandType.Name, "");
+                var mutationName = exposeAttribute.IsFieldNameSet ? exposeAttribute.FieldName : _commandNameSuffixRegex.Replace(commandType.Name, string.Empty);
 
                 if (!Mutation.HasField(mutationName))
                 {
@@ -280,7 +288,7 @@ namespace CoreSharp.GraphQL
                         var listGqlType = (ListGraphType) Activator.CreateInstance(typeof(ListGraphType<>).MakeGenericType(returnObjectType), null);
                         listGqlType.ResolvedType = resultGqlType;
                         resultGqlType = (IGraphType) listGqlType;
-                        resultGqlType.Name = "ListOf" + name;
+                        // resultGqlType.Name = "ListOf" + name;
                     }
 
                     if (authorizeAttribute != null)
@@ -293,9 +301,9 @@ namespace CoreSharp.GraphQL
                             resultGqlType.Metadata[GraphQLExtensions.PermissionsKey] = permissions;
                         }
 
-                        if (!string.IsNullOrWhiteSpace(authorizeAttribute.Permission))
+                        foreach (var authorizeAttributePermission in authorizeAttribute.Permissions)
                         {
-                            permissions.Add(authorizeAttribute.Permission);
+                            permissions.Add(authorizeAttributePermission);
                         }
                     }
                 }
@@ -309,7 +317,7 @@ namespace CoreSharp.GraphQL
                     arguments.Add(argument);
                 }
 
-                var queryName = exposeAttribute.IsFieldNameSet ? exposeAttribute.FieldName : new Regex("Query").Replace(queryType.Name, "");
+                var queryName = exposeAttribute.IsFieldNameSet ? exposeAttribute.FieldName : _queryNamePrefixRegex.Replace(_queryNameSuffixRegex.Replace(queryType.Name, string.Empty), string.Empty);
 
                 if (!Query.HasField(queryName))
                 {
