@@ -12,7 +12,7 @@ namespace CoreSharp.GraphQL
         {
             var userContext = context.UserContext as IDictionary<string, object>;
             var authenticated = userContext.GetValueOrDefault("IsAuthenticated") as bool? == true;
-            var claims = userContext.GetValueOrDefault("Claims") as IEnumerable<string>;
+            var permissions = userContext.GetValueOrDefault("Permissions") as string[];
 
             return new EnterLeaveListener(_ =>
             {
@@ -36,7 +36,7 @@ namespace CoreSharp.GraphQL
                 {
                     var fieldDef = context.TypeInfo.GetFieldDef();
                     if (fieldDef?.RequiresPermissions() == true &&
-                        (!authenticated || (claims == null || !fieldDef.CanAccess(claims))))
+                        (!authenticated || (permissions == null || !fieldDef.CanAccess(permissions))))
                     {
                         context.ReportError(new ValidationError(
                             context.OriginalQuery,

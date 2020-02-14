@@ -146,33 +146,14 @@ namespace CoreSharp.GraphQL
                     resultGqlType = (IGraphType)_container.GetInstance(returnObjectType);
                     resultGqlType.Name = resultTypeName;
 
+                    ListGraphType listGqlType = null;
                     if (isCollection)
                     {
                         var name = resultGqlType.Name;
-                        var listGqlType = (ListGraphType) Activator.CreateInstance(typeof(ListGraphType<>).MakeGenericType(returnObjectType), null);
+                        listGqlType = (ListGraphType) Activator.CreateInstance(typeof(ListGraphType<>).MakeGenericType(returnObjectType), null);
                         listGqlType.ResolvedType = resultGqlType;
                         resultGqlType = (IGraphType) listGqlType;
                         // resultGqlType.Name = "ListOf" + name;
-                    }
-
-                    if (authorizeAttribute != null)
-                    {
-                        var permissions = resultGqlType.GetMetadata<List<string>>(GraphQLExtensions.PermissionsKey);
-
-                        if (permissions == null)
-                        {
-                            permissions = new List<string>();
-
-                            resultGqlType.Metadata[GraphQLExtensions.PermissionsKey] = permissions;
-                        }
-
-                        if (authorizeAttribute.Permissions != null)
-                        {
-                            foreach (var authorizeAttributePermission in authorizeAttribute.Permissions)
-                            {
-                                permissions.Add(authorizeAttributePermission);
-                            }
-                        }
                     }
                 }
 
@@ -196,7 +177,11 @@ namespace CoreSharp.GraphQL
                         Resolver = new CommandResolver(_container, commandHandlerType, commandType, GetJsonSerializerSettings()),
                         Name = GetNormalizedFieldName(mutationName),
                         Description = descriptionAttribute?.Description,
-                        Arguments = new QueryArguments(arguments)
+                        Arguments = new QueryArguments(arguments),
+                        Metadata = new Dictionary<string, object>()
+                        {
+                            [GraphQLExtensions.PermissionsKey] = authorizeAttribute?.Permissions?.ToList()
+                        }
                     };
 
                     Mutation.AddField(type);
@@ -282,29 +267,15 @@ namespace CoreSharp.GraphQL
                     resultGqlType = (IGraphType)_container.GetInstance(returnObjectType);
                     resultGqlType.Name = resultTypeName;
 
+                    //TODO: refactor
+                    ListGraphType listGqlType = null;
                     if (isCollection)
                     {
                         var name = resultGqlType.Name;
-                        var listGqlType = (ListGraphType) Activator.CreateInstance(typeof(ListGraphType<>).MakeGenericType(returnObjectType), null);
+                        listGqlType = (ListGraphType) Activator.CreateInstance(typeof(ListGraphType<>).MakeGenericType(returnObjectType), null);
                         listGqlType.ResolvedType = resultGqlType;
                         resultGqlType = (IGraphType) listGqlType;
                         // resultGqlType.Name = "ListOf" + name;
-                    }
-
-                    if (authorizeAttribute != null)
-                    {
-                        var permissions = resultGqlType.GetMetadata<List<string>>(GraphQLExtensions.PermissionsKey);
-
-                        if (permissions == null)
-                        {
-                            permissions = new List<string>();
-                            resultGqlType.Metadata[GraphQLExtensions.PermissionsKey] = permissions;
-                        }
-
-                        foreach (var authorizeAttributePermission in authorizeAttribute.Permissions)
-                        {
-                            permissions.Add(authorizeAttributePermission);
-                        }
                     }
                 }
 
@@ -328,7 +299,11 @@ namespace CoreSharp.GraphQL
                         Resolver = new QueryResolver(_container, queryHandlerType, queryType, GetJsonSerializerSettings()),
                         Name = GetNormalizedFieldName(queryName),
                         Description = descriptionAttribute?.Description,
-                        Arguments = new QueryArguments(arguments)
+                        Arguments = new QueryArguments(arguments),
+                        Metadata = new Dictionary<string, object>()
+                        {
+                            [GraphQLExtensions.PermissionsKey] = authorizeAttribute?.Permissions?.ToList()
+                        }
                     };
 
                     Query.AddField(type);
