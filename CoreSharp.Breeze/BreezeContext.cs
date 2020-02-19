@@ -314,6 +314,11 @@ namespace CoreSharp.Breeze
             return TypeFilter(entityInfo.Entity.GetType());
         }
 
+        protected internal virtual void BeforeModify(EntityInfo entityInfo)
+        {
+
+        }
+
         #region Metadata
 
         /// <summary>
@@ -541,7 +546,7 @@ namespace CoreSharp.Breeze
         {
             // Get the map of foreign key relationships from the metadata
             var fkMap = GetMetadata().ForeignKeyMap;
-            return new NhRelationshipFixer(saveMap, fkMap, Session, _breezeConfigurator);
+            return new NhRelationshipFixer(saveMap, fkMap, Session, _breezeConfigurator, this);
         }
 
         /// <summary>

@@ -36,6 +36,7 @@ namespace CoreSharp.Breeze
         private bool _removeMode;
         private readonly Dictionary<EntityInfo, object> _clientEntityObjects = new Dictionary<EntityInfo, object>();
         private readonly IBreezeConfigurator _breezeConfigurator;
+        private readonly BreezeContext _breezeContext;
 
         private readonly Regex _removeIdSuffixRegex = new Regex("Id$", RegexOptions.Compiled);
 
@@ -47,14 +48,17 @@ namespace CoreSharp.Breeze
         /// <param name="fkMap">Map of relationship name -> foreign key name.  This is built in the NHBreezeMetadata class.</param>
         /// <param name="session">NHibernate session that will save the entities</param>
         /// <param name="breezeConfigurator"></param>
-        public NhRelationshipFixer(Dictionary<Type, List<EntityInfo>> saveMap, IDictionary<string, string> fkMap, ISession session,
-            IBreezeConfigurator breezeConfigurator)
+        /// <param name="breezeContext"></param>
+        public NhRelationshipFixer(Dictionary<Type, List<EntityInfo>> saveMap, IDictionary<string, string> fkMap,
+            ISession session,
+            IBreezeConfigurator breezeConfigurator, BreezeContext breezeContext)
         {
-            this._saveMap = saveMap;
-            this._fkMap = fkMap;
-            this._session = session;
-            this._breezeConfigurator = breezeConfigurator;
-            this._dependencyGraph = new Dictionary<EntityInfo, List<EntityInfo>>();
+            _saveMap = saveMap;
+            _fkMap = fkMap;
+            _session = session;
+            _breezeConfigurator = breezeConfigurator;
+            _breezeContext = breezeContext;
+            _dependencyGraph = new Dictionary<EntityInfo, List<EntityInfo>>();
         }
 
         /// <summary>
@@ -64,7 +68,7 @@ namespace CoreSharp.Breeze
         /// <returns>The list of entities in the order they should be save, according to their relationships.</returns>
         public List<EntityInfo> FixupRelationships()
         {
-            this._removeMode = false;
+            _removeMode = false;
             ProcessRelationships();
             return SortDependencies();
         }
@@ -76,7 +80,7 @@ namespace CoreSharp.Breeze
         /// <param name="saveMap">Map of entity types -> entity instances to save</param>
         public void RemoveRelationships()
         {
-            this._removeMode = true;
+            _removeMode = true;
             ProcessRelationships();
         }
 
@@ -240,7 +244,7 @@ namespace CoreSharp.Breeze
                 }
             }
             // TODO: update unmapped properties
-            typeof(EntityInfo).GetProperty("Entity").SetValue(entityInfo, clientEntity);
+            entityInfo.Entity = clientEntity;
             return true;
         }
 
@@ -344,6 +348,11 @@ namespace CoreSharp.Breeze
             //Save the original client object
             _clientEntityObjects[entityInfo] = entityInfo.Entity;
 
+            var entityInfoEntity = entityInfo.Entity;
+            entityInfo.Entity = dbEntity;
+            _breezeContext.BeforeModify(entityInfo);
+
+
             //We have to set the properties from the client object
             propNames = meta.PropertyNames;
             var propTypes = meta.PropertyTypes;
@@ -362,7 +371,7 @@ namespace CoreSharp.Breeze
                 if (memberConfig != null && (
                     (memberConfig.Ignored.HasValue && memberConfig.Ignored.Value) ||
                     (memberConfig.Writable.HasValue && !memberConfig.Writable.Value) ||
-                    (memberConfig.ShouldDeserializePredicate != null && memberConfig.ShouldDeserializePredicate.Invoke(entityInfo.Entity) == false)
+                    (memberConfig.ShouldDeserializePredicate != null && memberConfig.ShouldDeserializePredicate.Invoke(entityInfoEntity) == false)
                 ))
                     continue;
 
@@ -372,7 +381,7 @@ namespace CoreSharp.Breeze
                 if (propType.IsComponentType)
                 {
                     var compType = (ComponentType) propType;
-                    var componentVal = GetPropertyValue(meta, entityInfo.Entity, propName);
+                    var componentVal = GetPropertyValue(meta, entityInfoEntity, propName);
                     var dbComponentVal = GetPropertyValue(meta, dbEntity, propName);
 
                     if (dbComponentVal == null)
@@ -387,11 +396,10 @@ namespace CoreSharp.Breeze
                 }
                 else
                 {
-                    var val = meta.GetPropertyValue(entityInfo.Entity, propName);
+                    var val = meta.GetPropertyValue(entityInfoEntity, propName);
                     meta.SetPropertyValue(dbEntity, propName, val);
                 }
             }
-            typeof(EntityInfo).GetProperty("Entity").SetValue(entityInfo, dbEntity);
             return true;
         }
 
