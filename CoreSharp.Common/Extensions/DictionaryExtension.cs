@@ -2,11 +2,12 @@
 
 using System.Collections.Generic;
 
-namespace CoreSharp.GraphQL.Extensions
+// ReSharper disable once CheckNamespace
+namespace System.Collections.Generic
 {
-    internal static class DictionaryExtension
+    public static class DictionaryExtension
     {
-        internal static TValue GetValueOrDefault<TKey, TValue>
+        public static TValue GetValueOrDefault<TKey, TValue>
             (   this IDictionary<TKey, TValue> dictionary,TKey key)
         {
             if (dictionary == null)
