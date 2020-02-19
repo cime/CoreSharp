@@ -11,20 +11,21 @@ namespace CoreSharp.GraphQL
 
         public static bool RequiresPermissions(this IProvideMetadata type)
         {
-            var permissions = type.GetMetadata<IEnumerable<string>>(PermissionsKey, new List<string>());
-            return permissions.Any();
+            var fieldPermissions = type.GetMetadata<IEnumerable<string>>(PermissionsKey);
+
+            return fieldPermissions != null && fieldPermissions.Any();
         }
 
-        public static bool CanAccess(this IProvideMetadata type, IEnumerable<string> permissions)
+        public static bool CanAccess(this IProvideMetadata type, params string[] permissions)
         {
-            var fieldPermissions = type.GetMetadata<IEnumerable<string>>(PermissionsKey, new List<string>());
-            return fieldPermissions.Any(x => permissions?.Contains(x) ?? false);
-        }
+            if (permissions == null || !permissions.Any())
+            {
+                return false;
+            }
 
-        public static bool HasPermission(this IProvideMetadata type, string permission)
-        {
-            var permissions = type.GetMetadata<IEnumerable<string>>(PermissionsKey, new List<string>());
-            return permissions.Any(x => string.Equals(x, permission));
+            var fieldPermissions = type.GetMetadata<IEnumerable<string>>(PermissionsKey)?.ToList();
+
+            return fieldPermissions == null || !fieldPermissions.Any() || fieldPermissions.Any(x => permissions.Contains(x));
         }
 
         public static void RequirePermission(this IProvideMetadata type, string permission)

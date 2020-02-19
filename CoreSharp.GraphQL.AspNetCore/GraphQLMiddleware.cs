@@ -1,5 +1,8 @@
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using GraphQL;
@@ -10,6 +13,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SimpleInjector;
 
 namespace CoreSharp.GraphQL.AspNetCore
 {
@@ -20,6 +24,7 @@ namespace CoreSharp.GraphQL.AspNetCore
         private const string GraphQLContentType = "application/graphql";
         private const string FormUrlEncodedContentType = "application/x-www-form-urlencoded";
 
+        private readonly Container _container;
         private readonly ILogger<GraphQLMiddleware<TSchema>> _logger;
         private readonly TSchema _schema;
         private readonly IComplexityConfigurationFactory _complexityConfigurationFactory;
@@ -28,10 +33,12 @@ namespace CoreSharp.GraphQL.AspNetCore
         private readonly PathString _path = "/graphql";
 
         public GraphQLMiddleware(
+            Container container,
             ILogger<GraphQLMiddleware<TSchema>> logger,
             TSchema schema, IComplexityConfigurationFactory complexityConfigurationFactory,
             IUserContextBuilder userContextBuilder)
         {
+            _container = container;
             _logger = logger;
             _schema = schema;
             _complexityConfigurationFactory = complexityConfigurationFactory;
@@ -81,6 +88,17 @@ namespace CoreSharp.GraphQL.AspNetCore
                 }
             }
 
+            IEnumerable<IValidationRule> validationRules;
+            try
+            {
+                validationRules = _container.GetAllInstances<IValidationRule>();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                validationRules = new IValidationRule[0];
+            }
+
             var executer = new DocumentExecuter();
             var result = await executer.ExecuteAsync(x =>
             {
@@ -89,17 +107,19 @@ namespace CoreSharp.GraphQL.AspNetCore
                 x.Query = gqlRequest.Query;
                 x.Inputs = gqlRequest.GetInputs();
                 x.UserContext = _userContextBuilder.BuildContext();
-                x.ValidationRules = new[] { new AuthenticationValidationRule() }.Concat(DocumentValidator.CoreRules);
+                x.ValidationRules = validationRules.Concat(DocumentValidator.CoreRules);
                 x.CancellationToken = context.RequestAborted;
                 x.ComplexityConfiguration = _complexityConfigurationFactory.GetComplexityConfiguration();
             });
 
-            if (result.Errors != null)
+            if (result.Errors.Any(x => x.Code == "auth-required") && context.Response.Headers.ContainsKey("Token-Expired"))
             {
-                _logger.LogError("GraphQL execution error(s): {Errors}", result.Errors);
+                await WriteUnauthorizedResponseAsync(context, documentWriter, result);
             }
-
-            await WriteResponseAsync(context, documentWriter, result);
+            else
+            {
+                await WriteResponseAsync(context, documentWriter, result);
+            }
         }
 
 
@@ -114,7 +134,15 @@ namespace CoreSharp.GraphQL.AspNetCore
             };
 
             context.Response.ContentType = "application/json";
-            context.Response.StatusCode = 400; // Bad Request
+            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+
+            return writer.WriteAsync(context.Response.Body, result);
+        }
+
+        private Task WriteUnauthorizedResponseAsync(HttpContext context, IDocumentWriter writer, ExecutionResult result)
+        {
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
 
             return writer.WriteAsync(context.Response.Body, result);
         }
@@ -122,7 +150,7 @@ namespace CoreSharp.GraphQL.AspNetCore
         private Task WriteResponseAsync(HttpContext context, IDocumentWriter writer, ExecutionResult result)
         {
             context.Response.ContentType = "application/json";
-            context.Response.StatusCode = 200; // OK
+            context.Response.StatusCode = (int)HttpStatusCode.OK;
 
             return writer.WriteAsync(context.Response.Body, result);
         }
