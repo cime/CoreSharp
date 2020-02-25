@@ -112,7 +112,7 @@ namespace CoreSharp.GraphQL.AspNetCore
                 x.ComplexityConfiguration = _complexityConfigurationFactory.GetComplexityConfiguration();
             });
 
-            if (result.Errors.Any(x => x.Code == "auth-required") && context.Response.Headers.ContainsKey("Token-Expired"))
+            if (result.Errors?.Any(x => x.Code == "auth-required") == true && context.Response.Headers.ContainsKey("Token-Expired"))
             {
                 await WriteUnauthorizedResponseAsync(context, documentWriter, result);
             }
