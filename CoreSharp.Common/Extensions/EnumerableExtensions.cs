@@ -7,7 +7,7 @@ namespace System.Collections.Generic
     public static class EnumerableExtensions
     {
         private static readonly Random Random = new Random();
-        
+
 #nullable disable
         public static T GetRandom<T>(this IEnumerable<T> sequence)
         {
@@ -89,11 +89,6 @@ namespace System.Collections.Generic
         public static IEnumerable<IGrouping<TKey, TSource>> Duplicates<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
         {
             return source.GroupBy(keySelector).Where(o => o.Count() > 1);
-        }
-        
-        public static HashSet<T> ToHashSet<T>(this IEnumerable<T> items)
-        {
-            return new HashSet<T>(items ?? new List<T>());
         }
     }
 }
