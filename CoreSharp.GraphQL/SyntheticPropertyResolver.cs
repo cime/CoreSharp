@@ -13,7 +13,7 @@ namespace CoreSharp.GraphQL
             _propertyInfo = propertyInfo;
         }
 
-        public object Resolve(ResolveFieldContext context)
+        public object Resolve(IResolveFieldContext context)
         {
             return null;
         }

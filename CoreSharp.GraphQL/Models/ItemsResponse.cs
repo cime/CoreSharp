@@ -30,13 +30,13 @@ namespace CoreSharp.GraphQL.Models
         private long _count = -1;
         public IList<T> Items { get; }
 
-        public ItemsResponse(ResolveFieldContext context, IQueryable<T> queryable, Page page, Sort sort)
+        public ItemsResponse(IResolveFieldContext context, IQueryable<T> queryable, Page page, Sort sort)
             : this(context, queryable, page, new[] {sort})
         {
 
         }
 
-        public ItemsResponse(ResolveFieldContext context, IQueryable<T> queryable, Page page, IList<Sort> order)
+        public ItemsResponse(IResolveFieldContext context, IQueryable<T> queryable, Page page, IList<Sort> order)
         {
             _queryable = queryable;
             _page = page;

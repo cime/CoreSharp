@@ -25,7 +25,7 @@ namespace CoreSharp.GraphQL
             _jsonSerializerSettings = jsonSerializerSettings;
         }
 
-        public object Resolve(ResolveFieldContext context)
+        public object Resolve(IResolveFieldContext context)
         {
             var commandHandler = _container.GetInstance(_commandHandlerType);
             var variableValue = context.Arguments?.ContainsKey("command") == true ? JsonConvert.SerializeObject(context.Arguments["command"], _jsonSerializerSettings) : "{}";
@@ -33,7 +33,7 @@ namespace CoreSharp.GraphQL
 
             if (command != null)
             {
-                var contextProperties = command.GetType().GetProperties().Where(x => x.PropertyType == typeof(ResolveFieldContext) && x.CanWrite).ToList();
+                var contextProperties = command.GetType().GetProperties().Where(x => typeof(IResolveFieldContext).IsAssignableFrom(x.PropertyType) && x.CanWrite).ToList();
 
                 foreach (var contextProperty in contextProperties)
                 {

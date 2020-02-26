@@ -111,7 +111,7 @@ namespace CoreSharp.GraphQL
 
             if (GraphTypeTypeRegistry.Contains(propertyType)) return true;
 
-            if (propertyType == typeof(ResolveFieldContext)) return false;
+            if (typeof(IResolveFieldContext).IsAssignableFrom(propertyType)) return false;
 
             if (firstCall)
             {

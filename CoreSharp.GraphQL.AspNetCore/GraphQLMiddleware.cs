@@ -6,7 +6,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using GraphQL;
-using GraphQL.Http;
+using GraphQL.NewtonsoftJson;
 using GraphQL.Validation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -56,7 +56,7 @@ namespace CoreSharp.GraphQL.AspNetCore
             // Handle requests as per recommendation at http://graphql.org/learn/serving-over-http/
             var httpRequest = context.Request;
             var gqlRequest = new GraphQLRequest();
-            var documentWriter = new DocumentWriter(Formatting.Indented, _schema.GetJsonSerializerSettings());
+            var documentWriter = new DocumentWriter(_schema.GetJsonSerializerSettings());
 
             if (HttpMethods.IsGet(httpRequest.Method) || (HttpMethods.IsPost(httpRequest.Method) && httpRequest.Query.ContainsKey(GraphQLRequest.QueryKey)))
             {

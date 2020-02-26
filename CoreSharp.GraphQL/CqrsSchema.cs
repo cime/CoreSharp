@@ -112,7 +112,7 @@ namespace CoreSharp.GraphQL
 
                 IInputObjectGraphType? inputGqlType = null;
 
-                var properties = commandType.GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => x.PropertyType != typeof(ResolveFieldContext)).ToList();
+                var properties = commandType.GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => !typeof(IResolveFieldContext).IsAssignableFrom(x.PropertyType)).ToList();
 
                 if (properties.Any())
                 {
@@ -159,6 +159,8 @@ namespace CoreSharp.GraphQL
                         resultGqlType = (IGraphType) listGqlType;
                         // resultGqlType.Name = "ListOf" + name;
                     }
+
+                    GraphTypeTypeRegistry.Register(resultType, returnObjectType);
                 }
 
                 var arguments = new List<QueryArgument>();
@@ -237,7 +239,7 @@ namespace CoreSharp.GraphQL
                     continue;
                 }
 
-                var properties = queryType.GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => x.PropertyType != typeof(ResolveFieldContext));
+                var properties = queryType.GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => !typeof(IResolveFieldContext).IsAssignableFrom(x.PropertyType));
                 IInputObjectGraphType? inputGqlType = null;
 
                 if (properties.Any())
@@ -285,6 +287,8 @@ namespace CoreSharp.GraphQL
                         resultGqlType = (IGraphType) listGqlType;
                         // resultGqlType.Name = "ListOf" + name;
                     }
+
+                    GraphTypeTypeRegistry.Register(resultType, returnObjectType);
                 }
 
                 var arguments = new List<QueryArgument>();

@@ -25,7 +25,7 @@ namespace CoreSharp.GraphQL
             _jsonSerializerSettings = jsonSerializerSettings;
         }
 
-        public object Resolve(ResolveFieldContext context)
+        public object Resolve(IResolveFieldContext context)
         {
             var queryHandler = _container.GetInstance(_queryHandlerType);
             var variableValue = context.Arguments?.ContainsKey("query") == true ? JsonConvert.SerializeObject(context.Arguments["query"], _jsonSerializerSettings) : "{}";
@@ -33,7 +33,7 @@ namespace CoreSharp.GraphQL
 
             if (query != null)
             {
-                var contextProperties = query.GetType().GetProperties().Where(x => x.PropertyType == typeof(ResolveFieldContext) && x.CanWrite).ToList();
+                var contextProperties = query.GetType().GetProperties().Where(x => typeof(IResolveFieldContext).IsAssignableFrom(x.PropertyType) && x.CanWrite).ToList();
 
                 foreach (var contextProperty in contextProperties)
                 {

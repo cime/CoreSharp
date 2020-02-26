@@ -116,17 +116,20 @@ namespace CoreSharp.GraphQL
                 }
             }
 
-            var interfaces = typeof(TSourceType).GetInterfaces().Where(x => x.IsPublic).ToList();
-            foreach (var @interface in interfaces)
+            if (_configuration.GenerateInterfaces)
             {
-                var interfaceType = GraphTypeTypeRegistry.Get(@interface);
-                if (interfaceType == null)
+                var interfaces = typeof(TSourceType).GetInterfaces().Where(x => x.IsPublic).ToList();
+                foreach (var @interface in interfaces)
                 {
-                    interfaceType = typeof(AutoInterfaceGraphType<>).MakeGenericType(@interface);
-                    GraphTypeTypeRegistry.Register(@interface, interfaceType);
-                }
+                    var interfaceType = GraphTypeTypeRegistry.Get(@interface);
+                    if (interfaceType == null)
+                    {
+                        interfaceType = typeof(AutoInterfaceGraphType<>).MakeGenericType(@interface);
+                        GraphTypeTypeRegistry.Register(@interface, interfaceType);
+                    }
 
-                Interface(interfaceType);
+                    Interface(interfaceType);
+                }
             }
         }
 
@@ -194,7 +197,7 @@ namespace CoreSharp.GraphQL
 
             if (GraphTypeTypeRegistry.Contains(propertyType)) return true;
 
-            if (propertyType == typeof(ResolveFieldContext)) return false;
+            if (typeof(IResolveFieldContext).IsAssignableFrom(propertyType)) return false;
 
             if (firstCall)
             {

@@ -9,6 +9,8 @@ namespace CoreSharp.GraphQL.Configuration
         protected Dictionary<Type, ITypeConfiguration> ModelsConfiguration = new Dictionary<Type, ITypeConfiguration>();
         private bool _isLocked = false;
 
+        public bool GenerateInterfaces { get; set; } = true;
+
         public static event Action<ITypeConfiguration> ModelConfigurationCreated;
 
         internal static void OnModelConfigurationCreated(ITypeConfiguration obj)
