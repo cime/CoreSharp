@@ -180,7 +180,7 @@ namespace CoreSharp.GraphQL
                     {
                         Type = resultGqlType == null ? GraphTypeTypeRegistry.Get(resultType) : null,
                         ResolvedType = resultGqlType,
-                        Resolver = new CommandResolver(_container, commandHandlerType, commandType, GetJsonSerializerSettings()),
+                        Resolver = new CommandResolver(_container, commandHandlerType, commandType, resultType, GetJsonSerializerSettings()),
                         Name = GetNormalizedFieldName(mutationName),
                         Description = descriptionAttribute?.Description,
                         Arguments = new QueryArguments(arguments),
@@ -308,7 +308,7 @@ namespace CoreSharp.GraphQL
                     {
                         Type = resultGqlType == null ? GraphTypeTypeRegistry.Get(resultType) : null,
                         ResolvedType = resultGqlType,
-                        Resolver = new QueryResolver(_container, queryHandlerType, queryType, GetJsonSerializerSettings()),
+                        Resolver = new QueryResolver(_container, queryHandlerType, queryType, resultType, GetJsonSerializerSettings()),
                         Name = GetNormalizedFieldName(queryName),
                         Description = descriptionAttribute?.Description,
                         Arguments = new QueryArguments(arguments),

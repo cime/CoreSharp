@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Concurrent;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading;
 using CoreSharp.Cqrs.Query;
 using GraphQL.Resolvers;
 using GraphQL.Types;
@@ -11,17 +14,21 @@ namespace CoreSharp.GraphQL
 {
     public class QueryResolver : IFieldResolver
     {
+        private static readonly ConcurrentDictionary<Type, Func<object, object, IResolveFieldContext, object>> Cache = new ConcurrentDictionary<Type, Func<object, object, IResolveFieldContext, object>>();
+        
         private readonly Container _container;
         private readonly Type _queryHandlerType;
         private readonly Type _queryType;
+        private readonly Type _resultType;
         private readonly JsonSerializerSettings _jsonSerializerSettings;
 
-        public QueryResolver(Container container, Type queryHandlerType, Type queryType,
+        public QueryResolver(Container container, Type queryHandlerType, Type queryType, Type resultType,
             JsonSerializerSettings jsonSerializerSettings)
         {
             _container = container;
             _queryHandlerType = queryHandlerType;
             _queryType = queryType;
+            _resultType = resultType;
             _jsonSerializerSettings = jsonSerializerSettings;
         }
 
@@ -40,13 +47,36 @@ namespace CoreSharp.GraphQL
                     contextProperty.SetValue(query, context);
                 }
             }
+            
+            
+            var handleMethodInfo = Cache.GetOrAdd(_queryHandlerType, (type) =>
+            {
+                var p1 = Expression.Parameter(typeof(object), "queryHandler");
+                var p2 = Expression.Parameter(typeof(object), "query");
+                var p3 = Expression.Parameter(typeof(IResolveFieldContext), "context");
 
-            var isAsync = _queryHandlerType.IsAssignableToGenericType(typeof(IAsyncQueryHandler<,>));
+                var isAsync = type.IsAssignableToGenericType(typeof(IAsyncQueryHandler<,>));
 
-            var handleMethodInfo =
-                _queryHandlerType.GetMethod(isAsync ? "HandleAsync" : "Handle", BindingFlags.Instance | BindingFlags.Public);
+                MethodCallExpression call;
+                if (isAsync)
+                {
+                    var mi = _queryHandlerType.GetMethod(nameof(IAsyncQueryHandler<IAsyncQuery<object>, object>.HandleAsync), BindingFlags.Instance | BindingFlags.Public, null, new []{ _queryType, typeof(CancellationToken) }, null);
+                    var cn = Expression.Property(p3, "CancellationToken");
 
-            return handleMethodInfo.Invoke(queryHandler, new[] {query});
+                    call = Expression.Call(Expression.Convert(p1, _queryHandlerType), mi, Expression.Convert(p2, _queryType), cn);
+                }
+                else
+                {
+                    var mi = _queryHandlerType.GetMethod(nameof(IQueryHandler<IQuery<object>, object>.Handle), BindingFlags.Instance | BindingFlags.Public, null, new []{ _queryType }, null);
+                    call = Expression.Call(Expression.Convert(p1, _queryHandlerType), mi, Expression.Convert(p2, _queryType));
+                }
+                
+                return Expression.Lambda<Func<object, object, IResolveFieldContext, object>>(
+                    Expression.Convert(call, typeof(object)),
+                    p1, p2, p3).Compile();
+            });
+
+            return handleMethodInfo(queryHandler, query, context);
         }
     }
 }
