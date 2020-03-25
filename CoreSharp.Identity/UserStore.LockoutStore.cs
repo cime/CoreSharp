@@ -35,7 +35,7 @@ namespace CoreSharp.Identity
                 throw new ArgumentNullException(nameof(user));
             }
 
-            user.LockoutEnd = lockoutEnd?.DateTime.ToUniversalTime();
+            user.LockoutEnd = lockoutEnd != null ? (DateTime?)DateTime.SpecifyKind(lockoutEnd.Value.DateTime, DateTimeKind.Utc) : null;
 
             return Task.CompletedTask;
         }
