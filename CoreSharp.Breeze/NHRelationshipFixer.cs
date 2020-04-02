@@ -146,7 +146,7 @@ namespace CoreSharp.Breeze
 
             if (entityInfo.EntityState == EntityState.Deleted)
             {
-                if (_deleteOrder.Contains(entityInfo))
+                if (!_deleteOrder.Contains(entityInfo))
                 {
                     _deleteOrder.Add(entityInfo);
                 }
