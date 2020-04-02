@@ -36,7 +36,7 @@ namespace CoreSharp.Breeze.Query
 
             if (Expr1Source is string expr1SourceString)
             {
-                if (expr1SourceString.EndsWith("Id") && entityType.GetProperty(expr1SourceString) == null)
+                if (expr1SourceString.EndsWith("Id") && !expr1SourceString.EndsWith(".Id") && entityType.GetProperty(expr1SourceString) == null)
                 {
                     var match = _navigationPropertyNameRegex.Match(expr1SourceString);
 

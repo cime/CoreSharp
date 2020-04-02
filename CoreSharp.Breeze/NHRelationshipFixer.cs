@@ -145,9 +145,19 @@ namespace CoreSharp.Breeze
             }
 
             if (entityInfo.EntityState == EntityState.Deleted)
-                _deleteOrder.Add(entityInfo);
+            {
+                if (_deleteOrder.Contains(entityInfo))
+                {
+                    _deleteOrder.Add(entityInfo);
+                }
+            }
             else
-                _saveOrder.Add(entityInfo);
+            {
+                if (!_saveOrder.Contains(entityInfo))
+                {
+                    _saveOrder.Add(entityInfo);
+                }
+            }
         }
 
         /// <summary>
