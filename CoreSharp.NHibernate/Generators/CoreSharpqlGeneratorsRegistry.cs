@@ -8,12 +8,7 @@ namespace CoreSharp.NHibernate.Generators
     {
         public CoreSharpLinqToHqlGeneratorsRegistry()
         {
-            this.Merge(new AddSecondsGenerator());
-            this.Merge(new AddMinutesGenerator());
-            this.Merge(new AddHoursGenerator());
-            this.Merge(new AddDaysGenerator());
-            this.Merge(new AddMonthsGenerator());
-            this.Merge(new AddYearsGenerator());
+            this.Merge(new DateTimeAddGenerator());
         }
     }
 }
