@@ -2,12 +2,15 @@ using System.Linq;
 using System.Reflection;
 using CoreSharp.DataAccess;
 using CoreSharp.NHibernate.Extensions;
+using CoreSharp.NHibernate.Generators;
 using CoreSharp.NHibernate.PostgreSQL.Conventions;
 using FluentNHibernate.Cfg;
 using FluentNHibernate.Conventions.Inspections;
 using FluentNHibernate.Conventions.Instances;
 using FluentNHibernate.Mapping;
+using NHibernate;
 using NHibernate.Cfg;
+using NHibernate.Dialect.Function;
 using NHibernate.Mapping;
 
 namespace CoreSharp.NHibernate.PostgreSQL.Extensions
@@ -98,6 +101,23 @@ namespace CoreSharp.NHibernate.PostgreSQL.Extensions
                     persistenceModel.Conventions.Add(typeof(PostgresqlHiLoIdConvention), new PostgresqlHiLoIdConvention(cfg));
                 }
             });
+        }
+
+        public static FluentConfiguration RegisterDateTimeGenerators(this FluentConfiguration fluentConfiguration)
+        {
+            fluentConfiguration.ExposeConfiguration(config =>
+            {
+                config.AddSqlFunction("AddSeconds", new SQLFunctionTemplate(NHibernateUtil.DateTime, "?1 + (?2 * interval '1 second')"));
+                config.AddSqlFunction("AddMinutes", new SQLFunctionTemplate(NHibernateUtil.DateTime, "?1 + (?2 * interval '1 minute')"));
+                config.AddSqlFunction("AddHours", new SQLFunctionTemplate(NHibernateUtil.DateTime, "?1 + (?2 * interval '1 hour')"));
+                config.AddSqlFunction("AddDays", new SQLFunctionTemplate(NHibernateUtil.DateTime, "?1 + (?2 * interval '1 day')"));
+                config.AddSqlFunction("AddMonths", new SQLFunctionTemplate(NHibernateUtil.DateTime, "?1 + (?2 * interval '1 month')"));
+                config.AddSqlFunction("AddYears", new SQLFunctionTemplate(NHibernateUtil.DateTime, "?1 + (?2 * interval '1 year')"));
+
+                config.LinqToHqlGeneratorsRegistry<CoreSharpLinqToHqlGeneratorsRegistry>();
+            });
+
+            return fluentConfiguration;
         }
     }
 }
