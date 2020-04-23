@@ -25,10 +25,12 @@ public class VersionedEntitySaveOrUpdateEventListener<TUser> : DefaultSaveOrUpda
         private readonly Type _genericVersionedEntityType = typeof(IVersionedEntityWithUser<>);
 
         private readonly IEventPublisher _eventPublisher;
+        private readonly IIdentityAccessor _identityAccessor;
 
-        public VersionedEntitySaveOrUpdateEventListener(IEventPublisher eventPublisher)
+        public VersionedEntitySaveOrUpdateEventListener(IEventPublisher eventPublisher, IIdentityAccessor identityAccessor)
         {
             _eventPublisher = eventPublisher;
+            _identityAccessor = identityAccessor;
         }
 
         protected override async Task<object> EntityIsTransientAsync(SaveOrUpdateEvent @event, CancellationToken cancellationToken)
@@ -81,13 +83,11 @@ public class VersionedEntitySaveOrUpdateEventListener<TUser> : DefaultSaveOrUpda
 
         private TUser GetCurrentUser(ISession session)
         {
-            if (Thread.CurrentPrincipal?.Identity is ClaimsIdentity)
+            if (_identityAccessor.Identity is ClaimsIdentity identity)
             {
-                var identity = Thread.CurrentPrincipal.Identity as ClaimsIdentity;
-                var idClaim = identity.Claims.SingleOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
-                long userId;
+                var idClaim = identity.Claims.SingleOrDefault(x => x.Type == ClaimTypes.Sid);
 
-                if (idClaim != null && long.TryParse(idClaim.Value, out userId) && userId > 0)
+                if (idClaim != null && long.TryParse(idClaim.Value, out var userId) && userId > 0)
                 {
                     return session.Load<TUser>(userId);
                 }
@@ -99,7 +99,7 @@ public class VersionedEntitySaveOrUpdateEventListener<TUser> : DefaultSaveOrUpda
 
                 if (systemUser == null)
                 {
-                    return default(TUser);
+                    return default;
                 }
 
                 _systemUserId = systemUser.Id;

@@ -22,6 +22,13 @@ namespace CoreSharp.NHibernate.EventListeners
 
         private readonly Type _genericVersionedEntityType = typeof(IVersionedEntityWithUser<>);
 
+        private readonly IIdentityAccessor _identityAccessor;
+
+        public VersionedEntityPreUpdateEventListener(IIdentityAccessor identityAccessor)
+        {
+            _identityAccessor = identityAccessor;
+        }
+
         public bool OnPreUpdate(PreUpdateEvent @event)
         {
             var entity = @event.Entity as IVersionedEntity;
@@ -64,10 +71,9 @@ namespace CoreSharp.NHibernate.EventListeners
 
         private TUser GetCurrentUser(ISession session)
         {
-            if (Thread.CurrentPrincipal?.Identity is ClaimsIdentity)
+            if (_identityAccessor?.Identity is ClaimsIdentity identity)
             {
-                var identity = Thread.CurrentPrincipal.Identity as ClaimsIdentity;
-                var idClaim = identity.Claims.SingleOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
+                var idClaim = identity.Claims.SingleOrDefault(x => x.Type == ClaimTypes.Sid);
                 long userId;
 
                 if (idClaim != null && long.TryParse(idClaim.Value, out userId) && userId > 0)
