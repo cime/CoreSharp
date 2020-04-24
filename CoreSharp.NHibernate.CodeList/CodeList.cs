@@ -8,22 +8,9 @@ namespace CoreSharp.NHibernate.CodeList
     [Serializable]
     public abstract class CodeList : VersionedEntity<string>, ICodeList
     {
-        private bool _isTransient = true;
-
         [DefaultValue(true)]
         public virtual bool Active { get; set; } = true;
 
         public virtual string Name { get; set; }
-
-        //Id can be changed via Code so we have to check CreatedBy and ModifiedBy
-        public override bool IsTransient()
-        {
-            return _isTransient;
-        }
-
-        public virtual void SetTransient(bool isTransient)
-        {
-            _isTransient = isTransient;
-        }
     }
 }

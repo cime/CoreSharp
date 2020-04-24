@@ -17,12 +17,24 @@ namespace CoreSharp.NHibernate
 
     [Serializable]
     [Ignore]
-    public abstract class VersionedEntity<TId> :  Entity<TId>, IVersionedEntity<TId>
+    public abstract class VersionedEntity<TId> :  Entity<TId>, IVersionedEntity<TId>, IEntityState
     {
+        private bool _isTransient = true;
+
         public virtual int Version { get; protected set; }
 
         public virtual DateTime CreatedDate { get; protected set; }
 
         public virtual DateTime? LastModifiedDate { get; protected set; }
+
+        public override bool IsTransient()
+        {
+            return _isTransient;
+        }
+
+        public virtual void SetTransient(bool isTransient)
+        {
+            _isTransient = isTransient;
+        }
     }
 }

@@ -23,6 +23,5 @@ namespace CoreSharp.NHibernate
         public virtual TUser CreatedBy { get; protected set; }
 
         public virtual TUser LastModifiedBy { get; protected set; }
-
     }
 }
