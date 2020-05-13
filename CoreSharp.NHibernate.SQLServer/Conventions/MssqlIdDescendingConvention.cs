@@ -2,10 +2,10 @@
 using System.Data;
 using System.Linq;
 using System.Text.RegularExpressions;
-using NHibernate.Dialect;
 using CoreSharp.NHibernate.Configuration;
+using NHibernate.Dialect;
 
-namespace CoreSharp.NHibernate.Conventions.Mssql
+namespace CoreSharp.NHibernate.SQLServer.Conventions
 {
     public class MssqlIdDescendingConvention : ISchemaConvention
     {

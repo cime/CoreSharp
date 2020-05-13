@@ -6,7 +6,7 @@ using FluentNHibernate.Conventions;
 using FluentNHibernate.Conventions.Instances;
 using NHibernate.Dialect;
 
-namespace CoreSharp.NHibernate.Conventions.Mssql
+namespace CoreSharp.NHibernate.SQLServer.Conventions
 {
     //More info: http://nhforge.org/blogs/nhibernate/archive/2009/03/11/nhibernate-and-ms-sql-server-2008-date-time-datetime2-and-datetimeoffset.aspx
     public class MssqlDataTypesConvention : ISchemaConvention, IPropertyConvention

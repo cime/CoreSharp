@@ -5,7 +5,7 @@ using System.Reflection;
 using NHibernate;
 using NHibernate.Connection;
 
-namespace CoreSharp.NHibernate.Conventions.Mssql
+namespace CoreSharp.NHibernate.SQLServer.Conventions
 {
     public static class NameNormalizer
     {

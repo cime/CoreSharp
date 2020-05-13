@@ -1,7 +1,7 @@
-using CoreSharp.NHibernate.Conventions.Mssql;
 using CoreSharp.NHibernate.Extensions;
 using FluentNHibernate.Cfg;
 using System.Linq;
+using CoreSharp.NHibernate.SQLServer.Conventions;
 
 namespace CoreSharp.NHibernate.SQLServer.Extensions
 {

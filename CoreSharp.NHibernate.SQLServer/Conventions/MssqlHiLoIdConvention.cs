@@ -9,7 +9,7 @@ using FluentNHibernate.Conventions.Instances;
 using NHibernate.Dialect;
 using NHibernate.Mapping;
 
-namespace CoreSharp.NHibernate.Conventions.Mssql
+namespace CoreSharp.NHibernate.SQLServer.Conventions
 {
     public class MssqlHiLoIdConvention : IIdConvention
     {
