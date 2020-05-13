@@ -1,11 +1,8 @@
-﻿using System;
-using System.CodeDom;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FluentValidation;
 using FluentValidation.Results;
-using CoreSharp.Validation;
 
-namespace CoreSharp.Tests.Validation.Models
+namespace CoreSharp.Validation.Tests.Models
 {
     public class GenericRootModel
     {

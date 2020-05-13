@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using CoreSharp.Common.Attributes;
 using FluentValidation;
 using FluentValidation.Results;
-using CoreSharp.Validation;
-using CoreSharp.Common.Attributes;
-using System.Threading.Tasks;
 
-namespace CoreSharp.Tests.Validation.Models
+namespace CoreSharp.Validation.Tests.Models
 {
     public class AsyncParent
     {

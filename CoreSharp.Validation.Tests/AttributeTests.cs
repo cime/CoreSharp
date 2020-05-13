@@ -1,11 +1,10 @@
-﻿using FluentValidation;
-using CoreSharp.Tests.Validation.Models.Attributes;
-using CoreSharp.Validation;
-using Xunit;
-using CoreSharp.Common.Tests;
+﻿using CoreSharp.Common.Tests;
+using CoreSharp.Validation.Tests.Models.Attributes;
+using FluentValidation;
 using SimpleInjector;
+using Xunit;
 
-namespace CoreSharp.Tests.Validation
+namespace CoreSharp.Validation.Tests
 {
     public class AttributeTests : IClassFixture<Bootstrapper>
     {

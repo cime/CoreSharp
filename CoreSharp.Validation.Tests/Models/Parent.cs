@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using CoreSharp.Common.Attributes;
 using FluentValidation;
 using FluentValidation.Results;
-using CoreSharp.Validation;
-using CoreSharp.Common.Attributes;
 
-namespace CoreSharp.Tests.Validation.Models
+namespace CoreSharp.Validation.Tests.Models
 {
     public class Parent
     {

@@ -1,6 +1,6 @@
 ﻿using CoreSharp.Common.Attributes;
 
-namespace CoreSharp.Tests.Validation.Models.Attributes
+namespace CoreSharp.Validation.Tests.Models.Attributes
 {
     public class LessThanOrEqualModel
     {

@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CoreSharp.Common.Tests;
+using CoreSharp.Validation.Tests.Models;
 using FluentValidation;
 using FluentValidation.Results;
-using CoreSharp.Tests.Validation.Models;
-using CoreSharp.Validation;
-using CoreSharp.Common.Tests;
-using Xunit;
 using SimpleInjector;
+using Xunit;
 
-namespace CoreSharp.Tests.Validation
+namespace CoreSharp.Validation.Tests
 {
     public class ValidationTests : IClassFixture<Bootstrapper>
     {

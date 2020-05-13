@@ -1,10 +1,10 @@
-﻿using FluentValidation;
-using CoreSharp.Tests.Validation.Models;
+﻿using CoreSharp.Common.Tests;
+using CoreSharp.Validation.Tests.Models;
+using FluentValidation;
 using SimpleInjector;
 using Xunit;
-using CoreSharp.Common.Tests;
 
-namespace CoreSharp.Tests.Validation
+namespace CoreSharp.Validation.Tests
 {
     public class LifecycleTests : IClassFixture<Bootstrapper>
     {
