@@ -1,6 +1,6 @@
 using System.Reflection;
+using GraphQL;
 using GraphQL.Resolvers;
-using GraphQL.Types;
 
 namespace CoreSharp.GraphQL
 {

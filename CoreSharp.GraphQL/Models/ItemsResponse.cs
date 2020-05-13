@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 using System.Reflection;
+using GraphQL;
 using GraphQL.Language.AST;
 using GraphQL.Types;
 

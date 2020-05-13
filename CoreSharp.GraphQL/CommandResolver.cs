@@ -5,8 +5,8 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
 using CoreSharp.Cqrs.Command;
+using GraphQL;
 using GraphQL.Resolvers;
-using GraphQL.Types;
 using Newtonsoft.Json;
 using SimpleInjector;
 
@@ -47,7 +47,7 @@ namespace CoreSharp.GraphQL
                     contextProperty.SetValue(command, context);
                 }
             }
-            
+
             var handleMethodInfo = Cache.GetOrAdd(_commandHandlerType, (type) =>
             {
                 var p1 = Expression.Parameter(typeof(object), "commandHandler");
@@ -69,7 +69,7 @@ namespace CoreSharp.GraphQL
                     var mi = _commandHandlerType.GetMethod(nameof(ICommandHandler<ICommand<object>, object>.Handle), BindingFlags.Instance | BindingFlags.Public, null, new []{ _commandType }, null);
                     call = Expression.Call(Expression.Convert(p1, _commandHandlerType), mi, Expression.Convert(p2, _commandType));
                 }
-                
+
                 return Expression.Lambda<Func<object, object, IResolveFieldContext, object>>(
                     Expression.Convert(call, typeof(object)),
                     p1, p2, p3).Compile();

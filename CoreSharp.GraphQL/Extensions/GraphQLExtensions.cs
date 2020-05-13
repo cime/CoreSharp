@@ -3,6 +3,7 @@ using System.Linq;
 using GraphQL.Builders;
 using GraphQL.Types;
 
+// ReSharper disable once CheckNamespace
 namespace CoreSharp.GraphQL
 {
     public static class GraphQLExtensions

@@ -61,6 +61,13 @@ namespace CoreSharp.GraphQL.Configuration
             return this;
         }
 
+        public  ITypeConfiguration<TType> ImplementInterface(Func<Type, bool> predicate)
+        {
+            base.ImplementInterface = predicate;
+
+            return this;
+        }
+        
         public ITypeConfiguration<TType> FieldName(string fieldName)
         {
             base.FieldName = fieldName;
@@ -80,6 +87,7 @@ namespace CoreSharp.GraphQL.Configuration
         public bool? Ignored { get; set; }
         public bool? Input { get; set; }
         public bool? Output { get; set; }
+        public Func<Type, bool> ImplementInterface { get; set; }
 
         protected TypeConfiguration(Type type)
         {

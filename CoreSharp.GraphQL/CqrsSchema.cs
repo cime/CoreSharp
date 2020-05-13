@@ -27,7 +27,7 @@ namespace CoreSharp.GraphQL
 
         private readonly Container _container;
         private readonly IGraphQLConfiguration _configuration;
-        private JsonSerializerSettings? _jsonSerializerSettings;
+        private JsonSerializerSettings _jsonSerializerSettings;
 
         public virtual bool AllowNullQuery => false;
         public virtual bool AllowNullCommand => false;
@@ -110,7 +110,7 @@ namespace CoreSharp.GraphQL
                     continue;
                 }
 
-                IInputObjectGraphType? inputGqlType = null;
+                IInputObjectGraphType inputGqlType = null;
 
                 var properties = commandType.GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => !typeof(IResolveFieldContext).IsAssignableFrom(x.PropertyType)).ToList();
 
@@ -141,7 +141,7 @@ namespace CoreSharp.GraphQL
                     }
                 }
 
-                IGraphType? resultGqlType = null;
+                IGraphType resultGqlType = null;
 
                 if (!GraphTypeTypeRegistry.Contains(resultType))
                 {
@@ -240,7 +240,7 @@ namespace CoreSharp.GraphQL
                 }
 
                 var properties = queryType.GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => !typeof(IResolveFieldContext).IsAssignableFrom(x.PropertyType));
-                IInputObjectGraphType? inputGqlType = null;
+                IInputObjectGraphType inputGqlType = null;
 
                 if (properties.Any())
                 {
@@ -268,7 +268,7 @@ namespace CoreSharp.GraphQL
                     }
                 }
 
-                IGraphType? resultGqlType = null;
+                IGraphType resultGqlType = null;
 
                 if (!GraphTypeTypeRegistry.Contains(resultType))
                 {
@@ -336,7 +336,7 @@ namespace CoreSharp.GraphQL
             return type.Name;
         }
 
-        protected virtual string? GetNormalizedFieldName(string? value)
+        protected virtual string GetNormalizedFieldName(string value)
         {
             if (string.IsNullOrEmpty(value))
             {

@@ -5,8 +5,8 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
 using CoreSharp.Cqrs.Query;
+using GraphQL;
 using GraphQL.Resolvers;
-using GraphQL.Types;
 using Newtonsoft.Json;
 using SimpleInjector;
 
@@ -15,7 +15,7 @@ namespace CoreSharp.GraphQL
     public class QueryResolver : IFieldResolver
     {
         private static readonly ConcurrentDictionary<Type, Func<object, object, IResolveFieldContext, object>> Cache = new ConcurrentDictionary<Type, Func<object, object, IResolveFieldContext, object>>();
-        
+
         private readonly Container _container;
         private readonly Type _queryHandlerType;
         private readonly Type _queryType;
@@ -47,8 +47,8 @@ namespace CoreSharp.GraphQL
                     contextProperty.SetValue(query, context);
                 }
             }
-            
-            
+
+
             var handleMethodInfo = Cache.GetOrAdd(_queryHandlerType, (type) =>
             {
                 var p1 = Expression.Parameter(typeof(object), "queryHandler");
@@ -70,7 +70,7 @@ namespace CoreSharp.GraphQL
                     var mi = _queryHandlerType.GetMethod(nameof(IQueryHandler<IQuery<object>, object>.Handle), BindingFlags.Instance | BindingFlags.Public, null, new []{ _queryType }, null);
                     call = Expression.Call(Expression.Convert(p1, _queryHandlerType), mi, Expression.Convert(p2, _queryType));
                 }
-                
+
                 return Expression.Lambda<Func<object, object, IResolveFieldContext, object>>(
                     Expression.Convert(call, typeof(object)),
                     p1, p2, p3).Compile();

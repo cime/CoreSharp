@@ -14,6 +14,8 @@ namespace CoreSharp.GraphQL.Configuration
         ITypeConfiguration<TModel> Input(bool value);
 
         ITypeConfiguration<TModel> Output(bool value);
+        
+        ITypeConfiguration<TModel> ImplementInterface(Func<Type, bool> predicate);
     }
 
     public interface ITypeConfiguration
@@ -29,6 +31,8 @@ namespace CoreSharp.GraphQL.Configuration
         bool? Ignored { get; set; }
         bool? Input { get; set; }
         bool? Output { get; set; }
+
+        Func<Type, bool> ImplementInterface { get; set; }
 
         IFieldConfiguration GetFieldConfiguration(string propertyName);
     }

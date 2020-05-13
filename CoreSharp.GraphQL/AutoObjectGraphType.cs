@@ -36,9 +36,10 @@ namespace CoreSharp.GraphQL
             _configuration = configuration;
             _typeConfiguration = _configuration.GetModelConfiguration<TSourceType>();
 
-            Name = GetTypeName(typeof(TSourceType));
-            Metadata["Type"] = typeof(TSourceType);
-            var typePermissions = typeof(TSourceType).GetCustomAttribute<AuthorizeAttribute>()?.Permissions;
+            var type = typeof(TSourceType);
+            Name = GetTypeName(type);
+            Metadata["Type"] = type;
+            var typePermissions = type.GetCustomAttribute<AuthorizeAttribute>()?.Permissions;
             Metadata[GraphQLExtensions.PermissionsKey] = typePermissions;
 
             var properties = GetRegisteredProperties().ToList();
@@ -118,9 +119,20 @@ namespace CoreSharp.GraphQL
 
             if (_configuration.GenerateInterfaces)
             {
-                var interfaces = typeof(TSourceType).GetInterfaces().Where(x => x.IsPublic).ToList();
+                var interfaces = type.GetInterfaces().Where(x => x.IsPublic).ToList();
+                
                 foreach (var @interface in interfaces)
                 {
+                    if (_configuration.ImplementInterface != null && !configuration.ImplementInterface(@interface, type))
+                    {
+                        continue;
+                    }
+                    
+                    if (_typeConfiguration.ImplementInterface != null && !_typeConfiguration.ImplementInterface(@interface))
+                    {
+                        continue;
+                    }
+
                     var interfaceType = GraphTypeTypeRegistry.Get(@interface);
                     if (interfaceType == null)
                     {

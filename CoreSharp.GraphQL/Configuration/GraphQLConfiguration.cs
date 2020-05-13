@@ -10,9 +10,10 @@ namespace CoreSharp.GraphQL.Configuration
         private bool _isLocked = false;
 
         public bool GenerateInterfaces { get; set; } = true;
+        public Func<Type, Type, bool> ImplementInterface { get; set; }
 
         public static event Action<ITypeConfiguration> ModelConfigurationCreated;
-
+        
         internal static void OnModelConfigurationCreated(ITypeConfiguration obj)
         {
             var handler = ModelConfigurationCreated;
@@ -25,7 +26,17 @@ namespace CoreSharp.GraphQL.Configuration
             {
                 _isLocked = true;
             }
-            var mergedConfig = (TypeConfiguration)Activator.CreateInstance(typeof(TypeConfiguration<>).MakeGenericType(modelType));
+
+            if (!ModelsConfiguration.ContainsKey(modelType))
+            {
+                var modelConfig = (TypeConfiguration)Activator.CreateInstance(typeof(TypeConfiguration<>).MakeGenericType(modelType));
+                ModelsConfiguration[modelType] = modelConfig;
+            }
+            
+            return ModelsConfiguration[modelType];
+
+            
+            /*var mergedConfig = (TypeConfiguration)Activator.CreateInstance(typeof(TypeConfiguration<>).MakeGenericType(modelType));
             //For interfaces we want to match only interfaces that are assignable from modelType
             var modelConfigs = modelType.IsInterface
                 ? ModelsConfiguration.Where(o => o.Key.IsInterface && o.Key.IsAssignableFrom(modelType)).ToList()
@@ -36,6 +47,7 @@ namespace CoreSharp.GraphQL.Configuration
             {
                 mergedConfig.ModelType = modelConfig.ModelType;
                 mergedConfig.FieldName = modelConfig.FieldName;
+                mergedConfig.ImplementInterface = modelConfig.ImplementInterface;
                 foreach (var data in modelConfig.Data)
                 {
                     mergedConfig.Data[data.Key] = data.Value;
@@ -50,7 +62,7 @@ namespace CoreSharp.GraphQL.Configuration
                     mergedConfig.MemberConfigurations[pair.Key] = mergedMember;
                 }
             }
-            return mergedConfig;
+            return mergedConfig;*/
         }
 
         public ITypeConfiguration GetModelConfiguration<TModel>() where TModel : class

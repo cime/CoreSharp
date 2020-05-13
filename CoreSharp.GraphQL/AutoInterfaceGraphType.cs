@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using CoreSharp.Common.Attributes;
+using CoreSharp.Common.Extensions;
 using CoreSharp.GraphQL.Configuration;
 using GraphQL;
 using GraphQL.Types;
@@ -18,19 +19,45 @@ namespace CoreSharp.GraphQL
 
         public AutoInterfaceGraphType(IGraphQLConfiguration configuration)
         {
-            if (!typeof(TSourceType).IsInterface)
+            var interfaceType = typeof(TSourceType);
+            
+            if (!interfaceType.IsInterface)
             {
                 throw new ArgumentException(nameof(TSourceType));
             }
 
             _configuration = configuration;
 
-            Name = GetTypeName(typeof(TSourceType));
+            Name = GetTypeName(interfaceType);
 
+            var implementators = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(x => x.GetTypes().Where(x => !x.IsInterface))
+                .ToArray();
+            implementators = implementators.Where(x => interfaceType.IsAssignableFrom(x))
+                .ToArray();
+            
             foreach (var propertyInfo in GetAllPublicProperties())
             {
+                var isNullableProperty = IsNullableProperty(propertyInfo);
+                var implementatorsNullable = implementators.Select(x => IsNullableProperty(x.GetProperty(propertyInfo.Name))).Distinct();
+
+                if (implementatorsNullable.Count() == 1)
+                {
+                    if (isNullableProperty != implementatorsNullable.Single())
+                    {
+                        // throw?
+                    }
+                    
+                    isNullableProperty = implementatorsNullable.Single();
+                }
+                else
+                {
+                    // throw?
+                    continue;
+                }
+                
                 var field= Field(
-                    type: propertyInfo.PropertyType.GetGraphTypeFromType(IsNullableProperty(propertyInfo)),
+                    type: propertyInfo.PropertyType.GetGraphTypeFromType(isNullableProperty),
                     name: GetFieldName(propertyInfo),
                     description: propertyInfo.Description(),
                     deprecationReason: propertyInfo.ObsoleteMessage()
@@ -53,8 +80,8 @@ namespace CoreSharp.GraphQL
 
         private static bool IsNullableProperty(PropertyInfo propertyInfo)
         {
-            if (Attribute.IsDefined(propertyInfo, typeof(RequiredAttribute))) return false;
-            if (Attribute.IsDefined(propertyInfo, typeof(NotNullAttribute))) return false;
+            if (Attribute.IsDefined(propertyInfo, typeof(RequiredAttribute), true)) return false;
+            if (Attribute.IsDefined(propertyInfo, typeof(NotNullAttribute), true)) return false;
 
             if (!propertyInfo.PropertyType.IsValueType) return true;
 

@@ -8,7 +8,7 @@ namespace CoreSharp.GraphQL.Attributes
     {
         private static readonly Regex FieldNameRegex = new Regex("^[_A-Za-z][_0-9A-Za-z]*$", RegexOptions.Compiled);
 
-        public string? FieldName { get; set; }
+        public string FieldName { get; set; }
         public bool IsFieldNameSet => !string.IsNullOrEmpty(FieldName);
 
         public ExposeGraphQLAttribute()

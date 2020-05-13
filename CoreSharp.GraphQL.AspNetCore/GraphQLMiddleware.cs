@@ -139,7 +139,7 @@ namespace CoreSharp.GraphQL.AspNetCore
             return writer.WriteAsync(context.Response.Body, result);
         }
 
-        private Task WriteUnauthorizedResponseAsync(HttpContext context, IDocumentWriter writer, ExecutionResult result)
+        private static Task WriteUnauthorizedResponseAsync(HttpContext context, IDocumentWriter writer, ExecutionResult result)
         {
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
@@ -147,7 +147,7 @@ namespace CoreSharp.GraphQL.AspNetCore
             return writer.WriteAsync(context.Response.Body, result);
         }
 
-        private Task WriteResponseAsync(HttpContext context, IDocumentWriter writer, ExecutionResult result)
+        private static Task WriteResponseAsync(HttpContext context, IDocumentWriter writer, ExecutionResult result)
         {
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)HttpStatusCode.OK;
@@ -187,6 +187,7 @@ namespace CoreSharp.GraphQL.AspNetCore
         }
     }
 
+    // ReSharper disable once UnusedType.Global
     public static class GraphQLMiddlewareExtensions
     {
         public static IApplicationBuilder UseGraphQL<TSchema>(this IApplicationBuilder builder)

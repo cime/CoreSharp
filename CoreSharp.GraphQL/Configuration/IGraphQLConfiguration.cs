@@ -5,6 +5,7 @@ namespace CoreSharp.GraphQL.Configuration
     public interface IGraphQLConfiguration
     {
         bool GenerateInterfaces { get; set; }
+        Func<Type, Type, bool> ImplementInterface { get; set; }
 
         ITypeConfiguration GetModelConfiguration(Type modelType);
 
