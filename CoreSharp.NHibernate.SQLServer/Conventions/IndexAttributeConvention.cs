@@ -5,9 +5,9 @@ using FluentNHibernate.Conventions.Instances;
 
 #nullable disable
 
-namespace CoreSharp.NHibernate.Conventions
+namespace CoreSharp.NHibernate.SQLServer.Conventions
 {
-    public class IndexedAttributeConvention : AttributePropertyConvention<IndexAttribute>, IReferenceConvention
+    public class IndexAttributeConvention : AttributePropertyConvention<IndexAttribute>, IReferenceConvention
     {
         protected override void Apply(IndexAttribute attribute, IPropertyInstance instance)
         {
@@ -32,7 +32,7 @@ namespace CoreSharp.NHibernate.Conventions
 
         private static string GetIndexName(string tableName, string name)
         {
-            return $"IX_{name}";
+            return $"IX_{tableName}_{name}";
         }
     }
 }

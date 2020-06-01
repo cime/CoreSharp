@@ -95,6 +95,7 @@ namespace CoreSharp.NHibernate.PostgreSQL.Extensions
                     persistenceModel.Conventions.Add(typeof(DateTimeOffsetPropertyConvention));
                     persistenceModel.Conventions.Add(typeof(DefaultValueAttributeConvention));
                     persistenceModel.Conventions.Add(typeof(CitextConvention));
+                    persistenceModel.Conventions.Add(typeof(IndexAttributeConvention));
                     persistenceModel.Conventions.Add(typeof(PostgresqlHiLoIdConvention), new PostgresqlHiLoIdConvention(cfg));
                 }
             });
