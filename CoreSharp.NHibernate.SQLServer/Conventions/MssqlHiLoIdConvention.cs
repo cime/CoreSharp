@@ -16,7 +16,7 @@ namespace CoreSharp.NHibernate.SQLServer.Conventions
         private const string NextHiValueColumnName = "NextHiValue";
         private const string TableColumnName = "Entity";
         private static readonly string HiLoIdentityTableName = "HiLoIdentity";
-        private static readonly string MaxLo = "1000";
+        private readonly string MaxLo = "1000";
         private static readonly Type[] ValidTypes = new [] { typeof(int), typeof(long), typeof(uint), typeof(ulong) };
         private static readonly HashSet<string> ValidDialects = new HashSet<string>
             {
@@ -29,6 +29,16 @@ namespace CoreSharp.NHibernate.SQLServer.Conventions
                 "NHibernate.Spatial.Dialect.MsSql2012GeometryDialect",
                 "NHibernate.Spatial.Dialect.MsSql2012GeographyDialect"
             };
+
+        public MssqlHiLoIdConvention(global::NHibernate.Cfg.Configuration configuration)
+        {
+            var maxLo = configuration.GetProperty("hilo_generator.max_lo");
+
+            if (!string.IsNullOrEmpty(maxLo))
+            {
+                MaxLo = maxLo;
+            }
+        }
 
         public void Apply(IIdentityInstance instance)
         {
@@ -46,7 +56,7 @@ namespace CoreSharp.NHibernate.SQLServer.Conventions
             }
 
             instance.GeneratedBy.HiLo(HiLoIdentityTableName, NextHiValueColumnName, maxLo, builder =>
-                builder.AddParam("WHERE", $"{TableColumnName} = '[{instance.EntityType.Name}]'"));
+                builder.AddParam("where", $"{TableColumnName} = '[{instance.EntityType.Name}]'"));
         }
 
         public static void SchemaCreate(global::NHibernate.Cfg.Configuration config)

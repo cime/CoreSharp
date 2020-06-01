@@ -1,6 +1,7 @@
 using CoreSharp.NHibernate.Extensions;
 using FluentNHibernate.Cfg;
 using System.Linq;
+using System.Reflection;
 using CoreSharp.NHibernate.SQLServer.Conventions;
 
 namespace CoreSharp.NHibernate.SQLServer.Extensions
@@ -22,11 +23,14 @@ namespace CoreSharp.NHibernate.SQLServer.Extensions
 
         public static FluentConfiguration AddSQLServerConventions(this FluentConfiguration fluentConfiguration)
         {
+            var cfg = (global::NHibernate.Cfg.Configuration)fluentConfiguration.GetMemberValue("cfg");
+
             return fluentConfiguration.Mappings(m =>
             {
                 foreach (var persistenceModel in m.AutoMappings)
                 {
                     persistenceModel.Conventions.AddFromAssemblyOf<MssqlHiLoIdConvention>();
+                    persistenceModel.Conventions.Add(typeof(MssqlHiLoIdConvention), new MssqlHiLoIdConvention(cfg));
                 }
             });
         }
