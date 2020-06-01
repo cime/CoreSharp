@@ -29,9 +29,9 @@ namespace CoreSharp.NHibernate.PostgreSQL.Extensions
 
             return fluentConfiguration.ExposeDbCommand((command, cfg) =>
             {
-                var hiLoTable = PostgresqlHiLoIdConvention.HiLoIdentityTableName;
-                var entityColumn = PostgresqlHiLoIdConvention.TableColumnName;
-                var valueColumn = PostgresqlHiLoIdConvention.NextHiValueColumnName;
+                var hiLoTable = PostgreSqlHiLoIdConvention.HiLoIdentityTableName;
+                var entityColumn = PostgreSqlHiLoIdConvention.TableColumnName;
+                var valueColumn = PostgreSqlHiLoIdConvention.NextHiValueColumnName;
                 var tables = cfg.ClassMappings.Where(x => !typeof(ICodeList).IsAssignableFrom(x.MappedClass)).Select(x => x.Table).Where(x => !string.IsNullOrEmpty(x.Name))
                     .Distinct()
                     .Select(x => GetFullName(x, cfg.NamingStrategy))
@@ -80,7 +80,7 @@ namespace CoreSharp.NHibernate.PostgreSQL.Extensions
 
             return fluentConfiguration.ExposeConfiguration(cfg =>
             {
-                PostgresqlHiLoIdConvention.SchemaCreate(cfg);
+                PostgreSqlHiLoIdConvention.SchemaCreate(cfg);
             });
         }
 
@@ -96,7 +96,7 @@ namespace CoreSharp.NHibernate.PostgreSQL.Extensions
                     persistenceModel.Conventions.Add(typeof(DefaultValueAttributeConvention));
                     persistenceModel.Conventions.Add(typeof(CitextConvention));
                     persistenceModel.Conventions.Add(typeof(IndexAttributeConvention));
-                    persistenceModel.Conventions.Add(typeof(PostgresqlHiLoIdConvention), new PostgresqlHiLoIdConvention(cfg));
+                    persistenceModel.Conventions.Add(typeof(PostgreSqlHiLoIdConvention), new PostgreSqlHiLoIdConvention(cfg));
                 }
             });
         }

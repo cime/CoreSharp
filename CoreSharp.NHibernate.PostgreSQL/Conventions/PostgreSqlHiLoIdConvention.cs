@@ -16,14 +16,13 @@ using NHibernate.Mapping;
 namespace CoreSharp.NHibernate.PostgreSQL.Conventions
 {
     [Priority(Priority.Low)]
-    public class PostgresqlHiLoIdConvention : IClassConvention, IIdConvention
+    public class PostgreSqlHiLoIdConvention : IClassConvention, IIdConvention
     {
         private readonly global::NHibernate.Cfg.Configuration _configuration;
         private readonly INamingStrategy _namingStrategy;
         internal const string NextHiValueColumnName = "next_hi_value";
         internal const string TableColumnName = "entity";
         internal static readonly string HiLoIdentityTableName = "public.hi_lo_identity"; // TODO: configurable schema
-        private static readonly string MaxLo = "1000";
         private static readonly Type[] ValidTypes = new [] { typeof(int), typeof(long), typeof(uint), typeof(ulong) };
         private static readonly HashSet<string> ValidDialects = new HashSet<string>
             {
@@ -34,11 +33,19 @@ namespace CoreSharp.NHibernate.PostgreSQL.Conventions
             };
         private static readonly ConcurrentDictionary<Type, IClassInstance> ClassInstances = new ConcurrentDictionary<Type, IClassInstance>();
         private static readonly ConcurrentDictionary<Type, string> FullNames = new ConcurrentDictionary<Type, string>();
+        private readonly string _maxLo = "1000";
 
-        public PostgresqlHiLoIdConvention(global::NHibernate.Cfg.Configuration configuration)
+        public PostgreSqlHiLoIdConvention(global::NHibernate.Cfg.Configuration configuration)
         {
             _configuration = configuration;
             _namingStrategy = configuration.NamingStrategy;
+
+            var maxLo = configuration.GetProperty("hilo_generator.max_lo");
+
+            if (!string.IsNullOrEmpty(maxLo))
+            {
+                _maxLo = maxLo;
+            }
         }
 
         public void Apply(IClassInstance instance)
@@ -53,7 +60,7 @@ namespace CoreSharp.NHibernate.PostgreSQL.Conventions
                 return;
             }
 
-            var maxLo = MaxLo;
+            var maxLo = _maxLo;
             var hiLoAttribute = instance.EntityType.GetCustomAttribute<HiLoAttribute>();
 
             if (hiLoAttribute != null && hiLoAttribute.Size > 0)
