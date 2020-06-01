@@ -18,11 +18,10 @@ namespace CoreSharp.NHibernate.PostgreSQL.Conventions
     [Priority(Priority.Low)]
     public class PostgreSqlHiLoIdConvention : IClassConvention, IIdConvention
     {
-        private readonly global::NHibernate.Cfg.Configuration _configuration;
         private readonly INamingStrategy _namingStrategy;
         internal const string NextHiValueColumnName = "next_hi_value";
         internal const string TableColumnName = "entity";
-        internal static readonly string HiLoIdentityTableName = "public.hi_lo_identity"; // TODO: configurable schema
+        internal static readonly string HiLoIdentityTableName = "hi_lo_identity";
         private static readonly Type[] ValidTypes = new [] { typeof(int), typeof(long), typeof(uint), typeof(ulong) };
         private static readonly HashSet<string> ValidDialects = new HashSet<string>
             {
@@ -33,19 +32,15 @@ namespace CoreSharp.NHibernate.PostgreSQL.Conventions
             };
         private static readonly ConcurrentDictionary<Type, IClassInstance> ClassInstances = new ConcurrentDictionary<Type, IClassInstance>();
         private static readonly ConcurrentDictionary<Type, string> FullNames = new ConcurrentDictionary<Type, string>();
+
         private readonly string _maxLo = "1000";
+        private readonly string _schema = "public";
 
         public PostgreSqlHiLoIdConvention(global::NHibernate.Cfg.Configuration configuration)
         {
-            _configuration = configuration;
             _namingStrategy = configuration.NamingStrategy;
-
-            var maxLo = configuration.GetProperty("hilo_generator.max_lo");
-
-            if (!string.IsNullOrEmpty(maxLo))
-            {
-                _maxLo = maxLo;
-            }
+            _maxLo = configuration.GetProperty("hilo_generator.max_lo") ?? _maxLo;
+            _schema = configuration.GetProperty("hilo_generator.schema") ?? _schema;
         }
 
         public void Apply(IClassInstance instance)
@@ -73,7 +68,9 @@ namespace CoreSharp.NHibernate.PostgreSQL.Conventions
             FullNames[instance.EntityType] = fullName;
 
             instance.GeneratedBy.HiLo(HiLoIdentityTableName, NextHiValueColumnName, maxLo, builder =>
-                builder.AddParam("where", $"{TableColumnName} = '{fullName}'"));
+                builder
+                    .AddParam("where", $"{TableColumnName} = '{fullName}'")
+                    .AddParam("schema", _schema));
         }
 
         public string GetFullName(IClassInstance classInstance)

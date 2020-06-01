@@ -16,7 +16,6 @@ namespace CoreSharp.NHibernate.SQLServer.Conventions
         private const string NextHiValueColumnName = "NextHiValue";
         private const string TableColumnName = "Entity";
         private static readonly string HiLoIdentityTableName = "HiLoIdentity";
-        private readonly string MaxLo = "1000";
         private static readonly Type[] ValidTypes = new [] { typeof(int), typeof(long), typeof(uint), typeof(ulong) };
         private static readonly HashSet<string> ValidDialects = new HashSet<string>
             {
@@ -30,14 +29,13 @@ namespace CoreSharp.NHibernate.SQLServer.Conventions
                 "NHibernate.Spatial.Dialect.MsSql2012GeographyDialect"
             };
 
+        private readonly string _maxLo = "1000";
+        private readonly string _schema = "dbo";
+
         public MssqlHiLoIdConvention(global::NHibernate.Cfg.Configuration configuration)
         {
-            var maxLo = configuration.GetProperty("hilo_generator.max_lo");
-
-            if (!string.IsNullOrEmpty(maxLo))
-            {
-                MaxLo = maxLo;
-            }
+            _maxLo = configuration.GetProperty("hilo_generator.max_lo") ?? _maxLo;
+            _schema = configuration.GetProperty("hilo_generator.schema") ?? _schema;
         }
 
         public void Apply(IIdentityInstance instance)
@@ -47,7 +45,7 @@ namespace CoreSharp.NHibernate.SQLServer.Conventions
                 return;
             }
 
-            var maxLo = MaxLo;
+            var maxLo = _maxLo;
             var hiLoAttribute = instance.EntityType.GetCustomAttribute<HiLoAttribute>();
 
             if (hiLoAttribute != null && hiLoAttribute.Size > 0)
@@ -56,7 +54,10 @@ namespace CoreSharp.NHibernate.SQLServer.Conventions
             }
 
             instance.GeneratedBy.HiLo(HiLoIdentityTableName, NextHiValueColumnName, maxLo, builder =>
-                builder.AddParam("where", $"{TableColumnName} = '[{instance.EntityType.Name}]'"));
+                builder
+                    .AddParam("where", $"[{TableColumnName}] = '[{instance.EntityType.Name}]'")
+                    .AddParam("schema", _schema)
+            );
         }
 
         public static void SchemaCreate(global::NHibernate.Cfg.Configuration config)
