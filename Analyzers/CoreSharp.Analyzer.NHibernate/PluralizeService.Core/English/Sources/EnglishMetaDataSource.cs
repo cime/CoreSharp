@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using PluralizationService.Core.Builder;
-using PluralizationService.Core.Builder.Base;
-using PluralizationService.English.Providers;
-using PluralizationService.Sources;
+﻿using CoreSharp.Analyzer.NHibernate.PluralizeService.Core.Core.Builder;
+using CoreSharp.Analyzer.NHibernate.PluralizeService.Core.Core.Builder.Base;
+using CoreSharp.Analyzer.NHibernate.PluralizeService.Core.English.Providers;
+using CoreSharp.Analyzer.NHibernate.PluralizeService.Core.Sources;
 
-namespace PluralizationService.English.Sources
+namespace CoreSharp.Analyzer.NHibernate.PluralizeService.Core.English.Sources
 {
     internal class EnglishMetaDataSource : SourceBase, IPluralizationSource
     {

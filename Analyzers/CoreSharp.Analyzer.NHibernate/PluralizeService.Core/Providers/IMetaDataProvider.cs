@@ -1,6 +1,6 @@
-﻿using PluralizationService.Adapters;
+﻿using CoreSharp.Analyzer.NHibernate.PluralizeService.Core.Adapters;
 
-namespace PluralizationService.Providers
+namespace CoreSharp.Analyzer.NHibernate.PluralizeService.Core.Providers
 {
     /// <summary>
     /// This interface represents a meta-data provider.

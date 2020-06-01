@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using PluralizationService.Properties;
+using CoreSharp.Analyzer.NHibernate.PluralizeService.Core.Properties;
 
-namespace PluralizationService.Core
+namespace CoreSharp.Analyzer.NHibernate.PluralizeService.Core.Core
 {
     /// <summary>
     /// This class represents a "fluent style" API for containing commonly used 

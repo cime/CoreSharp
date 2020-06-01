@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 
-namespace PluralizationService.Core.Builder.Base
+namespace CoreSharp.Analyzer.NHibernate.PluralizeService.Core.Core.Builder.Base
 {
     /// <summary>
-    /// This class is a helper base class intended to make the process of 
+    /// This class is a helper base class intended to make the process of
     /// creating concrete products a little easier and cleaner.
     /// </summary>
     public abstract class ProductBase : DisposableObject, IBuilderProduct
@@ -32,7 +30,7 @@ namespace PluralizationService.Core.Builder.Base
         /// This property contains a collection of providers.
         /// </summary>
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        IEnumerable<IBuilderProvider> IBuilderProduct.Providers { get { return _providers; } }
+        public IEnumerable<IBuilderProvider> Providers { get { return _providers; } }
 
         // *******************************************************************
 

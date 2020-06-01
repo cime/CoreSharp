@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 
-namespace PluralizationService.Core
+namespace CoreSharp.Analyzer.NHibernate.PluralizeService.Core.Core
 {
     /// <summary>
     /// This class is a helper base class for creating disposable objects 

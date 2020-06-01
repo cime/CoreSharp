@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace PluralizationService.Core.Builder.Base
+﻿namespace CoreSharp.Analyzer.NHibernate.PluralizeService.Core.Core.Builder.Base
 {
     /// <summary>
     /// This class is a helper base class intended to make the process of 

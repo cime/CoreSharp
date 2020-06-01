@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace PluralizationService
+namespace CoreSharp.Analyzer.NHibernate.PluralizeService.Core
 {
     /// <summary>
     /// This class represents a pluralization related exception.

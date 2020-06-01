@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using PluralizationService.English.Sources;
-using PluralizationService.Sources;
-using PluralizationService.Core.Builder.Base.Extensions;
+﻿using CoreSharp.Analyzer.NHibernate.PluralizeService.Core.Core.Builder.Base.Extensions;
+using CoreSharp.Analyzer.NHibernate.PluralizeService.Core.English.Sources;
+using CoreSharp.Analyzer.NHibernate.PluralizeService.Core.Sources;
 
-namespace PluralizationService.English
+namespace CoreSharp.Analyzer.NHibernate.PluralizeService.Core.English
 {
     /// <summary>
     /// This class contains extension methods related to the <see cref="PluralizationApiBuilder"/>

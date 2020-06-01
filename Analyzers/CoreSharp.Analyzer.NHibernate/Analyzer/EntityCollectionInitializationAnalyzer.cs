@@ -73,8 +73,11 @@ namespace CoreSharp.Analyzer.NHibernate.Analyzer
                             {
                                 var propSyntax = classDeclarationSyntax.DescendantNodes().OfType<PropertyDeclarationSyntax>()
                                                             .SingleOrDefault(x => x.ChildTokens().Any(t => t.Kind() == SyntaxKind.IdentifierToken && t.Value.ToString() == propertySymbol.Name));
+                                var hasSetter = propSyntax?.DescendantNodes()
+                                    .OfType<AccessorDeclarationSyntax>()
+                                    .Any(x => x.Kind() == SyntaxKind.SetAccessorDeclaration) ?? false;
 
-                                if (propSyntax != null && !propSyntax.ChildNodes().OfType<EqualsValueClauseSyntax>().Any())
+                                if (propSyntax != null && hasSetter && !propSyntax.ChildNodes().OfType<EqualsValueClauseSyntax>().Any())
                                 {
                                     treeContext.ReportDiagnostic(Diagnostic.Create(Rule, propSyntax.GetLocation()));
                                 }

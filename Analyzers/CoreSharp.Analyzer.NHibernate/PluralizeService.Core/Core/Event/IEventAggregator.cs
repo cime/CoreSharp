@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace PluralizationService.Core.Event
+namespace CoreSharp.Analyzer.NHibernate.PluralizeService.Core.Core.Event
 {
     /// <summary>
     /// This interface represents an object that performs event aggregation.

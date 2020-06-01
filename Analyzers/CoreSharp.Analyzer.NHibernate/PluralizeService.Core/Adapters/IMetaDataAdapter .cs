@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 
-namespace PluralizationService.Adapters
+namespace CoreSharp.Analyzer.NHibernate.PluralizeService.Core.Adapters
 {
     /// <summary>
     /// This interface represents a meta-data adapter for a specific culture.

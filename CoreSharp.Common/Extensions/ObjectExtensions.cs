@@ -7,6 +7,7 @@ using CoreSharp.Common.Helpers;
 
 #nullable disable
 
+// ReSharper disable once CheckNamespace
 namespace System.Reflection
 {
     public static class ObjectExtensions
@@ -18,21 +19,21 @@ namespace System.Reflection
         {
             return (T) source.ConvertTo(typeof(T));
         }
-        
+
         public static object ConvertTo(this object source, Type destinationType)
         {
             if (destinationType == null)
             {
                 throw new ArgumentNullException("destinationType");
             }
-            
+
             if (destinationType.IsGenericType && destinationType.GetGenericTypeDefinition() == typeof(Nullable<>))
             {
                 if (source == null)
                 {
                     return null;
                 }
-                
+
                 destinationType = Nullable.GetUnderlyingType(destinationType);
             }
 

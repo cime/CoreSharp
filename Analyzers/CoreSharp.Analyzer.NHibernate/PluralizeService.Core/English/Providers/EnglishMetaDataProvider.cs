@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using PluralizationService.Adapters;
-using PluralizationService.Core.Builder.Base;
-using PluralizationService.English.Adapters;
-using PluralizationService.English.Sources;
-using PluralizationService.Providers;
+﻿using CoreSharp.Analyzer.NHibernate.PluralizeService.Core.Adapters;
+using CoreSharp.Analyzer.NHibernate.PluralizeService.Core.Core.Builder.Base;
+using CoreSharp.Analyzer.NHibernate.PluralizeService.Core.English.Adapters;
+using CoreSharp.Analyzer.NHibernate.PluralizeService.Core.English.Sources;
+using CoreSharp.Analyzer.NHibernate.PluralizeService.Core.Providers;
 
-namespace PluralizationService.English.Providers
+namespace CoreSharp.Analyzer.NHibernate.PluralizeService.Core.English.Providers
 {
     /// <summary>
     /// This class is an implementation of <see cref="IMetaDataProvider"/>

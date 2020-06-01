@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using PluralizationService.Core;
+﻿using System.Collections.Generic;
+using CoreSharp.Analyzer.NHibernate.PluralizeService.Core.Core;
 
-namespace PluralizationService.English.Adapters
+namespace CoreSharp.Analyzer.NHibernate.PluralizeService.Core.English.Adapters
 {
     /// <summary>
     /// This class is a 2-way dictionary.

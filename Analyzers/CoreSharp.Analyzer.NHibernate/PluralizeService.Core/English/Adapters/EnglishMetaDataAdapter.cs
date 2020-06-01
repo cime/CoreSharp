@@ -4,11 +4,11 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using PluralizationService.Adapters;
-using PluralizationService.Core;
-using PluralizationService.English.Providers;
+using CoreSharp.Analyzer.NHibernate.PluralizeService.Core.Adapters;
+using CoreSharp.Analyzer.NHibernate.PluralizeService.Core.Core;
+using CoreSharp.Analyzer.NHibernate.PluralizeService.Core.English.Providers;
 
-namespace PluralizationService.English.Adapters
+namespace CoreSharp.Analyzer.NHibernate.PluralizeService.Core.English.Adapters
 {
     /// <summary>
     /// This class is an english implementation of <see cref="IMetaDataAdapter"/>

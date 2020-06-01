@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
-using PluralizationService.Core;
+﻿using System.Globalization;
+using CoreSharp.Analyzer.NHibernate.PluralizeService.Core.Core;
 
-namespace PluralizationService.English.Adapters
+namespace CoreSharp.Analyzer.NHibernate.PluralizeService.Core.English.Adapters
 {
     /// <summary>
     /// This class contains extension methods related to the string 

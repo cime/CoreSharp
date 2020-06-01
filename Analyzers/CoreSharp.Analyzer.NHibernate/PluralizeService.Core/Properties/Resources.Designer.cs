@@ -8,10 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace PluralizationService.Properties {
-    using System;
-    
-    
+namespace CoreSharp.Analyzer.NHibernate.PluralizeService.Core.Properties {
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>

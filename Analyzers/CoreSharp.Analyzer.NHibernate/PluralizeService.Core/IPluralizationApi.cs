@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 
-namespace PluralizationService
+namespace CoreSharp.Analyzer.NHibernate.PluralizeService.Core
 {
     /// <summary>
     /// This interface represents a public API for converting words to and

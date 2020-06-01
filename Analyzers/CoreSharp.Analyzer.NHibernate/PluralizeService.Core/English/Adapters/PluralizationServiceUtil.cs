@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 
-namespace PluralizationService.English.Adapters
+namespace CoreSharp.Analyzer.NHibernate.PluralizeService.Core.English.Adapters
 {
     /// <summary>
     /// This class utility contains misc utility methods.

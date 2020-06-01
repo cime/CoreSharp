@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
-namespace PluralizationService.Core.Builder.Base.Extensions
+namespace CoreSharp.Analyzer.NHibernate.PluralizeService.Core.Core.Builder.Base.Extensions
 {
     /// <summary>
     /// This class contains extension methods related to the <see cref="SourceBase"/>

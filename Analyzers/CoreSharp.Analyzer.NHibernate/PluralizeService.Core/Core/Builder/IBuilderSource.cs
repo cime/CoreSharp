@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
-namespace PluralizationService.Core.Builder
+namespace CoreSharp.Analyzer.NHibernate.PluralizeService.Core.Core.Builder
 {
     /// <summary>
     /// This interface represents a builder source, which is an object

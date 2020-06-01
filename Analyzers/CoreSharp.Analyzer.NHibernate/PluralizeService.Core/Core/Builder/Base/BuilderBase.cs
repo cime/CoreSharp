@@ -1,20 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using PluralizationService.Properties;
-using PluralizationService.Core.Builder.Base.Extensions;
+using CoreSharp.Analyzer.NHibernate.PluralizeService.Core.Properties;
 
-namespace PluralizationService.Core.Builder.Base
+namespace CoreSharp.Analyzer.NHibernate.PluralizeService.Core.Core.Builder.Base
 {
     /// <summary>
-    /// This class is a helper base class intended to make the process of 
+    /// This class is a helper base class intended to make the process of
     /// creating concrete builders a little easier and cleaner.
     /// </summary>
     public abstract class BuilderBase : IBuilder
     {
-        // ******************************************************************* 
+        // *******************************************************************
         // Fields.
         // *******************************************************************
 
@@ -53,7 +50,7 @@ namespace PluralizationService.Core.Builder.Base
 
         /// <summary>
         /// This constructor creates a new instance of the <see cref="BuilderBase"/>
-        /// class, that is embedded inside an existing parent product. 
+        /// class, that is embedded inside an existing parent product.
         /// </summary>
         /// <param name="parentProduct">A parent product reference.</param>
         protected BuilderBase(
@@ -71,7 +68,7 @@ namespace PluralizationService.Core.Builder.Base
 
         /// <summary>
         /// This constructor creates a new instance of the <see cref="BuilderBase"/>
-        /// class, that is embedded inside an existing parent product. 
+        /// class, that is embedded inside an existing parent product.
         /// </summary>
         /// <param name="parentProvider">A parent provider reference.</param>
         protected BuilderBase(
@@ -87,7 +84,7 @@ namespace PluralizationService.Core.Builder.Base
 
         #endregion
 
-        // ******************************************************************* 
+        // *******************************************************************
         // IBuilder implementation.
         // *******************************************************************
 
@@ -128,13 +125,13 @@ namespace PluralizationService.Core.Builder.Base
         /// <returns>A new product instance.</returns>
         TProduct IBuilder.Build<TProduct>()
         {
-            // If there are no external providers then we'll need to insist 
+            // If there are no external providers then we'll need to insist
             //   that the builder contains at least one source.
             if (_externalProviders?.Count() == 0)
             {
-                // The builder requires at least one source before it can build 
+                // The builder requires at least one source before it can build
                 //   anything.
-                if (this.Sources().Count() == 0)
+                if (_sources.Count() == 0)
                     throw new BuilderException(
                         Resources.BuilderBase_NoSources
                     );

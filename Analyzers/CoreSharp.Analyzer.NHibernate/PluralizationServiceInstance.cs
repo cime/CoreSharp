@@ -1,6 +1,6 @@
 using System.Globalization;
-using PluralizationService;
-using PluralizationService.English;
+using CoreSharp.Analyzer.NHibernate.PluralizeService.Core;
+using CoreSharp.Analyzer.NHibernate.PluralizeService.Core.English;
 
 namespace CoreSharp.Analyzer.NHibernate
 {

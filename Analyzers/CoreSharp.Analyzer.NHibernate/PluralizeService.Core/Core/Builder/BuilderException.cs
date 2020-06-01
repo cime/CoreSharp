@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace PluralizationService.Core.Builder
+namespace CoreSharp.Analyzer.NHibernate.PluralizeService.Core.Core.Builder
 {
     /// <summary>
     /// This class represents a builder related exception.

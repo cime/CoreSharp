@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using PluralizationService.Adapters;
-using PluralizationService.Core;
-using PluralizationService.Core.Builder.Base;
-using PluralizationService.Properties;
-using PluralizationService.Providers;
-using PluralizationService.Core.Builder.Base.Extensions;
+using CoreSharp.Analyzer.NHibernate.PluralizeService.Core.Adapters;
+using CoreSharp.Analyzer.NHibernate.PluralizeService.Core.Core;
+using CoreSharp.Analyzer.NHibernate.PluralizeService.Core.Core.Builder.Base;
+using CoreSharp.Analyzer.NHibernate.PluralizeService.Core.Properties;
+using CoreSharp.Analyzer.NHibernate.PluralizeService.Core.Providers;
 
-namespace PluralizationService
+namespace CoreSharp.Analyzer.NHibernate.PluralizeService.Core
 {
     /// <summary>
     /// This class is a default implementation of <see cref="IPluralizationApi"/>
@@ -53,7 +51,7 @@ namespace PluralizationService
         #region IPluralizationApi implementation
 
         /// <summary>
-        /// This method determines if the specified word is plural in the 
+        /// This method determines if the specified word is plural in the
         /// language associated with the current culture.
         /// </summary>
         /// <param name="word">The word to test.</param>
@@ -78,7 +76,7 @@ namespace PluralizationService
         // *******************************************************************
 
         /// <summary>
-        /// This method determines if the specified word is plural in the 
+        /// This method determines if the specified word is plural in the
         /// language associated with the specified culture.
         /// </summary>
         /// <param name="word">The word to test.</param>
@@ -114,7 +112,7 @@ namespace PluralizationService
         // *******************************************************************
 
         /// <summary>
-        /// This method determines if the specified word is singular in the 
+        /// This method determines if the specified word is singular in the
         /// language associated with the current culture.
         /// </summary>
         /// <param name="word">The word to test.</param>
@@ -139,7 +137,7 @@ namespace PluralizationService
         // *******************************************************************
 
         /// <summary>
-        /// This method determines if the specified word is singular in the 
+        /// This method determines if the specified word is singular in the
         /// language associated with the specified culture.
         /// </summary>
         /// <param name="word">The word to test.</param>
@@ -376,7 +374,7 @@ namespace PluralizationService
         protected override void OnInitialize()
         {
             // Look for meta-data providers.
-            var metaDataProviders = this.Providers()
+            var metaDataProviders = this.Providers
                 .Where(x => x is IMetaDataProvider)
                 .Select(x => x as IMetaDataProvider)
                 .ToList();
@@ -395,7 +393,7 @@ namespace PluralizationService
         // *******************************************************************
 
         /// <summary>
-        /// This method is overriden in order to dispose of any internal 
+        /// This method is overriden in order to dispose of any internal
         /// unmanaged resources.
         /// </summary>
         protected override void OnDispose()

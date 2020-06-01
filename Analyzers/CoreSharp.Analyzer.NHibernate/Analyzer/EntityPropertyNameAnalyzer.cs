@@ -21,6 +21,8 @@ namespace CoreSharp.Analyzer.NHibernate.Analyzer
 
         public override void Initialize(AnalysisContext context)
         {
+            context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+            context.EnableConcurrentExecution();
             base.Initialize(context);
 
             context.RegisterSyntaxNodeAction((nodeContext) =>

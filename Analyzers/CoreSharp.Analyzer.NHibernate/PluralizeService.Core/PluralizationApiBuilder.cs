@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using PluralizationService.Core.Builder;
-using PluralizationService.Core.Builder.Base;
-using PluralizationService.Core.Builder.Base.Extensions;
+﻿using CoreSharp.Analyzer.NHibernate.PluralizeService.Core.Core.Builder;
+using CoreSharp.Analyzer.NHibernate.PluralizeService.Core.Core.Builder.Base;
+using CoreSharp.Analyzer.NHibernate.PluralizeService.Core.Core.Builder.Base.Extensions;
 
-namespace PluralizationService
+namespace CoreSharp.Analyzer.NHibernate.PluralizeService.Core
 {
     /// <summary>
     /// This class builds instances of <see cref="IPluralizationApi"/>
