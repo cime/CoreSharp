@@ -38,17 +38,22 @@ namespace CoreSharp.NHibernate.Configuration
 
         public override bool ShouldMap(Type type)
         {
-            if (type.GetCustomAttribute<IncludeAttribute>() != null)
+            if (type.GetCustomAttribute<IncludeAttribute>(false) != null)
             {
                 return true;
             }
 
-            return base.ShouldMap(type) && typeof(IEntity).IsAssignableFrom(type) && type.GetCustomAttribute<IgnoreAttribute>(false) == null;
+            if (type.GetCustomAttribute<IgnoreAttribute>(false) != null)
+            {
+                return false;
+            }
+
+            return base.ShouldMap(type) && typeof(IEntity).IsAssignableFrom(type);
         }
 
         public override bool AbstractClassIsLayerSupertype(Type type)
         {
-            return type.GetCustomAttribute<IncludeAttribute>() == null;
+            return type.GetCustomAttribute<IncludeAttribute>(false) == null;
         }
 
         public override bool ShouldMap(Member member)
