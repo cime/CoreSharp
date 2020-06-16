@@ -20,6 +20,11 @@ namespace CoreSharp.NHibernate
         {
             return Id <= 0;
         }
+
+        public override string ToString()
+        {
+            return $"{GetType().Name}(Id={GetId()}";
+        }
     }
 
     [Serializable]
@@ -42,6 +47,11 @@ namespace CoreSharp.NHibernate
         public virtual Type GetIdType()
         {
             return typeof(TKey);
+        }
+
+        public override string ToString()
+        {
+            return $"{GetType().Name}(Id={GetId()})";
         }
     }
 }
