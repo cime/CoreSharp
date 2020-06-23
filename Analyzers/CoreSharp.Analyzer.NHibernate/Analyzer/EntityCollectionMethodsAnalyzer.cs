@@ -3,6 +3,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using CoreSharp.Analyzer.NHibernate.Extensions;
+using Humanizer;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -74,7 +75,7 @@ namespace CoreSharp.Analyzer.NHibernate.Analyzer
                                 || propertyInterfaces.Any(x => x.Name == "ISet" || x.Name == "IList" || x.Name == "IEnumerable"))
                                 && propertySymbol.Type.Kind != SymbolKind.ArrayType)
                             {
-                                var propertyNameSingular = PluralizationServiceInstance.Instance.Singularize(propertySymbol.Name);
+                                var propertyNameSingular = propertySymbol.Name.Singularize();
                                 var methodNames = new [] { $"Add{propertyNameSingular}", $"Remove{propertyNameSingular}", $"Clear{propertySymbol.Name}" };
                                 var notFound = methodNames.Where(x => !methods.Any(m => m.Name == x)).ToList();
 

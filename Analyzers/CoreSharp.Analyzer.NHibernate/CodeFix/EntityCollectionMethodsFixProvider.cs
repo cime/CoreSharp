@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CoreSharp.Analyzer.NHibernate.Analyzer;
 using CoreSharp.Analyzer.NHibernate.Extensions;
+using Humanizer;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -57,7 +58,7 @@ namespace CoreSharp.Analyzer.NHibernate.CodeFix
                 var childTypeName = childType.Name;
 
                 var propertyName = propertySymbol.Name;
-                var propertyNameSingular = PluralizationServiceInstance.Instance.Singularize(propertySymbol.Name);
+                var propertyNameSingular = propertySymbol.Name.Singularize();
 
                 var parentName = @class.GetIdentifierValue();
 
