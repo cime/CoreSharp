@@ -51,9 +51,24 @@ namespace CoreSharp.Common.Internationalization
             return Catalogs[EnglishCulture];
         }
 
+        private static ICatalog GetCatalog(CultureInfo cultureInfo)
+        {
+            if (Catalogs.ContainsKey(cultureInfo))
+            {
+                return Catalogs[cultureInfo];
+            }
+
+            return Catalogs[EnglishCulture];
+        }
+
         public static string _(string text)
         {
             return GetCatalog().GetString(text);
+        }
+
+        public static string _(string text, CultureInfo cultureInfo)
+        {
+            return GetCatalog(cultureInfo).GetString(text);
         }
 
         public static string _(string text, params object[] args)
