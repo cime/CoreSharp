@@ -7,6 +7,7 @@ using System.Text;
 using CoreSharp.Breeze.Extensions;
 using CoreSharp.Breeze.Metadata;
 using CoreSharp.DataAccess;
+using Humanizer;
 using NHibernate;
 using NHibernate.Engine;
 using NHibernate.Id;
@@ -32,7 +33,6 @@ namespace CoreSharp.Breeze
         private Dictionary<string, string> _resourceMap;
         private HashSet<string> _typeNames;
         private List<Dictionary<string, object>> _enumList;
-        private readonly PluralizationServiceInstance _pluralizationService;
         private readonly IBreezeConfigurator _breezeConfigurator;
         private Dictionary<Type, List<NHSyntheticProperty>> _syntheticProperties;
 
@@ -41,7 +41,6 @@ namespace CoreSharp.Breeze
             _sessionFactory = sessionFactory;
             _breezeConfig = breezeConfig;
             _breezeConfigurator = breezeConfigurator;
-            _pluralizationService = new PluralizationServiceInstance(CultureInfo.GetCultureInfo("en-us"));
         }
 
         /// <summary>
@@ -151,7 +150,7 @@ namespace CoreSharp.Breeze
                 }
             }
 
-            var resourceName = _pluralizationService.Pluralize(type.Name);
+            var resourceName = type.Name.Pluralize();
 
             //We add custom resource name if defined
             var modelConfiguration = _breezeConfigurator.GetModelConfiguration(type);
