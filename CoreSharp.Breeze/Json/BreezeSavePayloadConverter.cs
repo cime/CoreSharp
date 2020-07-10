@@ -22,7 +22,18 @@ namespace CoreSharp.Breeze.Json
                 return token;
             }
 
-            var result = (IBreezeSavePayload)Activator.CreateInstance(objectType);
+            var tag = token.SelectToken("saveOptions.tag", false);
+            IBreezeSavePayload result;
+
+            if (tag != null)
+            {
+                result = (IBreezeSavePayload)tag.ToObject(objectType);
+            }
+            else
+            {
+                result = (IBreezeSavePayload)Activator.CreateInstance(objectType);
+            }
+
             result.Payload = (JObject) token;
 
             return result;
