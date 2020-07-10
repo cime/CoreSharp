@@ -16,6 +16,11 @@ namespace CoreSharp.Analyzer.NHibernate.Extensions
             return HasKeyword(node, SyntaxKind.ReadOnlyKeyword);
         }
 
+        public static bool IsAbstract(this SyntaxNode node)
+        {
+            return HasKeyword(node, SyntaxKind.AbstractKeyword);
+        }
+
         public static bool IsVirtual(this SyntaxNode node)
         {
             return HasKeyword(node, SyntaxKind.VirtualKeyword) || HasKeyword(node, SyntaxKind.OverrideKeyword);
