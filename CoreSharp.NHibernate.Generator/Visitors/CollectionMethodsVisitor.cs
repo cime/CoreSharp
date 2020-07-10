@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CoreSharp.NHibernate.Generator.Extensions;
 using CoreSharp.NHibernate.Generator.Models;
+using Humanizer;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -28,7 +29,6 @@ namespace CoreSharp.NHibernate.Generator.Visitors
 
         private readonly DocumentMetadata _documentMetadata;
         private readonly ProjectMetadata _projectMetadata;
-        private readonly PluralizationServiceInstance _pluralizationService = new PluralizationServiceInstance(new CultureInfo("en-US"));
 
         private bool _hasChanges = false;
 
@@ -81,8 +81,8 @@ namespace CoreSharp.NHibernate.Generator.Visitors
                 var propertyName = propertySymbol.Name;
                 var propertyType = (INamedTypeSymbol)propertySymbol.Type;
                 var childTypeName = propertyType.TypeArguments.First().Name;
-                var addMethodName = "Add" + _pluralizationService.Singularize(propertyName);
-                var removeMethodName = "Remove" + _pluralizationService.Singularize(propertyName);
+                var addMethodName = "Add" + propertyName.Singularize();
+                var removeMethodName = "Remove" + propertyName.Singularize();
                 var clearMethodName = "Clear" + propertyName;
 
                 //TODO: remove existing methods
