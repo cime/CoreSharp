@@ -10,8 +10,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using CoreSharp.Common.Attributes;
-using CoreSharp.DataAccess;
 using CoreSharp.GraphQL.Configuration;
+using GraphQL.Resolvers;
 using DefaultValueAttribute = System.ComponentModel.DefaultValueAttribute;
 
 namespace CoreSharp.GraphQL
@@ -31,7 +31,7 @@ namespace CoreSharp.GraphQL
         /// <summary>
         /// Creates a GraphQL type by specifying fields to exclude from registration.
         /// </summary>
-        public AutoObjectGraphType(IGraphQLConfiguration configuration)
+        public AutoObjectGraphType(IGraphQLConfiguration configuration, IFieldResolver fieldResolver)
         {
             _configuration = configuration;
             _typeConfiguration = _configuration.GetModelConfiguration<TSourceType>();
@@ -62,6 +62,7 @@ namespace CoreSharp.GraphQL
                         description: propertyInfo.Description(),
                         deprecationReason: propertyInfo.ObsoleteMessage()
                     );
+                    field.Resolver = fieldResolver;
 
                     field.DefaultValue = (propertyInfo.GetCustomAttributes(typeof(DefaultValueAttribute), false).FirstOrDefault() as DefaultValueAttribute)?.Value;
                     field.Metadata["PropertyInfo"] = propertyInfo;
@@ -76,12 +77,13 @@ namespace CoreSharp.GraphQL
                 }
                 else
                 {
-                    var field= Field(
+                    var field = Field(
                         type: propertyInfo.PropertyType.GetGraphTypeFromType(IsNullableProperty(propertyInfo)),
                         name: fieldConfiguration?.FieldName ?? GetFieldName(propertyInfo),
                         description: propertyInfo.Description(),
                         deprecationReason: propertyInfo.ObsoleteMessage()
                     );
+                    field.Resolver = fieldResolver;
 
                     field.DefaultValue = (propertyInfo.GetCustomAttributes(typeof(DefaultValueAttribute), false).FirstOrDefault() as DefaultValueAttribute)?.Value;
                     field.Metadata["PropertyInfo"] = propertyInfo;
@@ -120,14 +122,14 @@ namespace CoreSharp.GraphQL
             if (_configuration.GenerateInterfaces)
             {
                 var interfaces = type.GetInterfaces().Where(x => x.IsPublic).ToList();
-                
+
                 foreach (var @interface in interfaces)
                 {
                     if (_configuration.ImplementInterface != null && !configuration.ImplementInterface(@interface, type))
                     {
                         continue;
                     }
-                    
+
                     if (_typeConfiguration.ImplementInterface != null && !_typeConfiguration.ImplementInterface(@interface))
                     {
                         continue;

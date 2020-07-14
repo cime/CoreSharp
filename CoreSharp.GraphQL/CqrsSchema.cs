@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -21,6 +22,8 @@ namespace CoreSharp.GraphQL
 {
     public abstract class CqrsSchema : Schema
     {
+        private static ConcurrentDictionary<Type, IGraphType> _typeCache = new ConcurrentDictionary<Type, IGraphType>();
+
         private readonly Regex _commandNameSuffixRegex = new Regex("(?:AsyncCommand|CommandAsync|Command)$", RegexOptions.Compiled);
         private readonly Regex _queryNameSuffixRegex = new Regex("(?:AsyncQuery|QueryAsync|Query)$", RegexOptions.Compiled);
         private readonly Regex _queryNamePrefixRegex = new Regex("^Get", RegexOptions.Compiled);
@@ -87,6 +90,7 @@ namespace CoreSharp.GraphQL
                                                                                  x.GetTypeInfo().IsAssignableToGenericType(typeof(IAsyncCommandHandler<,>)));
                 var genericArguments = genericType.GetGenericArguments();
                 var commandType = genericArguments[0];
+                var queryResultType = genericArguments[1];
                 var resultType = genericArguments[1];
 
                 if (commandType.GetCustomAttribute<ExposeGraphQLAttribute>() == null)
@@ -143,7 +147,7 @@ namespace CoreSharp.GraphQL
 
                 IGraphType resultGqlType = null;
 
-                if (!GraphTypeTypeRegistry.Contains(resultType))
+                if (!_typeCache.ContainsKey(queryResultType) && GraphTypeTypeRegistry.Get(resultType) == null)
                 {
                     var resultTypeName = resultType.Name;
                     var returnObjectType = typeof(AutoObjectGraphType<>).MakeGenericType(resultType);
@@ -161,6 +165,10 @@ namespace CoreSharp.GraphQL
                     }
 
                     GraphTypeTypeRegistry.Register(resultType, returnObjectType);
+                }
+                else if (_typeCache.ContainsKey(queryResultType))
+                {
+                    resultGqlType = _typeCache[queryResultType];
                 }
 
                 var arguments = new List<QueryArgument>();
@@ -216,6 +224,7 @@ namespace CoreSharp.GraphQL
                                                                                x.GetTypeInfo().IsAssignableToGenericType(typeof(IAsyncQueryHandler<,>)));
                 var genericArguments = genericType.GetGenericArguments();
                 var queryType = genericArguments[0];
+                var queryResultType = genericArguments[1];
                 var resultType = genericArguments[1];
 
                 if (queryType.GetCustomAttribute<ExposeGraphQLAttribute>() == null)
@@ -270,7 +279,7 @@ namespace CoreSharp.GraphQL
 
                 IGraphType resultGqlType = null;
 
-                if (!GraphTypeTypeRegistry.Contains(resultType))
+                if (!_typeCache.ContainsKey(queryResultType) && GraphTypeTypeRegistry.Get(resultType) == null)
                 {
                     var resultTypeName = GetTypeName(resultType);
                     var returnObjectType = typeof(AutoObjectGraphType<>).MakeGenericType(resultType);
@@ -289,6 +298,11 @@ namespace CoreSharp.GraphQL
                     }
 
                     GraphTypeTypeRegistry.Register(resultType, returnObjectType);
+                    _typeCache.TryAdd(queryResultType, resultGqlType);
+                }
+                else if (_typeCache.ContainsKey(queryResultType))
+                {
+                    resultGqlType = _typeCache[queryResultType];
                 }
 
                 var arguments = new List<QueryArgument>();

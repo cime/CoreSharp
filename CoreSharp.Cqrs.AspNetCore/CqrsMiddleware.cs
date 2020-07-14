@@ -8,9 +8,9 @@ using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 using CoreSharp.Common.Attributes;
+using CoreSharp.Cqrs.AspNetCore.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using SimpleInjector;
 
 namespace CoreSharp.Cqrs.AspNetCore
 {
@@ -19,7 +19,6 @@ namespace CoreSharp.Cqrs.AspNetCore
     {
         public static readonly string ContextKey = "CQRS";
 
-        private readonly Container _container;
         private readonly CqrsFormatterRegistry _registry;
         private readonly ICqrsOptions _options;
 
@@ -29,9 +28,8 @@ namespace CoreSharp.Cqrs.AspNetCore
         private readonly ConcurrentDictionary<Type, dynamic> _deserializeMethods = new ConcurrentDictionary<Type, dynamic>();
         private static readonly MethodInfo CreateDeserializeLambdaMethodInfo = typeof(CqrsMiddleware).GetMethod(nameof(CreateDeserializeLambda), BindingFlags.NonPublic | BindingFlags.Static);
 
-        public CqrsMiddleware(Container container, CqrsFormatterRegistry registry, ICqrsOptions options)
+        public CqrsMiddleware(CqrsFormatterRegistry registry, ICqrsOptions options)
         {
-            _container = container;
             _registry = registry;
             _options = options;
 
@@ -97,7 +95,7 @@ namespace CoreSharp.Cqrs.AspNetCore
 
             dynamic command = await deserializeMethod(formatter, context.Request);
 
-            dynamic handler = _container.GetInstance(info.CommandHandlerType);
+            dynamic handler = options.GetInstance(info.CommandHandlerType);
             context.Items[ContextKey] = new CqrsContext(context.Request.Path.Value, path, CqrsType.Command, info.CommandHandlerType);
 
             if (info.IsGeneric)
@@ -166,7 +164,7 @@ namespace CoreSharp.Cqrs.AspNetCore
 
             dynamic query = await deserializeMethod(formatter, context.Request);
 
-            dynamic handler = _container.GetInstance(info.QueryHandlerType);
+            dynamic handler = options.GetInstance(info.QueryHandlerType);
 
             context.Items[ContextKey] = new CqrsContext(context.Request.Path.Value, path, CqrsType.Command, info.QueryHandlerType);
 
@@ -203,7 +201,7 @@ namespace CoreSharp.Cqrs.AspNetCore
 
         private void CloseSession()
         {
-            var session = _container.GetInstance<global::NHibernate.ISession>();
+            var session = (global::NHibernate.ISession) _options.GetInstance(typeof(global::NHibernate.ISession));
 
             if (session == null || !session.IsOpen)
             {

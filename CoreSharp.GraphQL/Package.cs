@@ -1,4 +1,5 @@
 using CoreSharp.GraphQL.Configuration;
+using GraphQL.Resolvers;
 using SimpleInjector;
 
 namespace CoreSharp.GraphQL
@@ -7,11 +8,13 @@ namespace CoreSharp.GraphQL
     {
         public void Register(Container container)
         {
-            container.Register<IComplexityConfigurationFactory>(() => new ComplexityConfigurationFactory(), Lifestyle.Singleton);
-            container.Register<IGraphQLConfiguration>(() => new GraphQLConfiguration(), Lifestyle.Singleton);
+            container.RegisterSingleton<IComplexityConfigurationFactory>(() => new ComplexityConfigurationFactory());
+            container.RegisterSingleton<IGraphQLConfiguration>(() => new GraphQLConfiguration());
 
-            container.Register(typeof(AutoInputGraphType<>), typeof(AutoInputGraphType<>).Assembly, Lifestyle.Singleton);
-            container.Register(typeof(AutoObjectGraphType<>), typeof(AutoObjectGraphType<>).Assembly, Lifestyle.Singleton);
+            container.RegisterSingleton(typeof(AutoInputGraphType<>), typeof(AutoInputGraphType<>).Assembly);
+            container.RegisterSingleton(typeof(AutoObjectGraphType<>), typeof(AutoObjectGraphType<>).Assembly);
+
+            container.Register<IFieldResolver>(() => NameFieldResolver.Instance, Lifestyle.Transient);
         }
     }
 }

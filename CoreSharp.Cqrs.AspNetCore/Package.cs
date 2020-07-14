@@ -1,3 +1,4 @@
+using CoreSharp.Cqrs.AspNetCore.Options;
 using SimpleInjector;
 
 namespace CoreSharp.Cqrs.AspNetCore
@@ -6,8 +7,9 @@ namespace CoreSharp.Cqrs.AspNetCore
     {
         public void Register(Container container)
         {
-            container.Register<ICqrsOptions>(() => new CqrsOptions(container), Lifestyle.Singleton);
-            container.Register<CqrsFormatterRegistry>(Lifestyle.Singleton);
+            container.RegisterSingleton<ICqrsOptions>(() => new SimpleInjectorCqrsOptions(container));
+            container.RegisterSingleton<CqrsFormatterRegistry>();
+            container.RegisterSingleton<CqrsMiddleware>();
         }
     }
 }
