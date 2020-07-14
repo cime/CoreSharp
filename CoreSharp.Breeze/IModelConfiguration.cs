@@ -6,11 +6,12 @@ namespace CoreSharp.Breeze
 {
     public interface IModelConfiguration
     {
-        Dictionary<string, object> Data { get; } 
+        Dictionary<string, object> Data { get; }
 
         Type ModelType { get; set; }
 
         string ResourceName { get; set; }
+        object Custom { get; set; }
 
         bool RefreshAfterSave { get; set; }
 
@@ -22,6 +23,7 @@ namespace CoreSharp.Breeze
     public interface IModelConfiguration<TModel>
     {
         IModelConfiguration<TModel> ResourceName(string resName);
+        IModelConfiguration<TModel> Custom(object custom);
 
         IModelConfiguration<TModel> RefreshAfterSave(bool value);
 

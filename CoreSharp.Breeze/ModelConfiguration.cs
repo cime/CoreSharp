@@ -53,6 +53,12 @@ namespace CoreSharp.Breeze
             return this;
         }
 
+        public IModelConfiguration<TModel> Custom(object custom)
+        {
+            base.Custom = custom;
+            return this;
+        }
+
         public new IModelConfiguration<TModel> RefreshAfterSave(bool value)
         {
             base.RefreshAfterSave = value;
@@ -93,6 +99,7 @@ namespace CoreSharp.Breeze
         public Type ModelType { get; set; }
 
         public string ResourceName { get; set; }
+        public object Custom { get; set; }
 
         public bool RefreshAfterSave { get; set; }
 

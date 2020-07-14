@@ -159,6 +159,11 @@ namespace CoreSharp.Breeze
                 resourceName = modelConfiguration.ResourceName;
             }
 
+            if (modelConfiguration.Custom != null)
+            {
+                cmap.Add("custom", modelConfiguration.Custom);
+            }
+
             cmap.Add("defaultResourceName", resourceName);
             _resourceMap.Add(resourceName, classKey);
 
