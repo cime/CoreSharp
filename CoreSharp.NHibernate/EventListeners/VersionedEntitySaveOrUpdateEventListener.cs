@@ -16,7 +16,7 @@ using NHibernate.Event.Default;
 
 namespace CoreSharp.NHibernate.EventListeners
 {
-public class VersionedEntitySaveOrUpdateEventListener<TUser> : DefaultSaveOrUpdateEventListener
+    public class VersionedEntitySaveOrUpdateEventListener<TUser> : DefaultSaveOrUpdateEventListener
         where TUser : IUser
     {
         // Default system user
@@ -43,9 +43,7 @@ public class VersionedEntitySaveOrUpdateEventListener<TUser> : DefaultSaveOrUpda
                     HandleCreated(entity, @event);
                 }
 
-                var eventType = typeof(EntitySavingOrUpdatingEvent<>).MakeGenericType(@event.Entity.GetType());
-                var deletingEvent = (IAsyncEvent)Activator.CreateInstance(eventType, @event.Entity, @event.Session);
-                await _eventPublisher.PublishAsync(deletingEvent, cancellationToken);
+                await PublishEventAsync(@event.Entity, @event.Session);
             }
 
             return await base.EntityIsTransientAsync(@event, cancellationToken);
@@ -61,12 +59,17 @@ public class VersionedEntitySaveOrUpdateEventListener<TUser> : DefaultSaveOrUpda
                     HandleCreated(entity, @event);
                 }
 
-                var eventType = typeof(EntitySavingOrUpdatingEvent<>).MakeGenericType(@event.Entity.GetType());
-                var deletingEvent = (IAsyncEvent)Activator.CreateInstance(eventType, @event.Entity, @event.Session);
-                _eventPublisher.PublishAsync(deletingEvent).GetAwaiter().GetResult();
+                PublishEventAsync(@event.Entity, @event.Session).GetAwaiter().GetResult();
             }
 
             return base.EntityIsTransient(@event);
+        }
+
+        private Task PublishEventAsync(object entity, ISession session)
+        {
+            var eventType = typeof(EntitySavingOrUpdatingEvent<>).MakeGenericType(entity.GetType());
+            var deletingEvent = (IAsyncEvent) Activator.CreateInstance(eventType, entity, session);
+            return _eventPublisher.PublishAsync(deletingEvent);
         }
 
         private void HandleCreated(IVersionedEntity entity, SaveOrUpdateEvent @event)
