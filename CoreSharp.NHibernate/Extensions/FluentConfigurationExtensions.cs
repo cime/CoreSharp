@@ -35,6 +35,16 @@ namespace CoreSharp.NHibernate.Extensions
                     {container.GetInstance<VersionedEntitySaveOrUpdateEventListener<TUser>>()};
                 cfg.EventListeners.UpdateEventListeners = new ISaveOrUpdateEventListener[]
                     {container.GetInstance<VersionedEntitySaveOrUpdateEventListener<TUser>>()};
+
+                cfg.EventListeners.PostInsertEventListeners =
+                    cfg.EventListeners.PostInsertEventListeners.Append(container
+                        .GetInstance<PostEntityActionEventListener>()).ToArray();
+                cfg.EventListeners.PostUpdateEventListeners =
+                    cfg.EventListeners.PostUpdateEventListeners.Append(container
+                        .GetInstance<PostEntityActionEventListener>()).ToArray();
+                cfg.EventListeners.PostDeleteEventListeners =
+                    cfg.EventListeners.PostDeleteEventListeners.Append(container
+                        .GetInstance<PostEntityActionEventListener>()).ToArray();
             });
         }
 
