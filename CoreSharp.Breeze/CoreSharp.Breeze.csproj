@@ -15,13 +15,9 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Breeze.NHibernate" Version="1.0.0" />
         <PackageReference Include="Humanizer.Core" Version="2.8.26" />
         <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
-        <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-        <PackageReference Include="System.Linq.Queryable" Version="4.3.0" />
-        <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
-        <PackageReference Include="NHibernate" Version="5.2.6" />
-        <PackageReference Include="NHibernate.Extensions" Version="2.1.1" />
     </ItemGroup>
 
     <ItemGroup>
@@ -29,6 +25,10 @@
         <ProjectReference Include="..\CoreSharp.DataAccess\CoreSharp.DataAccess.csproj" />
         <ProjectReference Include="..\CoreSharp.NHibernate\CoreSharp.NHibernate.csproj" />
         <ProjectReference Include="..\CoreSharp.Validation\CoreSharp.Validation.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Extensions\" />
     </ItemGroup>
 
 </Project>

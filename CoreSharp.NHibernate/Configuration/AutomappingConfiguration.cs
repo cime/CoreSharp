@@ -4,23 +4,19 @@ using System.Linq;
 using System.Reflection;
 using CoreSharp.Common.Attributes;
 using CoreSharp.DataAccess;
-using CoreSharp.DataAccess.Attributes;
 using FluentNHibernate;
 using FluentNHibernate.Automapping;
 using FluentNHibernate.Automapping.Steps;
 using FluentNHibernate.Conventions;
-using Microsoft.Extensions.Configuration;
 
 namespace CoreSharp.NHibernate.Configuration
 {
     public class AutomappingConfiguration : DefaultAutomappingConfiguration
     {
-        private readonly IConfiguration _configuration;
         private readonly List<Assembly> _mappingStepsAssembiles;
 
-        public AutomappingConfiguration(IConfiguration configuration)
+        public AutomappingConfiguration()
         {
-            _configuration = configuration;
             _mappingStepsAssembiles = new List<Assembly>();
         }
 

@@ -10,20 +10,16 @@ using Xunit;
 
 namespace CoreSharp.Validation.Tests
 {
-    public class ValidationTests : IClassFixture<Bootstrapper>
+    public class ValidationTests : BaseTest
     {
-        private Bootstrapper _baseTest;
 
-        public ValidationTests(Bootstrapper baseTest)
+        public ValidationTests(Bootstrapper bootstrapper) : base(bootstrapper)
         {
-            _baseTest = baseTest;
-            _baseTest.BeforeInitialization(container =>
-            {
-                container.RegisterPackages();
-                container.RegisterValidatorsFromAssemblyOf<LifecycleTests>();
-            });
+        }
 
-            _baseTest.Initialize();
+        protected override void ConfigureContainer(Container container)
+        {
+            container.RegisterValidatorsFromAssemblyOf<LifecycleTests>();
         }
 
         [Fact]
@@ -35,7 +31,7 @@ namespace CoreSharp.Validation.Tests
             TestModelAsyncDomainValidator.ValidateCount = 0;
             TestModelAsyncDomainValidator.CanValidateCount = 0;
             TestModelAsyncDomainValidator.ValidatBeforeValidationCount = 0;
-            var validator = _baseTest.Container.GetInstance<IValidator<TestModel>>();
+            var validator = Container.GetInstance<IValidator<TestModel>>();
 
             for (var i = 0; i < 5; i++)
             {
@@ -60,7 +56,7 @@ namespace CoreSharp.Validation.Tests
             TestModelAsyncDomainValidator.ValidateCount = 0;
             TestModelAsyncDomainValidator.CanValidateCount = 0;
             TestModelAsyncDomainValidator.ValidatBeforeValidationCount = 0;
-            var validator = _baseTest.Container.GetInstance<IValidator<TestModel>>();
+            var validator = Container.GetInstance<IValidator<TestModel>>();
 
             for (var i = 0; i < 5; i++)
             {
@@ -104,7 +100,7 @@ namespace CoreSharp.Validation.Tests
                     ParentSubChildDomainValidator.Clear();
                     SubChildDomainValidator.Clear();
 
-                    var validator = _baseTest.Container.GetInstance<IValidator<Parent>>();
+                    var validator = Container.GetInstance<IValidator<Parent>>();
                     var model = new Parent
                     {
                         Children = new List<Child>
@@ -246,7 +242,7 @@ namespace CoreSharp.Validation.Tests
                     AsyncParentSubChildDomainValidator.Clear();
                     AsyncSubChildDomainValidator.Clear();
 
-                    var validator = _baseTest.Container.GetInstance<IValidator<AsyncParent>>();
+                    var validator = Container.GetInstance<IValidator<AsyncParent>>();
                     var model = new AsyncParent
                     {
                         Children = new List<AsyncChild>
@@ -377,11 +373,11 @@ namespace CoreSharp.Validation.Tests
                 },
                 Relation = child4
             };
-            var validator = _baseTest.Container.GetInstance<IValidator<GenericChildParent>>();
+            var validator = Container.GetInstance<IValidator<GenericChildParent>>();
             var valResult = validator.Validate(model);
             AssertValidationResult(valResult, child1, child2, child4);
 
-            var childValidator = _baseTest.Container.GetInstance<IValidator<GenericChildChild>>();
+            var childValidator = Container.GetInstance<IValidator<GenericChildChild>>();
             valResult = childValidator.Validate(child1);
             Assert.True(valResult.IsValid);
         }
@@ -403,11 +399,11 @@ namespace CoreSharp.Validation.Tests
                 },
                 Relation = child4
             };
-            var validator = _baseTest.Container.GetInstance<IValidator<GenericRootChildParent>>();
+            var validator = Container.GetInstance<IValidator<GenericRootChildParent>>();
             var valResult = validator.Validate(model);
             AssertValidationResult(valResult, child1, child2, child4);
 
-            var childValidator = _baseTest.Container.GetInstance<IValidator<GenericRootChildChild>>();
+            var childValidator = Container.GetInstance<IValidator<GenericRootChildChild>>();
             valResult = childValidator.Validate(child1);
             Assert.True(valResult.IsValid);
         }
@@ -429,7 +425,7 @@ namespace CoreSharp.Validation.Tests
                 },
                 Relation = child4
             };
-            var validator = _baseTest.Container.GetInstance<IValidator<GenericRootModel>>();
+            var validator = Container.GetInstance<IValidator<GenericRootModel>>();
             var valResult = validator.Validate(model);
 
             Assert.False(valResult.IsValid);
@@ -440,7 +436,7 @@ namespace CoreSharp.Validation.Tests
             AssertNotEmptyInstanceError(valResult.Errors[2], "Relation", "Invalid name", child4);
             AssertNameNotEmptyError(valResult.Errors[3], model);
 
-            var childValidator = _baseTest.Container.GetInstance<IValidator<GenericRootModel>>();
+            var childValidator = Container.GetInstance<IValidator<GenericRootModel>>();
             valResult = childValidator.Validate(child1);
             Assert.False(valResult.IsValid);
         }
