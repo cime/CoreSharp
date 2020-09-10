@@ -24,8 +24,6 @@ namespace CoreSharp.NHibernate.PostgreSQL.Types
 
         public override void Set(DbCommand cmd, object value, int index, ISessionImplementor session)
         {
-            var test = value;
-
             if (cmd.Parameters[index] is NpgsqlParameter param)
             {
                 param.NpgsqlDbType = NpgsqlDbType.Citext;
