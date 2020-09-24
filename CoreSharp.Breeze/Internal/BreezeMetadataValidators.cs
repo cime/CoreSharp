@@ -133,7 +133,7 @@ namespace CoreSharp.Breeze.Internal
                     }
 
                     var allPropertyRules = validationRules.OfType<PropertyRule>()
-                        .Where(x => !string.IsNullOrEmpty(x.PropertyName) && x.Condition == null && x.AsyncCondition == null)
+                        .Where(IsRuleSupported)
                         .ToLookup(o => o.PropertyName, o => o);
 
                     foreach (var dataProperty in structuralType.DataProperties)
@@ -202,6 +202,16 @@ namespace CoreSharp.Breeze.Internal
             }
 
             return metadata;
+        }
+
+        private static bool IsRuleSupported(PropertyRule rule)
+        {
+            var options = rule.CurrentValidator.Options;
+            return !string.IsNullOrEmpty(rule.PropertyName) &&
+                   rule.Condition == null &&
+                   rule.AsyncCondition == null &&
+                   options.Condition == null &&
+                   options.AsyncCondition == null;
         }
 
         private static string Pluralize(string s)
