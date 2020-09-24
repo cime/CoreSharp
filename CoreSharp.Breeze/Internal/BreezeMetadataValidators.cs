@@ -133,7 +133,7 @@ namespace CoreSharp.Breeze.Internal
                     }
 
                     var allPropertyRules = validationRules.OfType<PropertyRule>()
-                        .Where(x => !string.IsNullOrEmpty(x.PropertyName))
+                        .Where(x => !string.IsNullOrEmpty(x.PropertyName) && x.Condition == null && x.AsyncCondition == null)
                         .ToLookup(o => o.PropertyName, o => o);
 
                     foreach (var dataProperty in structuralType.DataProperties)
