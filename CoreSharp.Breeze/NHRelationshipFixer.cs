@@ -407,8 +407,15 @@ namespace CoreSharp.Breeze
                 }
                 else
                 {
+                    var index = Array.IndexOf(meta.PropertyNames, propName);
+                    var isLazy = meta.PropertyLaziness[index];
+                    var isNullable = meta.PropertyNullability[index];
                     var val = meta.GetPropertyValue(entityInfoEntity, propName);
-                    meta.SetPropertyValue(dbEntity, propName, val);
+
+                    if (!isLazy || !isNullable || !(val is byte[]) || !(new byte[] { 0,0,0,0,0,0,39,117 }.SequenceEqual((byte[])val)));
+                    {
+                        meta.SetPropertyValue(dbEntity, propName, val);
+                    }
                 }
             }
             return true;
