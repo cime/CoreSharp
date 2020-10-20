@@ -249,8 +249,16 @@ namespace CoreSharp.Breeze
                     }
                     else
                     {
-                        var val = meta.GetPropertyValue(entityInfo.Entity, propName);
-                        meta.SetPropertyValue(clientEntity, propName, val);
+                        var index = Array.IndexOf(meta.PropertyNames, propName);
+                        var isLazy = meta.PropertyLaziness[index];
+                        var isNullable = meta.PropertyNullability[index];
+                        var val = meta.GetPropertyValue(clientEntity, propName);
+
+                        // lazy loadable byte[]
+                        if (!isLazy || isNullable || !(val is byte[]) || !(new byte[] { 0,0,0,0,0,0,39,117 }.SequenceEqual((byte[])val)))
+                        {
+                            meta.SetPropertyValue(clientEntity, propName, val);
+                        }
                     }
                 }
             }
@@ -412,7 +420,8 @@ namespace CoreSharp.Breeze
                     var isNullable = meta.PropertyNullability[index];
                     var val = meta.GetPropertyValue(entityInfoEntity, propName);
 
-                    if (!isLazy || !isNullable || !(val is byte[]) || !(new byte[] { 0,0,0,0,0,0,39,117 }.SequenceEqual((byte[])val)));
+                    // lazy loadable byte[]
+                    if (!isLazy || isNullable || !(val is byte[]) || !(new byte[] { 0,0,0,0,0,0,39,117 }.SequenceEqual((byte[])val)))
                     {
                         meta.SetPropertyValue(dbEntity, propName, val);
                     }
