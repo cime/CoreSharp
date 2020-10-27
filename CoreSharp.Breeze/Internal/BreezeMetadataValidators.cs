@@ -62,7 +62,7 @@ namespace CoreSharp.Breeze.Internal
             {
                 var entityType = new EntityType();
 
-                var properties = clientModelType.GetProperties(BindingFlags.Instance | BindingFlags.Public)
+                var properties = clientModelType.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy)
                     .Where(p => p.Name != "Id" && p.DeclaringType == clientModelType);
 
                 entityType.ShortName = clientModelType.Name;

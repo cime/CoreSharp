@@ -11,8 +11,10 @@ using CoreSharp.Breeze.Extensions;
 using NHibernate;
 using NHibernate.Engine;
 using NHibernate.Hql;
+using NHibernate.Intercept;
 using NHibernate.Metadata;
 using NHibernate.Persister.Entity;
+using NHibernate.Proxy;
 using NHibernate.Type;
 
 namespace CoreSharp.Breeze
@@ -252,7 +254,7 @@ namespace CoreSharp.Breeze
                         var index = Array.IndexOf(meta.PropertyNames, propName);
                         var isLazy = meta.PropertyLaziness[index];
                         var isNullable = meta.PropertyNullability[index];
-                        var val = meta.GetPropertyValue(clientEntity, propName);
+                        var val = meta.GetPropertyValue(entityInfo.Entity, propName);
 
                         // lazy loadable byte[]
                         if (!isLazy || isNullable || !(val is byte[]) || !(new byte[] { 0,0,0,0,0,0,39,117 }.SequenceEqual((byte[])val)))
@@ -431,7 +433,7 @@ namespace CoreSharp.Breeze
         }
 
         /// <summary>
-        /// Connect the related entities based on the foreign key values.
+        /// Connect the related entities based on the foreign key values.a
         /// Note that this may cause related entities to be loaded from the DB if they are not already in the session.
         /// </summary>
         /// <param name="entityInfo">Entity that will be saved</param>
@@ -831,7 +833,8 @@ namespace CoreSharp.Breeze
             {
                 return id;
             }
-            var entityType = entityInfo.Entity.GetType();
+
+            var entityType = GetEntityType(entityInfo.Entity);
             if (!syntheticProperties.ContainsKey(entityType))
             {
                 return id;
@@ -851,6 +854,28 @@ namespace CoreSharp.Breeze
             }
 
             return id;
+        }
+
+        public static Type GetEntityType(object entity, bool allowInitialization = true)
+        {
+            if (entity is INHibernateProxy nhProxy)
+            {
+                if (nhProxy.HibernateLazyInitializer.IsUninitialized && !allowInitialization)
+                {
+                    return nhProxy.HibernateLazyInitializer.PersistentClass;
+                }
+
+                // We have to initialize in case of a subclass to get the concrete type
+                entity = nhProxy.HibernateLazyInitializer.GetImplementation();
+            }
+
+            switch (entity)
+            {
+                case IFieldInterceptorAccessor interceptorAccessor:
+                    return interceptorAccessor.FieldInterceptor.MappedClass;
+                default:
+                    return entity.GetType();
+            }
         }
 
         /// <summary>
