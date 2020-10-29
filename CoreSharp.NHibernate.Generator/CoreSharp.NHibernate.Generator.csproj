@@ -15,7 +15,7 @@
       <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.2.1" />
       <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="3.2.1" />
       <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="3.2.1" />
-      <PackageReference Include="SimpleInjector" Version="4.7.1" />
+      <PackageReference Include="SimpleInjector" Version="5.1.0" />
     </ItemGroup>
 
 </Project>

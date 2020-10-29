@@ -18,5 +18,7 @@ namespace CoreSharp.Cqrs.AspNetCore.Options
         IEnumerable<QueryInfo> GetQueryTypes();
 
         object GetInstance(Type type);
+
+        void Verify();
     }
 }

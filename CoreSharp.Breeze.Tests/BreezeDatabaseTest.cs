@@ -18,12 +18,14 @@ namespace CoreSharp.Breeze.Tests
         {
             var schemaExport = new SchemaExport(Container.GetInstance<Configuration>());
             schemaExport.Create(true, true);
-            using var scope = AsyncScopedLifestyle.BeginScope(Container);
-            using var session = Container.GetInstance<ISession>();
-            using var tx = session.BeginTransaction();
-            FillDatabase(session);
+            using (AsyncScopedLifestyle.BeginScope(Container))
+            {
+                using var session = Container.GetInstance<ISession>();
+                using var tx = session.BeginTransaction();
+                FillDatabase(session);
 
-            tx.Commit();
+                tx.Commit();
+            }
         }
 
         protected virtual void FillDatabase(ISession session)

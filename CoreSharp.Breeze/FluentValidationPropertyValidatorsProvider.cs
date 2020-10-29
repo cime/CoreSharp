@@ -81,14 +81,12 @@ namespace CoreSharp.Breeze
                     yield break;
                 }
 
-                propertyValidators = validationRules.OfType<PropertyRule>().ToLookup(o => o.PropertyName);
+                propertyValidators = validationRules.OfType<PropertyRule>().Where(IsRuleSupported).ToLookup(o => o.PropertyName);
                 _typePropertyValidators.Add(type, propertyValidators);
             }
 
             // Add fluent validations
-            var propertyRules = propertyValidators[dataProperty.NameOnServer]
-                .Where(pr => pr.RuleSets == null || ValidationRuleSet.InsertUpdate.Intersect(pr.RuleSets).Any());
-            foreach (var propertyRule in propertyRules)
+            foreach (var propertyRule in propertyValidators[dataProperty.NameOnServer])
             {
                 var currentValidator = propertyRule.CurrentValidator;
                 var name = FluentValidators.GetName(currentValidator);
@@ -101,6 +99,21 @@ namespace CoreSharp.Breeze
                 validator.MergeLeft(FluentValidators.GetParameters(currentValidator));
                 yield return validator;
             }
+        }
+
+        private static bool IsRuleSupported(PropertyRule rule)
+        {
+            if (rule.RuleSets != null && !ValidationRuleSet.InsertUpdate.Intersect(rule.RuleSets).Any())
+            {
+                return false;
+            }
+
+            var options = rule.CurrentValidator.Options;
+            return !string.IsNullOrEmpty(rule.PropertyName) &&
+                   rule.Condition == null &&
+                   rule.AsyncCondition == null &&
+                   options.Condition == null &&
+                   options.AsyncCondition == null;
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using CoreSharp.Common.Attributes;
@@ -68,5 +69,40 @@ namespace CoreSharp.Cqrs.AspNetCore.Options
         public abstract IEnumerable<CommandInfo> GetCommandTypes();
         public abstract IEnumerable<QueryInfo> GetQueryTypes();
         public abstract object GetInstance(Type type);
+
+        public void Verify()
+        {
+            var exposedCommandsWithNoAuthorize = GetCommandTypes()
+                .Where(x => x.CommandType.GetCustomAttribute<ExposeAttribute>() != null &&
+                            x.CommandType.GetCustomAttribute<AuthorizeAttribute>() == null)
+                .ToList();
+            var exposedQueriesWithNoAuthorize = GetQueryTypes()
+                .Where(x => x.QueryType.GetCustomAttribute<ExposeAttribute>() != null &&
+                            x.QueryType.GetCustomAttribute<AuthorizeAttribute>() == null)
+                .ToList();
+
+            var message = string.Empty;
+            if (exposedCommandsWithNoAuthorize.Any())
+            {
+                message += $"Commands with {nameof(ExposeAttribute)} but no {nameof(AuthorizeAttribute)}:{Environment.NewLine}";
+                message += string.Join(Environment.NewLine,
+                    exposedCommandsWithNoAuthorize.Select(x => $" - {x.CommandType.Namespace}.{x.CommandType.Name}"));
+                message += Environment.NewLine;
+            }
+
+            if (exposedQueriesWithNoAuthorize.Any())
+            {
+                if (exposedCommandsWithNoAuthorize.Any())
+                {
+                    message += Environment.NewLine;
+                }
+
+                message += $"Queries with {nameof(ExposeAttribute)} but no {nameof(AuthorizeAttribute)}:{Environment.NewLine}";
+                message += string.Join(Environment.NewLine,
+                    exposedQueriesWithNoAuthorize.Select(x => $" - {x.QueryType.Namespace}.{x.QueryType.Name}"));
+            }
+
+            throw new Exception(message);
+        }
     }
 }

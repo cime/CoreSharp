@@ -123,26 +123,6 @@ namespace CoreSharp.GraphQL
                     var inputObjectType = typeof(AutoInputGraphType<>).MakeGenericType(commandType);
                     inputGqlType = (IInputObjectGraphType)_container.GetInstance(inputObjectType);
                     inputGqlType.Description = descriptionAttribute?.Description;
-
-                    var addFieldMethod = inputGqlType.GetType().GetMethod("AddField");
-
-                    foreach (var propertyInfo in properties)
-                    {
-                        addFieldMethod.Invoke(inputGqlType,
-                            new[]
-                            {
-                                new FieldType()
-                                {
-                                    Name = propertyInfo.Name.ToCamelCase(),
-                                    Type = propertyInfo.PropertyType.GetGraphTypeFromType(IsNullableProperty(propertyInfo)),
-                                    Description = propertyInfo.GetCustomAttribute<DescriptionAttribute>()?.Description,
-                                    Metadata = new Dictionary<string, object>()
-                                    {
-                                        [GraphQLExtensions.PermissionsKey] = propertyInfo.GetCustomAttribute<AuthorizeAttribute>()?.Permissions
-                                    }
-                                }
-                            });
-                    }
                 }
 
                 IGraphType resultGqlType = null;
@@ -256,25 +236,6 @@ namespace CoreSharp.GraphQL
                     var inputObjectType = typeof(AutoInputGraphType<>).MakeGenericType(queryType);
                     inputGqlType = (IInputObjectGraphType)_container.GetInstance(inputObjectType);
                     inputGqlType.Description = descriptionAttribute?.Description;
-
-                    var addFieldMethod = inputGqlType.GetType().GetMethod("AddField");
-
-                    foreach (var propertyInfo in properties)
-                    {
-                        addFieldMethod.Invoke(inputGqlType, new[]
-                        {
-                            new FieldType()
-                            {
-                                Name = GetNormalizedFieldName(propertyInfo.Name),
-                                Type = propertyInfo.PropertyType.GetGraphTypeFromType(IsNullableProperty(propertyInfo)),
-                                Description = propertyInfo.GetCustomAttribute<DescriptionAttribute>()?.Description,
-                                Metadata = new Dictionary<string, object>()
-                                {
-                                    [GraphQLExtensions.PermissionsKey] = propertyInfo.GetCustomAttribute<AuthorizeAttribute>()?.Permissions
-                                }
-                            }
-                        });
-                    }
                 }
 
                 IGraphType resultGqlType = null;
