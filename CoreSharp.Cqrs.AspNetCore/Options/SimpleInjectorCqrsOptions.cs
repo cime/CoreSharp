@@ -20,7 +20,12 @@ namespace CoreSharp.Cqrs.AspNetCore.Options
 
         public override IEnumerable<QueryInfo> GetQueryTypes()
         {
-            return _container.GetRootRegistrations()
+            if (!_container.IsLocked)
+            {
+                throw new InvalidOperationException("Container is not Locked");
+            }
+
+            return _container.GetCurrentRegistrations()
                 .Select(x => x.Registration.ImplementationType)
                 .Distinct()
                 .Where(t =>
@@ -44,7 +49,12 @@ namespace CoreSharp.Cqrs.AspNetCore.Options
 
         public override IEnumerable<CommandInfo> GetCommandTypes()
         {
-            return _container.GetRootRegistrations()
+            if (!_container.IsLocked)
+            {
+                throw new InvalidOperationException("Container is not Locked");
+            }
+
+            return _container.GetCurrentRegistrations()
                 .Select(x => x.Registration.ImplementationType)
                 .Distinct()
                 .Where(t =>

@@ -22,7 +22,7 @@ namespace CoreSharp.GraphQL
 {
     public abstract class CqrsSchema : Schema
     {
-        private static ConcurrentDictionary<Type, IGraphType> _typeCache = new ConcurrentDictionary<Type, IGraphType>();
+        private static readonly ConcurrentDictionary<Type, IGraphType> _typeCache = new ConcurrentDictionary<Type, IGraphType>();
 
         private readonly Regex _commandNameSuffixRegex = new Regex("(?:AsyncCommand|CommandAsync|Command)$", RegexOptions.Compiled);
         private readonly Regex _queryNameSuffixRegex = new Regex("(?:AsyncQuery|QueryAsync|Query)$", RegexOptions.Compiled);
@@ -71,7 +71,12 @@ namespace CoreSharp.GraphQL
 
         public virtual void RegisterCommandsFromContainer()
         {
-            var registrations = _container.GetRootRegistrations();
+            if (!_container.IsLocked)
+            {
+                throw new InvalidOperationException("Container is not Locked");
+            }
+
+            var registrations = _container.GetCurrentRegistrations();
             var registeredTypes = registrations.Select(x => x.Registration.ImplementationType).Distinct().ToList();
             var commandHandlerTypes = registeredTypes
                 .Where(x => x.GetCustomAttribute<DecoratorAttribute>() == null)
@@ -185,7 +190,12 @@ namespace CoreSharp.GraphQL
 
         public virtual void RegisterQueriesFromContainer()
         {
-            var registrations = _container.GetRootRegistrations();
+            if (!_container.IsLocked)
+            {
+                throw new InvalidOperationException("Container is not Locked");
+            }
+
+            var registrations = _container.GetCurrentRegistrations();
             var registeredTypes = registrations.Select(x => x.Registration.ImplementationType).Distinct().ToList();
             var queryHandlerTypes = registeredTypes
                 .Where(x => x.GetCustomAttribute<DecoratorAttribute>() == null)
