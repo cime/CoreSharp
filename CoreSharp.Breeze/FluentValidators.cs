@@ -7,7 +7,7 @@ using FluentValidation.Validators;
 
 namespace CoreSharp.Breeze
 {
-    internal static class FluentValidators
+    public static class FluentValidators
     {
         private static readonly Dictionary<Type, string> ValNames = new Dictionary<Type, string>();
 

@@ -15,7 +15,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Breeze.NHibernate" Version="1.0.0" />
+        <PackageReference Include="Breeze.NHibernate" Version="1.1.0" />
         <PackageReference Include="Humanizer.Core" Version="2.8.26" />
         <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     </ItemGroup>

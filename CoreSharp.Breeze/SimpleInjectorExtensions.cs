@@ -39,6 +39,7 @@ namespace CoreSharp.Breeze
             container.TryRegisterSingleton<IEntityBatchFetcherFactory, EntityBatchFetcherFactory>(registeredServices);
             container.TryRegisterSingleton<IModelSaveValidatorProvider, DefaultModelSaveValidatorProvider>(registeredServices);
             container.TryRegisterSingleton<ITypeMembersProvider, DefaultTypeMembersProvider>(registeredServices);
+            container.TryRegisterSingleton<IDataTypeProvider, DefaultDataTypeProvider>(registeredServices);
             container.TryRegisterSingleton<ISaveWorkStateFactory, SaveWorkStateFactory>(registeredServices);
             container.TryRegisterSingleton<BreezeContractResolver>(registeredServices);
             container.TryRegisterSingleton<IBreezeConfigurator>(() => {
