@@ -6,26 +6,21 @@ using Xunit;
 
 namespace CoreSharp.Validation.Tests
 {
-    public class AttributeTests : IClassFixture<Bootstrapper>
+    public class AttributeTests : BaseTest
     {
-        private Bootstrapper _baseTest;
-
-        public AttributeTests(Bootstrapper baseTest)
+        public AttributeTests(Bootstrapper bootstrapper) : base(bootstrapper)
         {
-            _baseTest = baseTest;
-            _baseTest.BeforeInitialization(container =>
-            {
-                container.RegisterPackages();
-                container.RegisterValidatorsFromAssemblyOf<LifecycleTests>();
-            });
+        }
 
-            _baseTest.Initialize();
+        protected override void ConfigureContainer(Container container)
+        {
+            container.RegisterValidatorsFromAssemblyOf<LifecycleTests>();
         }
 
         [Fact]
         public void Length()
         {
-            var validator = _baseTest.Container.GetInstance<IValidator<LengthModel>>();
+            var validator = Container.GetInstance<IValidator<LengthModel>>();
 
             var model = new LengthModel
             {
@@ -62,7 +57,7 @@ namespace CoreSharp.Validation.Tests
         [Fact]
         public void NotNull()
         {
-            var validator = _baseTest.Container.GetInstance<IValidator<NotNullModel>>();
+            var validator = Container.GetInstance<IValidator<NotNullModel>>();
 
             var model = new NotNullModel();
             var result = validator.Validate(model, ruleSet: ValidationRuleSet.Attribute);
@@ -78,7 +73,7 @@ namespace CoreSharp.Validation.Tests
         [Fact]
         public void CreditCard()
         {
-            var validator = _baseTest.Container.GetInstance<IValidator<CreditCardModel>>();
+            var validator = Container.GetInstance<IValidator<CreditCardModel>>();
 
             var model = new CreditCardModel
             {
@@ -99,7 +94,7 @@ namespace CoreSharp.Validation.Tests
         [Fact]
         public void Email()
         {
-            var validator = _baseTest.Container.GetInstance<IValidator<EmailModel>>();
+            var validator = Container.GetInstance<IValidator<EmailModel>>();
 
             var model = new EmailModel
             {
@@ -120,7 +115,7 @@ namespace CoreSharp.Validation.Tests
         [Fact]
         public void Equal()
         {
-            var validator = _baseTest.Container.GetInstance<IValidator<EqualModel>>();
+            var validator = Container.GetInstance<IValidator<EqualModel>>();
 
             var model = new EqualModel
             {
@@ -146,7 +141,7 @@ namespace CoreSharp.Validation.Tests
         [Fact]
         public void NotEqual()
         {
-            var validator = _baseTest.Container.GetInstance<IValidator<NotEqualModel>>();
+            var validator = Container.GetInstance<IValidator<NotEqualModel>>();
 
             var model = new NotEqualModel
             {
@@ -172,7 +167,7 @@ namespace CoreSharp.Validation.Tests
         [Fact]
         public void ExactLength()
         {
-            var validator = _baseTest.Container.GetInstance<IValidator<ExactLengthModel>>();
+            var validator = Container.GetInstance<IValidator<ExactLengthModel>>();
 
             var model = new ExactLengthModel
             {
@@ -192,7 +187,7 @@ namespace CoreSharp.Validation.Tests
         [Fact]
         public void GreaterThan()
         {
-            var validator = _baseTest.Container.GetInstance<IValidator<GreaterThanModel>>();
+            var validator = Container.GetInstance<IValidator<GreaterThanModel>>();
 
             var model = new GreaterThanModel
             {
@@ -212,7 +207,7 @@ namespace CoreSharp.Validation.Tests
         [Fact]
         public void GreaterThanOrEqual()
         {
-            var validator = _baseTest.Container.GetInstance<IValidator<GreaterThanOrEqualModel>>();
+            var validator = Container.GetInstance<IValidator<GreaterThanOrEqualModel>>();
 
             var model = new GreaterThanOrEqualModel
             {
@@ -232,7 +227,7 @@ namespace CoreSharp.Validation.Tests
         [Fact]
         public void LessThan()
         {
-            var validator = _baseTest.Container.GetInstance<IValidator<LessThanModel>>();
+            var validator = Container.GetInstance<IValidator<LessThanModel>>();
 
             var model = new LessThanModel
             {
@@ -252,7 +247,7 @@ namespace CoreSharp.Validation.Tests
         [Fact]
         public void LessThanOrEqual()
         {
-            var validator = _baseTest.Container.GetInstance<IValidator<LessThanOrEqualModel>>();
+            var validator = Container.GetInstance<IValidator<LessThanOrEqualModel>>();
 
             var model = new LessThanOrEqualModel
             {
@@ -272,7 +267,7 @@ namespace CoreSharp.Validation.Tests
         [Fact]
         public void RegularExpression()
         {
-            var validator = _baseTest.Container.GetInstance<IValidator<RegularExpressionModel>>();
+            var validator = Container.GetInstance<IValidator<RegularExpressionModel>>();
 
             var model = new RegularExpressionModel
             {
@@ -292,7 +287,7 @@ namespace CoreSharp.Validation.Tests
         [Fact]
         public void IgnoreValidationAttributes()
         {
-            var validator = _baseTest.Container.GetInstance<IValidator<IgnoreValidationAttributesModel>>();
+            var validator = Container.GetInstance<IValidator<IgnoreValidationAttributesModel>>();
 
             var model = new IgnoreValidationAttributesModel();
             var result = validator.Validate(model, ruleSet: ValidationRuleSet.Attribute);

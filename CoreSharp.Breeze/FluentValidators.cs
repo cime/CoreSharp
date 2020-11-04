@@ -1,17 +1,15 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using FluentValidation.Validators;
 using CoreSharp.Validation.Extensions;
+using FluentValidation.Validators;
 
 namespace CoreSharp.Breeze
 {
-public static class FluentValidators
+    public static class FluentValidators
     {
         private static readonly Dictionary<Type, string> ValNames = new Dictionary<Type, string>();
-        private static readonly Dictionary<Type, Func<IPropertyValidator, IDictionary<string, object>>> ValParametersFuncs =
-            new Dictionary<Type, Func<IPropertyValidator, IDictionary<string, object>>>();
 
         static FluentValidators()
         {
@@ -50,11 +48,8 @@ public static class FluentValidators
                 RegexOptions.IgnoreCase);
         }
 
-        public static IDictionary<string, object> GetParamaters(IPropertyValidator validator)
+        public static IDictionary<string, object> GetParameters(IPropertyValidator validator)
         {
-            if (ValParametersFuncs.ContainsKey(validator.GetType()))
-                return ValParametersFuncs[validator.GetType()](validator);
-
             var result = new Dictionary<string, object>();
             result["errorMessageId"] = ToClientFormat(validator.GetMessageId());
 
@@ -72,10 +67,10 @@ public static class FluentValidators
                 result["to"] = btwVal.To;
             }
 
-            if (validator is ILengthValidator lenghtVal)
+            if (validator is ILengthValidator lengthVal)
             {
-                result["min"] = lenghtVal.Min;
-                result["max"] = lenghtVal.Max;
+                result["min"] = lengthVal.Min;
+                result["max"] = lengthVal.Max;
             }
 
             if (validator is IRegularExpressionValidator regexVal)
@@ -98,19 +93,5 @@ public static class FluentValidators
                 ? ValNames[validatorType]
                 : null;
         }
-
-        public static void RegisterValidator(Type validatorType, string name)
-        {
-            ValNames[validatorType] = name;
-        }
-
-        public static void RegisterValidator<T>(string name, Func<T, IDictionary<string, object>> parametersFunc = null)
-            where T : IPropertyValidator
-        {
-            ValNames[typeof(T)] = name;
-            if (parametersFunc != null)
-                ValParametersFuncs[typeof(T)] = validator => parametersFunc((T)validator);
-        }
-
     }
 }

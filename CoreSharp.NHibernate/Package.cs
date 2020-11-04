@@ -1,4 +1,4 @@
-using CoreSharp.DataAccess;
+﻿using CoreSharp.DataAccess;
 using CoreSharp.NHibernate.Decorators;
 using CoreSharp.NHibernate.DeepClone;
 using CoreSharp.NHibernate.Store;
@@ -19,7 +19,7 @@ namespace CoreSharp.NHibernate
 
             container.RegisterSingleton<IMappingsValidator, MappingsValidator>();
 
-            container.RegisterDecorator<ISessionFactory, SessionFactoryDecorator>(Lifestyle.Singleton);
+            //container.RegisterDecorator<ISessionFactory, SessionFactoryDecorator>(Lifestyle.Singleton);
             container.RegisterDecorator<ISession, SessionDecorator>(Lifestyle.Scoped);
         }
     }
