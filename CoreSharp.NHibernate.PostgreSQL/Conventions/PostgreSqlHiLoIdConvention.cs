@@ -28,7 +28,8 @@ namespace CoreSharp.NHibernate.PostgreSQL.Conventions
                 typeof (PostgreSQL81Dialect).FullName,
                 typeof (PostgreSQL82Dialect).FullName,
                 typeof (PostgreSQL83Dialect).FullName,
-                typeof (PostgreSQLDialect).FullName
+                typeof (PostgreSQLDialect).FullName,
+                typeof (CoreSharp.NHibernate.PostgreSQL.PostgresDialect).FullName
             };
         private static readonly ConcurrentDictionary<Type, IClassInstance> ClassInstances = new ConcurrentDictionary<Type, IClassInstance>();
         private static readonly ConcurrentDictionary<Type, string> FullNames = new ConcurrentDictionary<Type, string>();

@@ -4,7 +4,7 @@ using FluentNHibernate.Conventions.Instances;
 
 namespace CoreSharp.NHibernate.Conventions
 {
-    public class DecimalAttributeConvetion : AttributePropertyConvention<ScalePrecisionAttribute>, IReferenceConvention
+    public class DecimalAttributeConvention : AttributePropertyConvention<ScalePrecisionAttribute>
     {
         protected override void Apply(ScalePrecisionAttribute attribute, IPropertyInstance instance)
         {
@@ -15,14 +15,6 @@ namespace CoreSharp.NHibernate.Conventions
                 instance.Precision(attribute.Precision + attribute.Scale);
                 instance.Scale(attribute.Scale);
             }
-        }
-
-        public void Apply(IManyToOneInstance instance)
-        {
-            //var attribute = instance.Property.MemberInfo.GetCustomAttribute<DecimalAttribute>();
-            //if (attribute == null) return;
-
-            //instance.Not.Nullable();
         }
     }
 }

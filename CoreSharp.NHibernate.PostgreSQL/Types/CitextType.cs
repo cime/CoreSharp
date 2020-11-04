@@ -11,7 +11,7 @@ namespace CoreSharp.NHibernate.PostgreSQL.Types
     [Serializable]
     public class CitextType : AbstractStringType
     {
-        public override string Name => "Citext";
+        public override string Name => "citext";
 
         public CitextType() : base(new StringSqlType())
         {
