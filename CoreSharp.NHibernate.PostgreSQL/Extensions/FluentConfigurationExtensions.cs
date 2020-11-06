@@ -92,6 +92,7 @@ namespace CoreSharp.NHibernate.PostgreSQL.Extensions
             {
                 foreach (var persistenceModel in m.AutoMappings)
                 {
+                    persistenceModel.Conventions.Add(typeof(ForeignKeyNameConvention));
                     persistenceModel.Conventions.Add(typeof(DateTimeOffsetPropertyConvention));
                     persistenceModel.Conventions.Add(typeof(DefaultValueAttributeConvention));
                     persistenceModel.Conventions.Add(typeof(CitextConvention));

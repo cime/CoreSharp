@@ -2,7 +2,10 @@ using CoreSharp.NHibernate.Extensions;
 using FluentNHibernate.Cfg;
 using System.Linq;
 using System.Reflection;
+using CoreSharp.NHibernate.Generators;
 using CoreSharp.NHibernate.SQLServer.Conventions;
+using NHibernate;
+using NHibernate.Dialect.Function;
 
 namespace CoreSharp.NHibernate.SQLServer.Extensions
 {
@@ -30,6 +33,8 @@ namespace CoreSharp.NHibernate.SQLServer.Extensions
                 foreach (var persistenceModel in m.AutoMappings)
                 {
                     persistenceModel.Conventions.AddFromAssemblyOf<MssqlHiLoIdConvention>();
+                    persistenceModel.Conventions.Add(typeof(ForeignKeyNameConvention));
+                    persistenceModel.Conventions.Add(typeof(FormulaAttributeBooleanConvention));
                     persistenceModel.Conventions.Add(typeof(MssqlHiLoIdConvention), new MssqlHiLoIdConvention(cfg));
                 }
             });
@@ -50,6 +55,23 @@ namespace CoreSharp.NHibernate.SQLServer.Extensions
                     command.ExecuteNonQuery();
                 }
             });
+        }
+        
+        public static FluentConfiguration RegisterDateTimeGenerators(this FluentConfiguration fluentConfiguration)
+        {
+            fluentConfiguration.ExposeConfiguration(config =>
+            {
+                config.AddSqlFunction("AddSeconds", new SQLFunctionTemplate(NHibernateUtil.DateTime, "DATEADD(second, ?2, ?1)"));
+                config.AddSqlFunction("AddMinutes", new SQLFunctionTemplate(NHibernateUtil.DateTime, "DATEADD(minute, ?2, ?1)"));
+                config.AddSqlFunction("AddHours", new SQLFunctionTemplate(NHibernateUtil.DateTime, "DATEADD(hour, ?2, ?1)"));
+                config.AddSqlFunction("AddDays", new SQLFunctionTemplate(NHibernateUtil.DateTime, "DATEADD(day, ?2, ?1)"));
+                config.AddSqlFunction("AddMonths", new SQLFunctionTemplate(NHibernateUtil.DateTime, "DATEADD(month, ?2, ?1)"));
+                config.AddSqlFunction("AddYears", new SQLFunctionTemplate(NHibernateUtil.DateTime, "DATEADD(year, ?2, ?1)"));
+
+                config.LinqToHqlGeneratorsRegistry<CoreSharpLinqToHqlGeneratorsRegistry>();
+            });
+
+            return fluentConfiguration;
         }
     }
 }

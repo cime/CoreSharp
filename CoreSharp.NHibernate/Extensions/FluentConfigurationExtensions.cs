@@ -4,7 +4,9 @@ using System.Data;
 using System.Data.Common;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using CoreSharp.DataAccess;
+using CoreSharp.NHibernate.Conventions;
 using CoreSharp.NHibernate.EventListeners;
 using CoreSharp.NHibernate.Interceptors;
 using FluentNHibernate.Cfg;
@@ -45,6 +47,20 @@ namespace CoreSharp.NHibernate.Extensions
                 cfg.EventListeners.PostDeleteEventListeners =
                     cfg.EventListeners.PostDeleteEventListeners.Append(container
                         .GetInstance<PostEntityActionEventListener>()).ToArray();
+            });
+        }
+        
+        public static FluentConfiguration AddConventions(this FluentConfiguration fluentConfiguration)
+        {
+            var cfg = (global::NHibernate.Cfg.Configuration)fluentConfiguration.GetMemberValue("cfg");
+
+            return fluentConfiguration.Mappings(m =>
+            {
+                foreach (var persistenceModel in m.AutoMappings)
+                {
+                    persistenceModel.Conventions.AddFromAssemblyOf<NotNullConvention>();
+                    persistenceModel.Conventions.Add(typeof(FormulaAttributeConvention), new FormulaAttributeConvention(cfg));
+                }
             });
         }
 
