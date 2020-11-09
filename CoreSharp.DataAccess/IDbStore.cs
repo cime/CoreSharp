@@ -63,31 +63,14 @@ namespace CoreSharp.DataAccess
         void Delete(IEntity model);
 
         /// <summary>
-        /// Re-read the state of the given instance from the underlying database.
+        /// Force the <c>ISession</c> to flush.
         /// </summary>
         /// <remarks>
-        /// <para>
-        /// It is inadvisable to use this to implement long-running sessions that span many
-        /// business tasks. This method is, however, useful in certain special circumstances.
-        /// </para>
-        /// <para>
-        /// For example,
-        /// <list>
-        ///		<item>Where a database trigger alters the object state upon insert or update</item>
-        ///		<item>After executing direct SQL (eg. a mass update) in the same session</item>
-        ///		<item>After inserting a <c>Blob</c> or <c>Clob</c></item>
-        /// </list>
-        /// </para>
+        /// Must be called at the end of a unit of work, before committing the transaction and closing
+        /// the session (<c>Transaction.Commit()</c> calls this method). <i>Flushing</i> is the process
+        /// of synchronizing the underlying persistent store with persistable state held in memory.
         /// </remarks>
-        /// <param name="model">A persistent instance</param>
-        void Refresh(IEntity model);
-
-        /// <summary>
-        /// Get the entity instance underlying the given proxy, throwing
-        /// an exception if the proxy is uninitialized. If the given object
-        /// is not a proxy, simply return the argument.
-        /// </summary>
-        object Unproxy(object maybeProxy);
+        void Flush();
     }
 
     /// <summary>
@@ -151,30 +134,13 @@ namespace CoreSharp.DataAccess
         void Delete(IEntity model);
 
         /// <summary>
-        /// Re-read the state of the given instance from the underlying database.
+        /// Force the <c>ISession</c> to flush.
         /// </summary>
         /// <remarks>
-        /// <para>
-        /// It is inadvisable to use this to implement long-running sessions that span many
-        /// business tasks. This method is, however, useful in certain special circumstances.
-        /// </para>
-        /// <para>
-        /// For example,
-        /// <list>
-        ///		<item>Where a database trigger alters the object state upon insert or update</item>
-        ///		<item>After executing direct SQL (eg. a mass update) in the same session</item>
-        ///		<item>After inserting a <c>Blob</c> or <c>Clob</c></item>
-        /// </list>
-        /// </para>
+        /// Must be called at the end of a unit of work, before committing the transaction and closing
+        /// the session (<c>Transaction.Commit()</c> calls this method). <i>Flushing</i> is the process
+        /// of synchronizing the underlying persistent store with persistable state held in memory.
         /// </remarks>
-        /// <param name="model">A persistent instance</param>
-        void Refresh(IEntity model);
-
-        /// <summary>
-        /// Get the entity instance underlying the given proxy, throwing
-        /// an exception if the proxy is uninitialized. If the given object
-        /// is not a proxy, simply return the argument.
-        /// </summary>
-        T Unproxy(object maybeProxy);
+        void Flush();
     }
 }

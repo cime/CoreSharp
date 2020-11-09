@@ -356,9 +356,7 @@ namespace NHibernate
 
         public static ISession UnWrap(this ISession session)
         {
-            var decorator = session as SessionDecorator;
-
-            return decorator != null ? decorator.Session : session;
+            return session is SessionDecorator decorator ? decorator.Session : session;
         }
 
         public static IEnumerable<T> Local<T>(this ISession session)

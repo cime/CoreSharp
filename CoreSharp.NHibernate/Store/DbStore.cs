@@ -48,14 +48,9 @@ namespace CoreSharp.NHibernate.Store
             _session.Delete(model);
         }
 
-        public void Refresh(IEntity model)
+        public void Flush()
         {
-            _session.Refresh(model);
-        }
-
-        public object Unproxy(object maybeProxy)
-        {
-            return _session.GetSessionImplementation().PersistenceContext.Unproxy(maybeProxy);
+            _session.Flush();
         }
     }
 
@@ -104,14 +99,9 @@ namespace CoreSharp.NHibernate.Store
             _session.Delete(model);
         }
 
-        public void Refresh(IEntity model)
+        public void Flush()
         {
-            _session.Refresh(model);
-        }
-
-        public T Unproxy(object maybeProxy)
-        {
-            return (T)_session.GetSessionImplementation().PersistenceContext.Unproxy(maybeProxy);
+            _session.Flush();
         }
     }
 }

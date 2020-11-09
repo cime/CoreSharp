@@ -1,7 +1,9 @@
 ﻿using CoreSharp.DataAccess;
+using CoreSharp.DataAccess.UnitOfWork;
 using CoreSharp.NHibernate.Decorators;
 using CoreSharp.NHibernate.DeepClone;
 using CoreSharp.NHibernate.Store;
+using CoreSharp.NHibernate.UnitOfWork;
 using CoreSharp.NHibernate.Visitors;
 using NHibernate;
 using SimpleInjector;
@@ -21,6 +23,8 @@ namespace CoreSharp.NHibernate
 
             //container.RegisterDecorator<ISessionFactory, SessionFactoryDecorator>(Lifestyle.Singleton);
             container.RegisterDecorator<ISession, SessionDecorator>(Lifestyle.Scoped);
+
+            container.RegisterSingleton<IUnitOfWorkFactory, UnitOfWorkFactory>();
         }
     }
 }

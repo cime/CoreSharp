@@ -70,21 +70,28 @@ namespace CoreSharp.Cqrs.AspNetCore.Options
         public abstract IEnumerable<QueryInfo> GetQueryTypes();
         public abstract object GetInstance(Type type);
 
-        public void Verify()
+        public void Verify(bool allowAnonymous)
         {
             var exposedCommandsWithNoAuthorize = GetCommandTypes()
                 .Where(x => x.CommandType.GetCustomAttribute<ExposeAttribute>() != null &&
-                            x.CommandType.GetCustomAttribute<AuthorizeAttribute>() == null)
+                            x.CommandType.GetCustomAttribute<AuthorizeAttribute>() == null &&
+                            (!allowAnonymous || x.CommandType.GetCustomAttribute<AllowAnonymousAttribute>() == null))
                 .ToList();
             var exposedQueriesWithNoAuthorize = GetQueryTypes()
                 .Where(x => x.QueryType.GetCustomAttribute<ExposeAttribute>() != null &&
-                            x.QueryType.GetCustomAttribute<AuthorizeAttribute>() == null)
+                            x.QueryType.GetCustomAttribute<AuthorizeAttribute>() == null &&
+                            (!allowAnonymous || x.QueryType.GetCustomAttribute<AllowAnonymousAttribute>() == null))
                 .ToList();
 
             var message = string.Empty;
             if (exposedCommandsWithNoAuthorize.Any())
             {
-                message += $"Commands with {nameof(ExposeAttribute)} but no {nameof(AuthorizeAttribute)}:{Environment.NewLine}";
+                message += $"Commands with {nameof(ExposeAttribute)} but no {nameof(AuthorizeAttribute)}";
+                if (allowAnonymous)
+                {
+                    message += $" or {nameof(AllowAnonymousAttribute)}";
+                }
+                message += $":{Environment.NewLine}";
                 message += string.Join(Environment.NewLine,
                     exposedCommandsWithNoAuthorize.Select(x => $" - {x.CommandType.Namespace}.{x.CommandType.Name}"));
                 message += Environment.NewLine;
@@ -97,7 +104,12 @@ namespace CoreSharp.Cqrs.AspNetCore.Options
                     message += Environment.NewLine;
                 }
 
-                message += $"Queries with {nameof(ExposeAttribute)} but no {nameof(AuthorizeAttribute)}:{Environment.NewLine}";
+                message += $"Queries with {nameof(ExposeAttribute)} but no {nameof(AuthorizeAttribute)}";
+                if (allowAnonymous)
+                {
+                    message += $" or {nameof(AllowAnonymousAttribute)}";
+                }
+                message += $":{Environment.NewLine}";
                 message += string.Join(Environment.NewLine,
                     exposedQueriesWithNoAuthorize.Select(x => $" - {x.QueryType.Namespace}.{x.QueryType.Name}"));
             }

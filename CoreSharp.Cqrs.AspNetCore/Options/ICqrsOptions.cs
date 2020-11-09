@@ -19,6 +19,6 @@ namespace CoreSharp.Cqrs.AspNetCore.Options
 
         object GetInstance(Type type);
 
-        void Verify();
+        void Verify(bool allowAnonymous);
     }
 }
