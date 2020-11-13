@@ -10,8 +10,8 @@ namespace CoreSharp.NHibernate.Conventions
     {
         private static readonly Type TypeOfIVersionedEntity = typeof(IVersionedEntity);
         private static readonly Type TypeOfIUser = typeof(IUser);
-        private static readonly IList<string> NotNullableProperties = new List<string>() { "CreatedBy", "CreatedDate" };
-        private static readonly IList<string> NonCascadableProperties = new List<string>() { "CreatedBy", "ModifiedBy" };
+        private static readonly IList<string> NotNullableProperties = new List<string>() { nameof(VersionedEntityWithUser<object>.CreatedBy), nameof(VersionedEntityWithUser<object>.CreatedDate) };
+        private static readonly IList<string> NonCascadableProperties = new List<string>() { nameof(VersionedEntityWithUser<object>.CreatedBy), nameof(VersionedEntityWithUser<object>.LastModifiedBy) };
 
         public void Apply(IPropertyInstance instance)
         {

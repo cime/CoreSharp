@@ -1,4 +1,6 @@
+using System.Reflection;
 using CoreSharp.DataAccess;
+using NHibernate;
 
 namespace CoreSharp.NHibernate.Extensions
 {
@@ -14,6 +16,11 @@ namespace CoreSharp.NHibernate.Extensions
             where T : IEntity
         {
             return id == null ? default(T) : dbStore.Get<T>(id);
+        }
+
+        public static ISession GetSession(this IDbStore dbStore)
+        {
+            return dbStore.GetMemberValue("_session") as ISession;
         }
     }
 }
