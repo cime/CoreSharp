@@ -20,6 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\CoreSharp.Common.Internationalization\CoreSharp.Common.Internationalization.csproj" />
         <ProjectReference Include="..\CoreSharp.Common\CoreSharp.Common.csproj" />
     </ItemGroup>
 
