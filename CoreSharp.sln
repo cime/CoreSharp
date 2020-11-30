@@ -73,6 +73,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Identity", "Identity", "{D6
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreSharp.Identity.Extensions", "CoreSharp.Identity.Extensions\CoreSharp.Identity.Extensions.csproj", "{60C5FA31-171F-42F2-A765-CEC93DF16220}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreSharp.Cqrs.Resolver", "CoreSharp.Cqrs.Resolver\CoreSharp.Cqrs.Resolver.csproj", "{98ECED64-4AB9-430A-B162-648FEAAD1D87}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -195,6 +197,10 @@ Global
 		{60C5FA31-171F-42F2-A765-CEC93DF16220}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{60C5FA31-171F-42F2-A765-CEC93DF16220}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{60C5FA31-171F-42F2-A765-CEC93DF16220}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98ECED64-4AB9-430A-B162-648FEAAD1D87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98ECED64-4AB9-430A-B162-648FEAAD1D87}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98ECED64-4AB9-430A-B162-648FEAAD1D87}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98ECED64-4AB9-430A-B162-648FEAAD1D87}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -218,6 +224,7 @@ Global
 		{067092DF-1CEB-41A1-8DDA-F3A5BEA72D6F} = {109A6C5E-84C1-4695-8321-B9067592F27A}
 		{7F6089A7-7836-4CD1-BFF4-839124AF9D7A} = {813C14BD-2754-4E11-8784-D9FAB841BD67}
 		{60C5FA31-171F-42F2-A765-CEC93DF16220} = {D62C732A-084D-4EBF-811E-0B22C6BB4863}
+		{98ECED64-4AB9-430A-B162-648FEAAD1D87} = {F6105F72-43B0-4CBE-AB3A-CA3758B4CD35}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AC5FB6CC-0977-47B3-8BD1-FCFE1EEC64F2}
