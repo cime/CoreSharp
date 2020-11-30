@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CoreSharp.Cqrs.Abstractions\CoreSharp.Cqrs.Abstractions.csproj" />
+    <ProjectReference Include="..\CoreSharp.Validation\CoreSharp.Validation.csproj" />
+  </ItemGroup>
+
+</Project>

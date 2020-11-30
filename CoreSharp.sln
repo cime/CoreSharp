@@ -75,17 +75,23 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreSharp.Identity.Extensio
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreSharp.Cqrs.Resolver", "CoreSharp.Cqrs.Resolver\CoreSharp.Cqrs.Resolver.csproj", "{98ECED64-4AB9-430A-B162-648FEAAD1D87}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreSharp.Cqrs.Grpc.Shared", "CoreSharp.Cqrs.Grpc.Shared\CoreSharp.Cqrs.Grpc.Shared.csproj", "{5A40AD62-1702-4CD5-80B6-1EF6AAABB7EA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreSharp.Cqrs.Grpc.Shared", "CoreSharp.Cqrs.Grpc.Shared\CoreSharp.Cqrs.Grpc.Shared.csproj", "{5A40AD62-1702-4CD5-80B6-1EF6AAABB7EA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreSharp.Cqrs.Grpc.Client", "CoreSharp.Cqrs.Grpc.Client\CoreSharp.Cqrs.Grpc.Client.csproj", "{9C02523B-DEBF-41B7-95C0-BEAA4598903E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreSharp.Cqrs.Grpc.Client", "CoreSharp.Cqrs.Grpc.Client\CoreSharp.Cqrs.Grpc.Client.csproj", "{9C02523B-DEBF-41B7-95C0-BEAA4598903E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreSharp.Cqrs.Grpc.Processors", "CoreSharp.Cqrs.Grpc.Processors\CoreSharp.Cqrs.Grpc.Processors.csproj", "{DEFDAC51-C6A3-4D80-AC52-A5DF276298D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreSharp.Cqrs.Grpc.Processors", "CoreSharp.Cqrs.Grpc.Processors\CoreSharp.Cqrs.Grpc.Processors.csproj", "{DEFDAC51-C6A3-4D80-AC52-A5DF276298D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreSharp.Cqrs.Grpc.Server", "CoreSharp.Cqrs.Grpc.Server\CoreSharp.Cqrs.Grpc.Server.csproj", "{EB2A11D8-EFEB-4352-82CD-68A3B5EEDF99}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreSharp.Cqrs.Grpc.Server", "CoreSharp.Cqrs.Grpc.Server\CoreSharp.Cqrs.Grpc.Server.csproj", "{EB2A11D8-EFEB-4352-82CD-68A3B5EEDF99}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreSharp.Cqrs.Grpc.AspNetCore", "CoreSharp.Cqrs.Grpc.AspNetCore\CoreSharp.Cqrs.Grpc.AspNetCore.csproj", "{73CDCC6F-E145-4F5A-8D98-EFBE2100297D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreSharp.Cqrs.Grpc.AspNetCore", "CoreSharp.Cqrs.Grpc.AspNetCore\CoreSharp.Cqrs.Grpc.AspNetCore.csproj", "{73CDCC6F-E145-4F5A-8D98-EFBE2100297D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreSharp.Cqrs.Grpc.Server.Host", "CoreSharp.Cqrs.Grpc.Server.Host\CoreSharp.Cqrs.Grpc.Server.Host.csproj", "{10FEEC7F-EE7C-4A09-9FB9-9AD539FB6F52}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreSharp.Cqrs.Grpc.Server.Host", "CoreSharp.Cqrs.Grpc.Server.Host\CoreSharp.Cqrs.Grpc.Server.Host.csproj", "{10FEEC7F-EE7C-4A09-9FB9-9AD539FB6F52}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreSharp.Cqrs.Mvc", "CoreSharp.Cqrs.Mvc\CoreSharp.Cqrs.Mvc.csproj", "{98A3FA7E-B70D-48E4-B5A3-CDC8395DE114}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreSharp.Cqrs.Validation", "CoreSharp.Cqrs.Validation\CoreSharp.Cqrs.Validation.csproj", "{C9448B9D-93E8-4391-AF70-6D5DD954EDAF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreSharp.Mvc.Formatters", "CoreSharp.Mvc.Formatters\CoreSharp.Mvc.Formatters.csproj", "{A6D76085-63EF-4B2C-A3D6-B096392E98CC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -237,6 +243,18 @@ Global
 		{10FEEC7F-EE7C-4A09-9FB9-9AD539FB6F52}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{10FEEC7F-EE7C-4A09-9FB9-9AD539FB6F52}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{10FEEC7F-EE7C-4A09-9FB9-9AD539FB6F52}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98A3FA7E-B70D-48E4-B5A3-CDC8395DE114}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98A3FA7E-B70D-48E4-B5A3-CDC8395DE114}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98A3FA7E-B70D-48E4-B5A3-CDC8395DE114}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98A3FA7E-B70D-48E4-B5A3-CDC8395DE114}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9448B9D-93E8-4391-AF70-6D5DD954EDAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9448B9D-93E8-4391-AF70-6D5DD954EDAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9448B9D-93E8-4391-AF70-6D5DD954EDAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9448B9D-93E8-4391-AF70-6D5DD954EDAF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6D76085-63EF-4B2C-A3D6-B096392E98CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6D76085-63EF-4B2C-A3D6-B096392E98CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6D76085-63EF-4B2C-A3D6-B096392E98CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6D76085-63EF-4B2C-A3D6-B096392E98CC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -267,6 +285,8 @@ Global
 		{EB2A11D8-EFEB-4352-82CD-68A3B5EEDF99} = {F6105F72-43B0-4CBE-AB3A-CA3758B4CD35}
 		{73CDCC6F-E145-4F5A-8D98-EFBE2100297D} = {F6105F72-43B0-4CBE-AB3A-CA3758B4CD35}
 		{10FEEC7F-EE7C-4A09-9FB9-9AD539FB6F52} = {F6105F72-43B0-4CBE-AB3A-CA3758B4CD35}
+		{98A3FA7E-B70D-48E4-B5A3-CDC8395DE114} = {F6105F72-43B0-4CBE-AB3A-CA3758B4CD35}
+		{C9448B9D-93E8-4391-AF70-6D5DD954EDAF} = {F6105F72-43B0-4CBE-AB3A-CA3758B4CD35}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AC5FB6CC-0977-47B3-8BD1-FCFE1EEC64F2}
