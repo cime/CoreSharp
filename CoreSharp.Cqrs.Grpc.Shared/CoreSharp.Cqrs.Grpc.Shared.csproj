@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Grpc.Core.Api" Version="2.32.0" />
+    <PackageReference Include="protobuf-net" Version="3.0.52" />
+    <PackageReference Include="AutoMapper" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CoreSharp.Common.Reflection\CoreSharp.Common.Reflection.csproj" />
+    <ProjectReference Include="..\CoreSharp.Common\CoreSharp.Common.csproj" />
+    <ProjectReference Include="..\CoreSharp.Cqrs.Resolver\CoreSharp.Cqrs.Resolver.csproj" />
+    <ProjectReference Include="..\CoreSharp.Validation.Abstractions\CoreSharp.Validation.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>
