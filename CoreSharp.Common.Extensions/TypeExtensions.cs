@@ -327,5 +327,76 @@ namespace System
                     );
             }
         }
+
+        /// <summary>
+        /// Taken from: https://stackoverflow.com/questions/457676/check-if-a-class-is-derived-from-a-generic-class
+        /// </summary>
+        /// <param name="toCheck"></param>
+        /// <param name="generic"></param>
+        /// <returns></returns>
+        public static bool IsSubclassOfRawGeneric(this Type toCheck, Type generic)
+        {
+            while (toCheck != null && toCheck != typeof(object))
+            {
+                var cur = toCheck.IsGenericType ? toCheck.GetGenericTypeDefinition() : toCheck;
+                if (generic == cur)
+                {
+                    return true;
+                }
+                toCheck = toCheck.BaseType;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Gets an attribute on an enum field value
+        /// Taken from: https://stackoverflow.com/questions/1799370/getting-attributes-of-enums-value
+        /// </summary>
+        /// <typeparam name="T">The type of the attribute you want to retrieve</typeparam>
+        /// <param name="enumVal">The enum value</param>
+        /// <returns>The attribute of type T that exists on the enum value</returns>
+        /// <example><![CDATA[string desc = myEnumVariable.GetAttributeOfType<DescriptionAttribute>().Description;]]></example>
+        public static T GetAttributeOfType<T>(this Enum enumVal) where T : Attribute
+        {
+            var type = enumVal.GetType();
+            var memInfo = type.GetMember(enumVal.ToString());
+            var attributes = memInfo[0].GetCustomAttributes(typeof(T), false);
+            return (attributes.Length > 0) ? (T)attributes[0] : null;
+        }
+
+        public static T GetAssignableCustomAttribute<T>(this PropertyInfo prop, bool inherit = true)
+            where T : Attribute
+        {
+            var attr = prop.GetCustomAttributes(inherit).FirstOrDefault(x => typeof(T).IsAssignableFrom(x.GetType()));
+            return attr as T;
+        }
+
+        public static string GetNiceName(this Type type, string prefix = "")
+        {
+            char separator = '`';
+            var listTypes = new List<string>() { nameof(IEnumerable), nameof(ICollection), nameof(IList) };
+
+            var namePart = type.Name.Split(separator).First().Replace("+", "");
+
+            if (listTypes.Contains(namePart))
+            {
+                namePart = "List";
+            }
+            if (namePart.EndsWith("[]"))
+            {
+                namePart = $"List{namePart.Substring(0, namePart.Length - 2)}";
+            }
+
+            if (type.IsGenericType)
+            {
+                var argTypes = type.GetGenericArguments();
+                var argNameParts = argTypes.Select(x => GetNiceName(x));
+                namePart = $"{namePart}_{string.Join("", argNameParts)}";
+            }
+
+            return namePart;
+
+        }
+
     }
 }

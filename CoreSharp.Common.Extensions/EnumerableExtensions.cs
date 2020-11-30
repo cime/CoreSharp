@@ -90,5 +90,22 @@ namespace System.Collections.Generic
         {
             return source.GroupBy(keySelector).Where(o => o.Count() > 1);
         }
+
+        public static IEnumerable<Tuple<T1, T2>> CrossJoin<T1, T2>(this IEnumerable<T1> sequence1, IEnumerable<T2> sequence2)
+        {
+            return sequence1.SelectMany(t1 => sequence2.Select(t2 => Tuple.Create(t1, t2)));
+        }
+
+        public static IEnumerable<TCol> Except<TCol, TAdd>(this IEnumerable<TCol> collection, IEnumerable<TAdd> buffer, Func<TCol, TAdd, bool> comparer)
+        {
+            var except = collection.Where(c => !buffer.Any(b => comparer(c, b))).ToList();
+            return except;
+        }
+
+        public static IEnumerable<TCol> Intersect<TCol, TAdd>(this IEnumerable<TCol> collection, IEnumerable<TAdd> buffer, Func<TCol, TAdd, bool> comparer)
+        {
+            var intersection = collection.Where(c => buffer.Any(b => comparer(c, b))).ToList();
+            return intersection;
+        }
     }
 }

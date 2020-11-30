@@ -23,7 +23,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\CoreSharp.Common.Extensions\CoreSharp.Common.Extensions.csproj" />
-      <ProjectReference Include="..\CoreSharp.Common.Reflection\CoreSharp.Common.Reflection.csproj" />
     </ItemGroup>
 
 </Project>
