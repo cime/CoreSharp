@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>netcoreapp3.1;netcoreapp3.0;netstandard2.0</TargetFrameworks>
+        <TargetFrameworks>net5.0;netcoreapp3.1;netcoreapp3.0;netstandard2.0</TargetFrameworks>
         <PackageId>CoreSharp.GraphQL.AspNetCore</PackageId>
-        <PackageVersion>0.2.0</PackageVersion>
+        <PackageVersion>0.2.6</PackageVersion>
         <Authors>cime</Authors>
         <Description>GraphQL CQRS integration and extension</Description>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -13,6 +13,10 @@
         <PackageLicenseUrl>https://github.com/cime/CoreSharp/blob/master/LICENSE</PackageLicenseUrl>
         <RepositoryUrl>https://github.com/cime/CoreSharp</RepositoryUrl>
     </PropertyGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
