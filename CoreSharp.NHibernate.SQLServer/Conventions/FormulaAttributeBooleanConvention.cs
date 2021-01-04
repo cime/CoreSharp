@@ -1,17 +1,33 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Linq;
+using System.Text.RegularExpressions;
 using CoreSharp.DataAccess.Attributes;
 using FluentNHibernate.Conventions;
+using FluentNHibernate.Conventions.AcceptanceCriteria;
+using FluentNHibernate.Conventions.Inspections;
 using FluentNHibernate.Conventions.Instances;
 
 namespace CoreSharp.NHibernate.SQLServer.Conventions
 {
-    public class FormulaAttributeBooleanConvention : AttributePropertyConvention<FormulaAttribute>
+    public class FormulaAttributeBooleanConvention : IPropertyConvention, IPropertyConventionAcceptance
     {
-        private static Regex Regex = new Regex("([^A-Za-z]+|^)(true|false)([^A-Za-z]+|$)", RegexOptions.Compiled);
-        
-        protected override void Apply(FormulaAttribute attribute, IPropertyInstance instance)
+        private static readonly Regex Regex = new Regex("([^A-Za-z]+|^)(true|false)([^A-Za-z]+|$)", RegexOptions.Compiled);
+
+        public void Accept(IAcceptanceCriteria<IPropertyInspector> criteria)
         {
-            instance.Formula(ReplaceBoolean(attribute.SqlFormula));
+            criteria.Expect(property => property.Property.MemberInfo.GetCustomAttributes(true).Any(x => x is FormulaAttribute));
+        }
+
+        public void Apply(IPropertyInstance instance)
+        {
+            var attributes = instance.Property.MemberInfo.GetCustomAttributes(true)
+                .Where(x => x is FormulaAttribute)
+                .Select(x => x as FormulaAttribute)
+                .ToList();
+
+            foreach (var attribute in attributes)
+            {
+                instance.Formula(ReplaceBoolean(attribute.SqlFormula));
+            }
         }
 
         public static string ReplaceBoolean(string sql)
