@@ -16,11 +16,12 @@
 
     <ItemGroup>
         <PackageReference Include="FluentValidation" Version="8.6.1" />
-        <PackageReference Include="SimpleInjector" Version="5.1.0" />
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\CoreSharp.Common.Internationalization\CoreSharp.Common.Internationalization.csproj" />
         <ProjectReference Include="..\CoreSharp.Common\CoreSharp.Common.csproj" />
+        <ProjectReference Include="..\CoreSharp.Validation.Abstractions\CoreSharp.Validation.Abstractions.csproj" />
     </ItemGroup>
 
 </Project>

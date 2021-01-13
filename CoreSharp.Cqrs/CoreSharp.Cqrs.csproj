@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CoreSharp.Common\CoreSharp.Common.csproj" />
+    <ProjectReference Include="..\CoreSharp.Cqrs.Abstractions\CoreSharp.Cqrs.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

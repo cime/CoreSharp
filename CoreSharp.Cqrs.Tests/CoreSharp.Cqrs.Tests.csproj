@@ -16,6 +16,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\CoreSharp.Cqrs.Grpc.Client\CoreSharp.Cqrs.Grpc.Client.csproj" />
       <ProjectReference Include="..\CoreSharp.Cqrs\CoreSharp.Cqrs.csproj" />
     </ItemGroup>
 

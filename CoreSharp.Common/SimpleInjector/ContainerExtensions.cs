@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using CoreSharp.Common.Extensions;
 
 // ReSharper disable once CheckNamespace
@@ -38,6 +39,31 @@ namespace SimpleInjector
             IServiceProvider provider = container;
 
             return provider.GetService(serviceType);
+        }
+
+        public static TInst GetRegisteredInstance<TInst>(this Container container)
+            where TInst : class
+        {
+
+            var registration = container.GetCurrentRegistrations().FirstOrDefault(x => x.ServiceType == typeof(TInst));
+            if (registration == null)
+            {
+                return null;
+            }
+            var creatorField = registration.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance)
+                    .FirstOrDefault(x => x.Name == "instanceCreator");
+            if (creatorField == null)
+            {
+                return null;
+            }
+            var fnc = creatorField.GetValue(registration) as Func<object>;
+            if (fnc == null)
+            {
+                return null;
+            }
+            var cfg = fnc() as TInst;
+            return cfg;
+
         }
     }
 }
