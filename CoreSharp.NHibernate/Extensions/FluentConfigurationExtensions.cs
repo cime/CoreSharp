@@ -49,8 +49,8 @@ namespace CoreSharp.NHibernate.Extensions
                         .GetInstance<PostEntityActionEventListener>()).ToArray();
             });
         }
-        
-        public static FluentConfiguration AddConventions(this FluentConfiguration fluentConfiguration)
+
+        public static FluentConfiguration AddConventions(this FluentConfiguration fluentConfiguration, IDatabaseTypeAccessor databaseTypeAccessor)
         {
             var cfg = (global::NHibernate.Cfg.Configuration)fluentConfiguration.GetMemberValue("cfg");
 
@@ -59,7 +59,7 @@ namespace CoreSharp.NHibernate.Extensions
                 foreach (var persistenceModel in m.AutoMappings)
                 {
                     persistenceModel.Conventions.AddFromAssemblyOf<NotNullConvention>();
-                    persistenceModel.Conventions.Add(typeof(FormulaAttributeConvention), new FormulaAttributeConvention(cfg));
+                    persistenceModel.Conventions.Add(typeof(FormulaAttributeConvention), new FormulaAttributeConvention(cfg, databaseTypeAccessor));
                 }
             });
         }

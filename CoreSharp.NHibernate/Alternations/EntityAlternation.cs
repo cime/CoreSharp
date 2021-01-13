@@ -1,7 +1,5 @@
 ﻿using FluentNHibernate.Automapping;
 using FluentNHibernate.Automapping.Alterations;
-using CoreSharp.NHibernate;
-using Entity = FluentNHibernate.Data.Entity;
 
 namespace CoreSharp.NHibernate.Alternations
 {
