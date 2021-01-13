@@ -24,12 +24,5 @@ namespace CoreSharp.Cqrs.Grpc.Contracts
             typeof(string)
         }.AsReadOnly();
 
-        public static ReadOnlyCollection<Type> DatesTypes = new List<Type> {
-            typeof(DateTimeOffset),
-            typeof(DateTimeOffset?),
-            typeof(DateTime),
-            typeof(DateTime?)
-        }.AsReadOnly();
-
     }
 }

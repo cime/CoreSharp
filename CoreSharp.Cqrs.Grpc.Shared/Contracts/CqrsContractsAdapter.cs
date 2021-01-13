@@ -21,7 +21,6 @@ namespace CoreSharp.Cqrs.Grpc.Contracts
             _cqrs = cqrs;
             _contracts = cqrs.BuildChannelContracts();
             _chCqrs = _cqrs.ToCqrsChannelInfo(_contracts, serviceNamePrefix); ;
-
         }
 
         public IEnumerable<CqrsChannelInfo> ToCqrsChannelInfo()
@@ -38,6 +37,11 @@ namespace CoreSharp.Cqrs.Grpc.Contracts
         public string GetProto(Assembly assemlby = null) {
 
             return _chCqrs.Where(x => assemlby == null || x.ReqType.Assembly == assemlby).ToProto<ProtoBufSerializer>();
+        }
+
+        public IReadOnlyDictionary<Type, Type> GetContracts()
+        {
+            return _contracts;
         }
     }
 }

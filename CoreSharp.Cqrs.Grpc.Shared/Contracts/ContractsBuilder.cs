@@ -206,10 +206,16 @@ namespace CoreSharp.Cqrs.Grpc.Contracts
         private Type GetReplaceType(Type type)
         {
 
-            // date - use string 
-            if (ContractsConstants.DatesTypes.Contains(type))
+            // date time 
+            if(type == typeof(DateTime))
             {
-                return typeof(string);
+                return typeof(long);
+            }
+
+            // date time offset
+            if (type == typeof(DateTimeOffset))
+            {
+                return typeof(ProtoDateTimeOffset);
             }
 
             // enum - user int
