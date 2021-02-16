@@ -17,39 +17,94 @@ namespace CoreSharp.Cqrs.Grpc.Client
             _grpcDispatcher = grpcDispatcher;
         }
 
+        public void Dispatch(ICommand command, GrpcCqrsCallOptions options)
+        {
+            var remoteDispatcher = GetRemoteDispatcher(command);
+            if (remoteDispatcher != null)
+            {
+                remoteDispatcher.Dispatch(command, options);
+            }
+            else
+            {
+                _dispatcher.Dispatch(command);
+            }
+        }
+
+        public TResult Dispatch<TResult>(ICommand<TResult> command, GrpcCqrsCallOptions options)
+        {
+            var remoteDispatcher = GetRemoteDispatcher(command);
+            if (remoteDispatcher != null)
+            {
+                return remoteDispatcher.Dispatch(command, options);
+            }
+            else
+            {
+                return _dispatcher.Dispatch(command);
+            }
+        }
+
+        public async Task DispatchAsync(IAsyncCommand command, GrpcCqrsCallOptions options, CancellationToken cancellationToken)
+        {
+            var remoteDispatcher = GetRemoteDispatcher(command);
+            if(remoteDispatcher != null)
+            {
+                await remoteDispatcher.DispatchAsync(command, options, cancellationToken);
+            } else
+            {
+                await _dispatcher.DispatchAsync(command, cancellationToken);
+            }
+        }
+
+        public async Task<TResult> DispatchAsync<TResult>(IAsyncCommand<TResult> command, GrpcCqrsCallOptions options, CancellationToken cancellationToken)
+        {
+            var remoteDispatcher = GetRemoteDispatcher(command);
+            if (remoteDispatcher != null)
+            {
+                return await remoteDispatcher.DispatchAsync(command, options, cancellationToken);
+            }
+            else
+            {
+                return await _dispatcher.DispatchAsync(command, cancellationToken);
+            }
+        }
+
+        #region IGrpcCommandDispatcher
+
         public void Dispatch(ICommand command)
         {
-            GetDispatcher(command).Dispatch(command);
+            Dispatch(command, null);
         }
 
         public TResult Dispatch<TResult>(ICommand<TResult> command)
         {
-            return GetDispatcher(command).Dispatch(command);
+            return Dispatch(command, null);
         }
 
         public async Task DispatchAsync(IAsyncCommand command)
         {
-            await GetDispatcher(command).DispatchAsync(command);
+            await DispatchAsync(command, null, default);
         }
 
         public async Task<TResult> DispatchAsync<TResult>(IAsyncCommand<TResult> command)
         {
-            return await GetDispatcher(command).DispatchAsync(command);
+            return await DispatchAsync(command, null, default);
         }
 
         public async Task DispatchAsync(IAsyncCommand command, CancellationToken cancellationToken)
         {
-            await GetDispatcher(command).DispatchAsync(command, cancellationToken);
+            await DispatchAsync(command, null, cancellationToken);
         }
 
         public async Task<TResult> DispatchAsync<TResult>(IAsyncCommand<TResult> command, CancellationToken cancellationToken)
         {
-            return await GetDispatcher(command).DispatchAsync(command, cancellationToken);
+            return await DispatchAsync(command, null, cancellationToken);
         }
 
-        private ICommandDispatcher GetDispatcher<T>(T command)
+        #endregion
+
+        private IGrpcCommandDispatcher GetRemoteDispatcher<T>(T command)
         {
-            var dispatcher = _clientManager.ExistsClientFor(command) ? _grpcDispatcher : _dispatcher;
+            var dispatcher = _clientManager.ExistsClientFor(command) ? _grpcDispatcher : null;
             return dispatcher;
         }
     }

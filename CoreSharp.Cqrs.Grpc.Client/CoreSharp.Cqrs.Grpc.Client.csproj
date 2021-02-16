@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CoreSharp.Cqrs.Grpc.Shared\CoreSharp.Cqrs.Grpc.Shared.csproj" />
+    <ProjectReference Include="..\CoreSharp.Identity.Jwt\CoreSharp.Identity.Jwt.csproj" />
   </ItemGroup>  
 
 </Project>

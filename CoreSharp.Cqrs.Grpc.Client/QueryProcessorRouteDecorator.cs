@@ -4,7 +4,7 @@ using CoreSharp.Cqrs.Query;
 
 namespace CoreSharp.Cqrs.Grpc.Client
 {
-    public class QueryProcessorRouteDecorator : IQueryProcessor
+    public class QueryProcessorRouteDecorator : IGrpcQueryProcessor
     {
 
         private readonly IGrpcClientManager _clientManager;
@@ -18,25 +18,54 @@ namespace CoreSharp.Cqrs.Grpc.Client
             _grpcProcessor = grpcProcessor;
         }
 
+        public TResult Handle<TResult>(IQuery<TResult> query, GrpcCqrsCallOptions callOptions)
+        {
+            var remoteProcessor = GetRemoteProcessor(query);
+            if (remoteProcessor != null)
+            {
+                return remoteProcessor.Handle(query, callOptions);
+            }
+            else
+            {
+                return _processor.Handle(query);
+            }
+        }
+
+        public async Task<TResult> HandleAsync<TResult>(IAsyncQuery<TResult> query, GrpcCqrsCallOptions callOptions, CancellationToken cancellationToken)
+        {
+            var remoteProcessor = GetRemoteProcessor(query);
+            if (remoteProcessor != null)
+            {
+                return await remoteProcessor.HandleAsync(query, callOptions, cancellationToken);
+            }
+            else
+            {
+                return await _processor.HandleAsync(query, cancellationToken);
+            }
+        }
+
+        #region IGrpcQueryProcessor
+
         public TResult Handle<TResult>(IQuery<TResult> query)
         {
-            return GetProcessor(query).Handle(query);
+            return Handle(query, null);
         }
 
         public async Task<TResult> HandleAsync<TResult>(IAsyncQuery<TResult> query)
         {
-            return await GetProcessor(query).HandleAsync(query);
+            return await HandleAsync(query, null, default);
         }
 
         public async Task<TResult> HandleAsync<TResult>(IAsyncQuery<TResult> query, CancellationToken cancellationToken)
         {
-            return await GetProcessor(query).HandleAsync(query, cancellationToken);
+            return await HandleAsync(query, null, cancellationToken);
         }
 
-        private IQueryProcessor GetProcessor<T>(T command)
+        #endregion
+
+        private IGrpcQueryProcessor GetRemoteProcessor<T>(T query)
         {
-            var dispatcher = _clientManager.ExistsClientFor(command) ? _grpcProcessor : _processor;
-            return dispatcher;
+            return _clientManager.ExistsClientFor(query) ? _grpcProcessor : null;
         }
     }
 }

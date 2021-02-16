@@ -9,5 +9,11 @@ namespace CoreSharp.Cqrs.Grpc.AspNetCore
         public int TimeoutMs { get; set; } = 10000;
 
         public IEnumerable<string> ContractsAssemblies { get; set; }
+
+        public string ServerId { get; set; }
+
+        public bool ExposeProto { get; set; } = true;
+
+        public string MapperValidator { get; set; }
     }
 }

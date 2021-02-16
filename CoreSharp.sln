@@ -87,15 +87,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreSharp.Cqrs.Grpc.AspNetC
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreSharp.Cqrs.Grpc.Server.Host", "CoreSharp.Cqrs.Grpc.Server.Host\CoreSharp.Cqrs.Grpc.Server.Host.csproj", "{10FEEC7F-EE7C-4A09-9FB9-9AD539FB6F52}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreSharp.Cqrs.Mvc", "CoreSharp.Cqrs.Mvc\CoreSharp.Cqrs.Mvc.csproj", "{98A3FA7E-B70D-48E4-B5A3-CDC8395DE114}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreSharp.Cqrs.Mvc", "CoreSharp.Cqrs.Mvc\CoreSharp.Cqrs.Mvc.csproj", "{98A3FA7E-B70D-48E4-B5A3-CDC8395DE114}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreSharp.Cqrs.Validation", "CoreSharp.Cqrs.Validation\CoreSharp.Cqrs.Validation.csproj", "{C9448B9D-93E8-4391-AF70-6D5DD954EDAF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreSharp.Cqrs.Validation", "CoreSharp.Cqrs.Validation\CoreSharp.Cqrs.Validation.csproj", "{C9448B9D-93E8-4391-AF70-6D5DD954EDAF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreSharp.Mvc.Formatters", "CoreSharp.Mvc.Formatters\CoreSharp.Mvc.Formatters.csproj", "{A6D76085-63EF-4B2C-A3D6-B096392E98CC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreSharp.Mvc.Formatters", "CoreSharp.Mvc.Formatters\CoreSharp.Mvc.Formatters.csproj", "{A6D76085-63EF-4B2C-A3D6-B096392E98CC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", "build\_build.csproj", "{FBF7815A-2F16-43C1-8D21-EF4E6616446A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreSharp.NHibernate.SourceGenerator", "CoreSharp.NHibernate.SourceGenerator\CoreSharp.NHibernate.SourceGenerator.csproj", "{19881C1A-D1CA-40BD-8579-7543C4315902}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreSharp.Identity.Jwt", "CoreSharp.Identity.Jwt\CoreSharp.Identity.Jwt.csproj", "{396EE263-834E-4B86-AFDE-06D72525A78B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreSharp.Cqrs.Grpc.AspNetCore.Jwt", "CoreSharp.Cqrs.Grpc.AspNetCore.Jwt\CoreSharp.Cqrs.Grpc.AspNetCore.Jwt.csproj", "{D7BEB632-2975-4330-904B-AB590FF0B2F8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -103,8 +107,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{FBF7815A-2F16-43C1-8D21-EF4E6616446A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FBF7815A-2F16-43C1-8D21-EF4E6616446A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BDE123B6-E1D3-4EC8-AA9A-400B4E186141}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BDE123B6-E1D3-4EC8-AA9A-400B4E186141}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BDE123B6-E1D3-4EC8-AA9A-400B4E186141}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -265,6 +267,16 @@ Global
 		{19881C1A-D1CA-40BD-8579-7543C4315902}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19881C1A-D1CA-40BD-8579-7543C4315902}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{19881C1A-D1CA-40BD-8579-7543C4315902}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBF7815A-2F16-43C1-8D21-EF4E6616446A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBF7815A-2F16-43C1-8D21-EF4E6616446A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{396EE263-834E-4B86-AFDE-06D72525A78B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{396EE263-834E-4B86-AFDE-06D72525A78B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{396EE263-834E-4B86-AFDE-06D72525A78B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{396EE263-834E-4B86-AFDE-06D72525A78B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7BEB632-2975-4330-904B-AB590FF0B2F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7BEB632-2975-4330-904B-AB590FF0B2F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7BEB632-2975-4330-904B-AB590FF0B2F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7BEB632-2975-4330-904B-AB590FF0B2F8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -297,6 +309,8 @@ Global
 		{10FEEC7F-EE7C-4A09-9FB9-9AD539FB6F52} = {F6105F72-43B0-4CBE-AB3A-CA3758B4CD35}
 		{98A3FA7E-B70D-48E4-B5A3-CDC8395DE114} = {F6105F72-43B0-4CBE-AB3A-CA3758B4CD35}
 		{C9448B9D-93E8-4391-AF70-6D5DD954EDAF} = {F6105F72-43B0-4CBE-AB3A-CA3758B4CD35}
+		{396EE263-834E-4B86-AFDE-06D72525A78B} = {D62C732A-084D-4EBF-811E-0B22C6BB4863}
+		{D7BEB632-2975-4330-904B-AB590FF0B2F8} = {F6105F72-43B0-4CBE-AB3A-CA3758B4CD35}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AC5FB6CC-0977-47B3-8BD1-FCFE1EEC64F2}
