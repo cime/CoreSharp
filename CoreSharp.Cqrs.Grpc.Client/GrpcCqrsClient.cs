@@ -200,12 +200,23 @@ namespace CoreSharp.Cqrs.Grpc.Client
                 var token = _tokenService?.GetDefaultUserToken();
                 if (!string.IsNullOrWhiteSpace(token))
                 {
-                    callOptions.Headers.Add("authorization", "Bearer " + token);
+
+                    var key = "authorization";
+
+                    // remove existing header
+                    var existingAuth = callOptions.Headers.FirstOrDefault(x => x.Key == key);
+                    if (existingAuth != null)
+                    {
+                        callOptions.Headers.Remove(existingAuth);
+                    }
+
+                    // add token
+                    callOptions.Headers.Add(key, "Bearer " + token);
                 }
             }
 
             // aspect options 
-            _clientAspect?.OnCall(callOptions, request);
+            _clientAspect?.OnCall(callOptions, request, options);
 
             // invoke
             var method = GetGrpcMethodDefinition<TChRequest, TChResponseEnvelope>();

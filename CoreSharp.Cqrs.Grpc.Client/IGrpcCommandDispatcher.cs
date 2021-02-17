@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using CoreSharp.Cqrs.Command;
+using CoreSharp.Cqrs.Grpc.Common;
 
 namespace CoreSharp.Cqrs.Grpc.Client
 {

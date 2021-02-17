@@ -1,4 +1,4 @@
-﻿namespace CoreSharp.Cqrs.Grpc.Client
+﻿namespace CoreSharp.Cqrs.Grpc.Common
 {
     public class GrpcCqrsCallOptions
     {

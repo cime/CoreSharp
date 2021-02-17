@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
+using CoreSharp.Cqrs.Grpc.Common;
 using CoreSharp.Identity.Jwt;
 
 namespace CoreSharp.Cqrs.Grpc.Client
