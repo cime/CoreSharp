@@ -35,16 +35,16 @@ namespace CoreSharp.Cqrs.Grpc.Client
 
         private ILogger<GrpcCqrsClient> _logger;
 
-        private readonly IGrpcClientAspect _clientAspect;
+        private readonly IEnumerable<IGrpcClientAspect> _clientAspects;
 
         public GrpcCqrsClient(GrpcCqrsClientConfiguration configuration, 
             ILogger<GrpcCqrsClient> logger, 
-            IGrpcClientAspect clientAspect = null)
+            IEnumerable<IGrpcClientAspect> clientAspects = null)
         {
 
             _configuration = configuration;
             _logger = logger;
-            _clientAspect = clientAspect;
+            _clientAspects = clientAspects?.ToList();
 
             // client id definition
             Id = !string.IsNullOrWhiteSpace(_configuration.ClientId) ? _configuration.ClientId : Assembly.GetEntryAssembly().FullName.Split(',')[0];
@@ -122,7 +122,7 @@ namespace CoreSharp.Cqrs.Grpc.Client
             {
                 _logger?.LogDebug("Request {requestName} started on client {clientId} for host {host}.", reqName, Id, Host);
                 var chReq = _mapper.Map<TChRequest>(req);
-                _clientAspect?.BeforeExecution(req);
+                _clientAspects?.ForEach(x => x.BeforeExecution(req));
                 var chRsp = await CallUnaryMethodChannelAsync<TChRequest, TChResponseEnvelope>(chReq, options, ct);
                 rsp = _mapper.Map<GrpcResponseEnvelope<TResponse>>(chRsp);
                 watch.Stop();
@@ -176,7 +176,7 @@ namespace CoreSharp.Cqrs.Grpc.Client
 
             } finally
             {
-                _clientAspect?.AfterExecution(rsp, exception);
+                _clientAspects?.ForEach(x => x.AfterExecution(rsp, exception));
             }
         }
 
@@ -216,7 +216,7 @@ namespace CoreSharp.Cqrs.Grpc.Client
             }
 
             // aspect options 
-            _clientAspect?.OnCall(callOptions, request, options);
+            _clientAspects?.ForEach(x => x.OnCall(callOptions, request, options));
 
             // invoke
             var method = GetGrpcMethodDefinition<TChRequest, TChResponseEnvelope>();
