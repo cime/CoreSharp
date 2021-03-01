@@ -11,7 +11,6 @@ using CoreSharp.Common.Reflection;
 using CoreSharp.Cqrs.Mvc.Commands;
 using CoreSharp.Cqrs.Mvc.Queries;
 using CoreSharp.Mvc.Formatters;
-using CoreSharp.Validation.Abstractions;
 
 namespace CoreSharp.Cqrs.Mvc
 {

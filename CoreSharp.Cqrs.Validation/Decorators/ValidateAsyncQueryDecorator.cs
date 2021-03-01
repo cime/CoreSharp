@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using CoreSharp.Cqrs.Query;
 using CoreSharp.Validation;
-using CoreSharp.Validation.Abstractions;
 using FluentValidation;
 using SimpleInjector;
 

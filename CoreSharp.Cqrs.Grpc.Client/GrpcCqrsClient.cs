@@ -11,7 +11,6 @@ using CoreSharp.Cqrs.Grpc.Common;
 using CoreSharp.Cqrs.Grpc.Contracts;
 using CoreSharp.Cqrs.Resolver;
 using CoreSharp.Validation;
-using CoreSharp.Validation.Abstractions;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 

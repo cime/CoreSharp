@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CoreSharp.Validation.Abstractions
+namespace CoreSharp.Validation
 {
     public class ValidationErrorResponseException : Exception
     {

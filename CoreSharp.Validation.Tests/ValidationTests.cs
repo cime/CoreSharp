@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CoreSharp.Common.Tests;
-using CoreSharp.Validation.Abstractions;
 using CoreSharp.Validation.Tests.Models;
 using FluentValidation;
 using FluentValidation.Results;

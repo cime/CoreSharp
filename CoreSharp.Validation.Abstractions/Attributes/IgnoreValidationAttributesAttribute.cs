@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CoreSharp.Validation.Abstractions.Attributes
+namespace CoreSharp.Validation.Attributes
 {
     [AttributeUsage(AttributeTargets.Class)]
     public class IgnoreValidationAttributesAttribute : Attribute

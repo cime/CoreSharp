@@ -1,5 +1,4 @@
 ﻿using CoreSharp.Common.Tests;
-using CoreSharp.Validation.Abstractions;
 using CoreSharp.Validation.Tests.Models.Attributes;
 using FluentValidation;
 using SimpleInjector;
