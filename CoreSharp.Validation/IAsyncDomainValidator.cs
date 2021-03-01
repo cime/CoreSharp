@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using FluentValidation;
 using FluentValidation.Results;
 
@@ -8,7 +9,7 @@ namespace CoreSharp.Validation
     {
         Task BeforeValidationAsync(object model, ValidationContext context);
 
-        Task<ValidationFailure> ValidateAsync(object model, ValidationContext context);
+        IAsyncEnumerable<ValidationFailure> ValidateAsync(object model, ValidationContext context);
 
         Task<bool> CanValidateAsync(object model, ValidationContext context);
 
@@ -23,7 +24,7 @@ namespace CoreSharp.Validation
     {
         Task BeforeValidationAsync(TRoot root, ValidationContext context);
 
-        Task<ValidationFailure> ValidateAsync(TChild child, ValidationContext context);
+        IAsyncEnumerable<ValidationFailure> ValidateAsync(TChild child, ValidationContext context);
 
         Task<bool> CanValidateAsync(TChild child, ValidationContext context);
     }

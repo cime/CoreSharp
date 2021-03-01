@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using System.Collections.Generic;
+using FluentValidation;
 using FluentValidation.Results;
 
 namespace CoreSharp.Validation
@@ -7,7 +8,7 @@ namespace CoreSharp.Validation
     {
         void BeforeValidation(object model, ValidationContext context);
 
-        ValidationFailure Validate(object model, ValidationContext context);
+        IEnumerable<ValidationFailure> Validate(object model, ValidationContext context);
 
         bool CanValidate(object model, ValidationContext context);
 
@@ -22,7 +23,7 @@ namespace CoreSharp.Validation
     {
         void BeforeValidation(TRoot root, ValidationContext context);
 
-        ValidationFailure Validate(TChild child, ValidationContext context);
+        IEnumerable<ValidationFailure> Validate(TChild child, ValidationContext context);
 
         bool CanValidate(TChild child, ValidationContext context);
     }

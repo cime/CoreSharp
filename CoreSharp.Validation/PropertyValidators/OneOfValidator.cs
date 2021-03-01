@@ -4,7 +4,7 @@ using System.Linq;
 using FluentValidation.Resources;
 using FluentValidation.Validators;
 
-namespace CoreSharp.Validation
+namespace CoreSharp.Validation.PropertyValidators
 {
 
     public class OneOfValidator<T> : AbstractCommonPropertyValidator

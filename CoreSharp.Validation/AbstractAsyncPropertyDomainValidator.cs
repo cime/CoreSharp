@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using CoreSharp.Validation;
@@ -9,7 +10,7 @@ namespace CoreSharp.Validation
 {
     public abstract class AbstractAsyncPropertyDomainValidator<TModel, TProp> : AbstractAsyncDomainValidator<TModel>
     {
-        public override async Task<ValidationFailure> ValidateAsync(TModel model, ValidationContext context)
+        public override async IAsyncEnumerable<ValidationFailure> ValidateAsync(TModel model, ValidationContext context)
         {
             var propGetter = PropertyExpression.Compile();
             var propVal = propGetter(model);
@@ -26,10 +27,8 @@ namespace CoreSharp.Validation
 
             if (!valid)
             {
-                return Failure(PropertyExpression, ErrorTemplate, context);
+                yield return Failure(PropertyExpression, ErrorTemplate, context);
             }
-
-            return Success;
         }
 
         protected abstract string ErrorTemplate { get; }

@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using CoreSharp.Common.Models;
 using CoreSharp.Validation;
+using CoreSharp.Validation.PropertyValidators;
 
+// ReSharper disable once CheckNamespace
 namespace FluentValidation
 {
     public static class CoreSharpFluentValidationExtensions

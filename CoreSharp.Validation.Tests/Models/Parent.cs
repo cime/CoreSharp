@@ -63,7 +63,7 @@ namespace CoreSharp.Validation.Tests.Models
         where TChild : class
     { }
 
-    public abstract class TestDomainValidator<TModel, TChild, TType> : AbstractDomainValidator<TModel, TChild> 
+    public abstract class TestDomainValidator<TModel, TChild, TType> : AbstractDomainValidator<TModel, TChild>
         where TModel : class
         where TChild : class
     {
@@ -82,10 +82,10 @@ namespace CoreSharp.Validation.Tests.Models
             BeforeValidationModels.Add(new Tuple<TModel, IDomainValidator>(root, this));
         }
 
-        public override ValidationFailure Validate(TChild child, ValidationContext context)
+        public override IEnumerable<ValidationFailure> Validate(TChild child, ValidationContext context)
         {
             ValidateModels.Add(new Tuple<TChild, IDomainValidator>(child, this));
-            return Success;
+            yield break;
         }
 
         public override bool CanValidate(TChild child, ValidationContext context)

@@ -26,14 +26,14 @@ namespace CoreSharp.Validation.Tests.Models
     public class GenericRootDomainValidator<TRoot> : AbstractDomainValidator<TRoot>
         where TRoot : GenericRootModel
     {
-        public override ValidationFailure Validate(TRoot child, ValidationContext context)
+        public override IEnumerable<ValidationFailure> Validate(TRoot child, ValidationContext context)
         {
             if (child.Name == "Invalid")
             {
-                return Failure("Invalid name", context);
+                yield return Failure("Invalid name", context);
             }
 
-            return string.IsNullOrEmpty(child.Name) ? Failure(o => o.Name, "Should not be empty", context) : Success;
+            yield return string.IsNullOrEmpty(child.Name) ? Failure(o => o.Name, "Should not be empty", context) : Success;
         }
 
         public override bool CanValidate(TRoot child, ValidationContext context)

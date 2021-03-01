@@ -27,10 +27,10 @@ namespace CoreSharp.Validation.Tests
         {
             TestModelDomainValidator.ValidateCount = 0;
             TestModelDomainValidator.CanValidateCount = 0;
-            TestModelDomainValidator.ValidatBeforeValidationCount = 0;
+            TestModelDomainValidator.ValidateBeforeValidationCount = 0;
             TestModelAsyncDomainValidator.ValidateCount = 0;
             TestModelAsyncDomainValidator.CanValidateCount = 0;
-            TestModelAsyncDomainValidator.ValidatBeforeValidationCount = 0;
+            TestModelAsyncDomainValidator.ValidateBeforeValidationCount = 0;
             var validator = Container.GetInstance<IValidator<TestModel>>();
 
             for (var i = 0; i < 5; i++)
@@ -40,10 +40,10 @@ namespace CoreSharp.Validation.Tests
                 Assert.True(valResult.IsValid);
                 Assert.Equal(i + 1, TestModelDomainValidator.ValidateCount);
                 Assert.Equal(i + 1, TestModelDomainValidator.CanValidateCount);
-                Assert.Equal(i + 1, TestModelDomainValidator.ValidatBeforeValidationCount);
+                Assert.Equal(i + 1, TestModelDomainValidator.ValidateBeforeValidationCount);
                 Assert.Equal(i + 1, TestModelAsyncDomainValidator.ValidateCount);
                 Assert.Equal(i + 1, TestModelAsyncDomainValidator.CanValidateCount);
-                Assert.Equal(i + 1, TestModelAsyncDomainValidator.ValidatBeforeValidationCount);
+                Assert.Equal(i + 1, TestModelAsyncDomainValidator.ValidateBeforeValidationCount);
             }
         }
 
@@ -52,10 +52,10 @@ namespace CoreSharp.Validation.Tests
         {
             TestModelDomainValidator.ValidateCount = 0;
             TestModelDomainValidator.CanValidateCount = 0;
-            TestModelDomainValidator.ValidatBeforeValidationCount = 0;
+            TestModelDomainValidator.ValidateBeforeValidationCount = 0;
             TestModelAsyncDomainValidator.ValidateCount = 0;
             TestModelAsyncDomainValidator.CanValidateCount = 0;
-            TestModelAsyncDomainValidator.ValidatBeforeValidationCount = 0;
+            TestModelAsyncDomainValidator.ValidateBeforeValidationCount = 0;
             var validator = Container.GetInstance<IValidator<TestModel>>();
 
             for (var i = 0; i < 5; i++)
@@ -65,10 +65,10 @@ namespace CoreSharp.Validation.Tests
                 Assert.True(valResult.IsValid);
                 Assert.Equal(i + 1, TestModelDomainValidator.ValidateCount);
                 Assert.Equal(i + 1, TestModelDomainValidator.CanValidateCount);
-                Assert.Equal(i + 1, TestModelDomainValidator.ValidatBeforeValidationCount);
+                Assert.Equal(i + 1, TestModelDomainValidator.ValidateBeforeValidationCount);
                 Assert.Equal(i + 1, TestModelAsyncDomainValidator.ValidateCount);
                 Assert.Equal(i + 1, TestModelAsyncDomainValidator.CanValidateCount);
-                Assert.Equal(i + 1, TestModelAsyncDomainValidator.ValidatBeforeValidationCount);
+                Assert.Equal(i + 1, TestModelAsyncDomainValidator.ValidateBeforeValidationCount);
             }
         }
 

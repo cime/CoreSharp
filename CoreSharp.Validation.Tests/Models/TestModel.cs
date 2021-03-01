@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using FluentValidation;
 using FluentValidation.Results;
 
@@ -21,17 +22,18 @@ namespace CoreSharp.Validation.Tests.Models
     {
         public static int ValidateCount;
         public static int CanValidateCount;
-        public static int ValidatBeforeValidationCount;
+        public static int ValidateBeforeValidationCount;
 
         public override void BeforeValidation(TestModel root, ValidationContext context)
         {
-            ValidatBeforeValidationCount++;
+            ValidateBeforeValidationCount++;
         }
 
-        public override ValidationFailure Validate(TestModel child, ValidationContext context)
+        public override IEnumerable<ValidationFailure> Validate(TestModel child, ValidationContext context)
         {
             ValidateCount++;
-            return Success;
+
+            yield break;
         }
 
         public override bool CanValidate(TestModel child, ValidationContext context)
@@ -47,18 +49,19 @@ namespace CoreSharp.Validation.Tests.Models
     {
         public static int ValidateCount;
         public static int CanValidateCount;
-        public static int ValidatBeforeValidationCount;
+        public static int ValidateBeforeValidationCount;
 
         public override Task BeforeValidationAsync(TestModel root, ValidationContext context)
         {
-            ValidatBeforeValidationCount++;
+            ValidateBeforeValidationCount++;
             return Task.CompletedTask;
         }
 
-        public override Task<ValidationFailure> ValidateAsync(TestModel child, ValidationContext context)
+        public override IAsyncEnumerable<ValidationFailure> ValidateAsync(TestModel child, ValidationContext context)
         {
             ValidateCount++;
-            return Task.FromResult(Success);
+
+            return null;
         }
 
         public override Task<bool> CanValidateAsync(TestModel child, ValidationContext context)
