@@ -57,10 +57,11 @@ namespace CoreSharp.Validation.Tests.Models
             return Task.CompletedTask;
         }
 
-        public override async IAsyncEnumerable<ValidationFailure> ValidateAsync(TestModel child, ValidationContext context)
+        public override IAsyncEnumerable<ValidationFailure> ValidateAsync(TestModel child, ValidationContext context)
         {
             ValidateCount++;
-            yield break;
+
+            return null;
         }
 
         public override Task<bool> CanValidateAsync(TestModel child, ValidationContext context)

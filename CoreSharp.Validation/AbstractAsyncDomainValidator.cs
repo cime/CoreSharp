@@ -52,7 +52,5 @@ namespace CoreSharp.Validation
         {
             return DomainValidationContext.CreateValidationFailure(errorMessage, context);
         }
-
-        protected ValidationFailure Success => null;
     }
 }
