@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using CoreSharp.Validation;
+using CoreSharp.Validation.Abstractions;
 using FluentValidation;
 
 namespace CoreSharp.Cqrs.Validation

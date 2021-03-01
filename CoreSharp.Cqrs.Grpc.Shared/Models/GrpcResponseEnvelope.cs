@@ -1,4 +1,5 @@
 ﻿using CoreSharp.Validation;
+using CoreSharp.Validation.Abstractions;
 
 namespace CoreSharp.Cqrs.Grpc.Common
 {

@@ -1,5 +1,6 @@
 ﻿using System;
 using CoreSharp.Validation;
+using CoreSharp.Validation.Abstractions;
 
 namespace CoreSharp.Cqrs.Mvc
 {

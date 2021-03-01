@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using CoreSharp.Validation.Internal;
@@ -15,7 +16,7 @@ namespace CoreSharp.Validation
     {
         public virtual string[] RuleSets { get; }
 
-        public abstract Task<ValidationFailure> ValidateAsync(TChild model, ValidationContext context);
+        public abstract IAsyncEnumerable<ValidationFailure> ValidateAsync(TChild model, ValidationContext context);
 
         public virtual Task<bool> CanValidateAsync(TChild model, ValidationContext context)
         {
@@ -27,7 +28,7 @@ namespace CoreSharp.Validation
             return Task.CompletedTask;
         }
 
-        Task<ValidationFailure> IAsyncDomainValidator.ValidateAsync(object model, ValidationContext context)
+        IAsyncEnumerable<ValidationFailure> IAsyncDomainValidator.ValidateAsync(object model, ValidationContext context)
         {
             return ValidateAsync((TChild)model, context);
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using CoreSharp.Cqrs.Query;
 using CoreSharp.Validation;
+using CoreSharp.Validation.Abstractions;
 using FluentValidation;
 using SimpleInjector;
 

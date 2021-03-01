@@ -41,24 +41,28 @@ namespace CoreSharp.Validation.Internal
                     continue;
                 }
 
-                var result = await rule.ValidateAsync(context.InstanceToValidate, context);
-                if (result == null)
+                var results = rule.ValidateAsync(context.InstanceToValidate, context);
+
+                if (results == null)
                 {
                     continue;
                 }
 
-                list.Add(result);
+                await foreach (var result in results)
+                {
+                    list.Add(result);
+                }
             }
 
             foreach (var rule in _rulesFunc(context).Where(o => o.CanValidate(context.InstanceToValidate, context)))
             {
-                var result = rule.Validate(context.InstanceToValidate, context);
-                if (result == null)
+                var results = rule.Validate(context.InstanceToValidate, context);
+                if (results == null)
                 {
                     continue;
                 }
 
-                list.Add(result);
+                list.AddRange(results);
             }
 
             return list;

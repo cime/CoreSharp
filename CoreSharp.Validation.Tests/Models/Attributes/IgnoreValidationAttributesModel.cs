@@ -1,5 +1,5 @@
 ﻿using CoreSharp.Common.Attributes;
-using CoreSharp.Validation.Attributes;
+using CoreSharp.Validation.Abstractions.Attributes;
 
 namespace CoreSharp.Validation.Tests.Models.Attributes
 {

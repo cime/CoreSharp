@@ -3,6 +3,7 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
         <PackageId>CoreSharp.Validation</PackageId>
+        <LangVersion>9.0</LangVersion>
 
         <Authors>cime</Authors>
         <Description>.NET standard implementation of validation</Description>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using CoreSharp.Validation.Internal;
 using FluentValidation;
@@ -14,7 +15,7 @@ namespace CoreSharp.Validation
     {
         public virtual string[] RuleSets { get; }
 
-        public abstract ValidationFailure Validate(TChild model, ValidationContext context);
+        public abstract IEnumerable<ValidationFailure> Validate(TChild model, ValidationContext context);
 
         public virtual bool CanValidate(TChild model, ValidationContext context)
         {
@@ -25,7 +26,7 @@ namespace CoreSharp.Validation
         {
         }
 
-        ValidationFailure IDomainValidator.Validate(object model, ValidationContext context)
+        IEnumerable<ValidationFailure> IDomainValidator.Validate(object model, ValidationContext context)
         {
             return Validate((TChild)model, context);
         }

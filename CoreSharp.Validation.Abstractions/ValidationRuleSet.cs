@@ -1,4 +1,4 @@
-﻿namespace CoreSharp.Validation
+﻿namespace CoreSharp.Validation.Abstractions
 {
     public class ValidationRuleSet
     {

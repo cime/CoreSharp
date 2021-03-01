@@ -5,6 +5,7 @@ using Breeze.NHibernate;
 using Breeze.NHibernate.Metadata;
 using CoreSharp.Common.Extensions;
 using CoreSharp.Validation;
+using CoreSharp.Validation.Abstractions;
 using FluentValidation;
 using FluentValidation.Internal;
 using FluentValidation.Validators;

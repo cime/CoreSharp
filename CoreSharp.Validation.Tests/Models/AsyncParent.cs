@@ -84,10 +84,11 @@ namespace CoreSharp.Validation.Tests.Models
             return Task.CompletedTask;
         }
 
-        public override Task<ValidationFailure> ValidateAsync(TChild child, ValidationContext context)
+        public override async IAsyncEnumerable<ValidationFailure> ValidateAsync(TChild child, ValidationContext context)
         {
             ValidateModels.Add(new Tuple<TChild, IAsyncDomainValidator>(child, this));
-            return Task.FromResult(Success);
+
+            yield break;
         }
 
         public override Task<bool> CanValidateAsync(TChild child, ValidationContext context)
