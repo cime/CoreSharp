@@ -13,6 +13,9 @@ using CoreSharp.Cqrs.Resolver;
 using CoreSharp.Identity.Jwt;
 using CoreSharp.Validation;
 using Grpc.Core;
+#if NETSTANDARD2_1 || NET5_0
+using Grpc.Net.Client;
+#endif
 using Microsoft.Extensions.Logging;
 
 namespace CoreSharp.Cqrs.Grpc.Client
@@ -65,9 +68,8 @@ namespace CoreSharp.Cqrs.Grpc.Client
             _tokenService = (_configuration.TokenConfiguration != null && _configuration.AuthorizationType == EnumChannelAuthorizationType.Token) 
                 ? new TokenService(_configuration.TokenConfiguration) : null;
 
-            // create client
-            var ch = CreateChannel(configuration);
-            _invoker = new DefaultCallInvoker(ch);
+            // create client invoker
+            _invoker = CreateCallInvoker(configuration);
         }
 
         public string Id { get; }
@@ -239,11 +241,25 @@ namespace CoreSharp.Cqrs.Grpc.Client
             return method as Method<TChRequest, TChResponseEnvelope>;
         }
 
-        private Channel CreateChannel(GrpcCqrsClientConfiguration configuration) 
+#if NETSTANDARD2_1 || NET5_0
+
+        private CallInvoker CreateCallInvoker(GrpcCqrsClientConfiguration configuration)
+        {
+            _logger?.LogInformation("Creating insecure net client.");
+            var ch = GrpcChannel.ForAddress($"http://{configuration.Url}:{configuration.Port}");
+            return ch.CreateCallInvoker();
+        }
+
+#else
+
+        private CallInvoker CreateCallInvoker(GrpcCqrsClientConfiguration configuration)
         {
             _logger?.LogInformation("Creating insecure client.");
-            return new Channel(configuration.Url, configuration.Port, ChannelCredentials.Insecure);
+            var ch = new Channel(configuration.Url, configuration.Port, ChannelCredentials.Insecure);
+            return new DefaultCallInvoker(ch);
         }
+
+#endif
 
         private static object CreateGrpcMethodForCqrsChannel(CqrsChannelInfo info)
         {
