@@ -29,8 +29,9 @@ namespace CoreSharp.Cqrs.Grpc.AspNetCore
         public void OnCall(CallOptions callOptions, object channelRequest, GrpcCqrsCallOptions cqrsCallOptions)
         {
             // auth header passthrough
+            StringValues vs = default;
             if ((cqrsCallOptions == null || !cqrsCallOptions.AddInternalAuthorization)
-                && _httpContextAccessor?.HttpContext?.Request?.Headers?.TryGetValue("authorization", out StringValues vs) == true
+                && _httpContextAccessor?.HttpContext?.Request?.Headers?.TryGetValue("authorization",  out vs) == true
                 && !string.IsNullOrWhiteSpace(vs.ToString()))
             {
                 var key = "authorization";
