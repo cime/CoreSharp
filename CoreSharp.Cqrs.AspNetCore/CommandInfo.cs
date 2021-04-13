@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using CoreSharp.Common.Attributes;
+using CoreSharp.Cqrs.AspNetCore.Options;
 using CoreSharp.Cqrs.Command;
 
 namespace CoreSharp.Cqrs.AspNetCore
@@ -15,17 +17,28 @@ namespace CoreSharp.Cqrs.AspNetCore
         public readonly Type ResultType;
         public readonly bool IsAsync;
         public readonly bool IsGeneric;
-        public Type[] GenericTypes;
+        public readonly Type[] GenericTypes;
+        public readonly string[] HttpMethods;
 
-        public CommandInfo(Type commandType)
+        public CommandInfo(Type commandType, ICqrsOptions options)
         {
             CommandType = commandType;
             IsAsync = typeof(IAsyncCommand).IsAssignableFrom(commandType) ||
                       commandType.GetTypeInfo().IsAssignableToGenericType(typeof(IAsyncCommand<>));
             IsGeneric = commandType.GetTypeInfo().IsAssignableToGenericType(typeof(ICommand<>)) ||
                         commandType.GetTypeInfo().IsAssignableToGenericType(typeof(IAsyncCommand<>));
-
             GenericTypes = new[] { CommandType };
+            HttpMethods = commandType
+                .GetCustomAttributes(true)
+                .OfType<HttpMethodAttribute>()
+                .SelectMany(x => x.HttpMethods)
+                .Distinct()
+                .ToArray();
+
+            if (!HttpMethods.Any())
+            {
+                HttpMethods = options.DefaultCommandHttpMethods;
+            }
 
             if (IsGeneric)
             {

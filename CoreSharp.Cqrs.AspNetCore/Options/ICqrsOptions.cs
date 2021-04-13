@@ -5,14 +5,12 @@ namespace CoreSharp.Cqrs.AspNetCore.Options
 {
     public interface ICqrsOptions
     {
-        string CommandsPath { get; set; }
-        string QueriesPath { get; set; }
+        string[] DefaultCommandHttpMethods { get; }
+        string[] DefaultQueryHttpMethods { get; }
 
-        string GetCommandKey(CommandInfo info);
-        string GetQueryKey(QueryInfo info);
+        string GetCommandPath(CommandInfo info);
+        string GetQueryPath(QueryInfo info);
 
-        string GetCommandPath(string path);
-        string GetQueryPath(string path);
 
         IEnumerable<CommandInfo> GetCommandTypes();
         IEnumerable<QueryInfo> GetQueryTypes();

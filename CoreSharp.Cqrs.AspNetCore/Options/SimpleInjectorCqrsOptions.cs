@@ -44,7 +44,7 @@ namespace CoreSharp.Cqrs.AspNetCore.Options
                         .Select(i => i.GetGenericArguments().First());
                 })
                 .Where(x => x.GetCustomAttribute<ExposeAttribute>() != null)
-                .Select(t => new QueryInfo(t));
+                .Select(t => new QueryInfo(t, this));
         }
 
         public override IEnumerable<CommandInfo> GetCommandTypes()
@@ -77,7 +77,7 @@ namespace CoreSharp.Cqrs.AspNetCore.Options
                         .Select(i => i.GetGenericArguments().First());
                 })
                 .Where(x => x.GetCustomAttribute<ExposeAttribute>() != null)
-                .Select(t => new CommandInfo(t));
+                .Select(t => new CommandInfo(t, this));
         }
 
         public override object GetInstance(Type type)
