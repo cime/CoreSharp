@@ -50,3 +50,17 @@ container.Options.AllowOverridingRegistrations = true;
 container.RegisterSingleton<MyCqrsOptions, BillingCqrsOptions>();
 container.Options.AllowOverridingRegistrations = false;
 ```
+
+Command and Query registration
+------------------------------
+
+```c#
+// Register command & query handlers from Assembly of MyCommandOrQueryHandler
+container.RegisterCqrsFromAssemblyOf<MyCommandOrQueryHandler>();
+
+// Register command handlers from Assembly of MyCommandHandler
+container.RegisterCommandHandlersFromAssemblyOf<MyCommandHandler>();
+
+// Register query handlers from Assembly of MyQueryHandler
+container.RegisterQueryHandlersFromAssemblyOf<MyQueryHandler>();
+```
