@@ -11,53 +11,38 @@ using CoreSharp.Common.Attributes;
 using CoreSharp.Cqrs.AspNetCore.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using NHibernate;
 
 namespace CoreSharp.Cqrs.AspNetCore
 {
     // ReSharper disable once ClassNeverInstantiated.Global
-    public class CqrsMiddleware : IMiddleware
+    public class CommandHandlerMiddleware : IMiddleware
     {
-        public static readonly string ContextKey = "CQRS";
-
         private readonly CqrsFormatterRegistry _registry;
         private readonly ICqrsOptions _options;
 
         private readonly Lazy<Dictionary<string, CommandInfo>> _commandTypes;
-        private readonly Lazy<Dictionary<string, QueryInfo>> _queryTypes;
 
         private readonly ConcurrentDictionary<Type, dynamic> _deserializeMethods = new ConcurrentDictionary<Type, dynamic>();
-        private static readonly MethodInfo CreateDeserializeLambdaMethodInfo = typeof(CqrsMiddleware).GetMethod(nameof(CreateDeserializeLambda), BindingFlags.NonPublic | BindingFlags.Static);
+        private static readonly MethodInfo CreateDeserializeLambdaMethodInfo = typeof(CommandHandlerMiddleware).GetMethod(nameof(CreateDeserializeLambda), BindingFlags.NonPublic | BindingFlags.Static);
 
-        public CqrsMiddleware(CqrsFormatterRegistry registry, ICqrsOptions options)
+        public CommandHandlerMiddleware(CqrsFormatterRegistry registry, ICqrsOptions options)
         {
             _registry = registry;
             _options = options;
 
-            _commandTypes = new Lazy<Dictionary<string, CommandInfo>>(() => options.GetCommandTypes().ToDictionary(
-                keySelector: options.GetCommandKey,
-                elementSelector: type => type,
-                comparer: StringComparer.OrdinalIgnoreCase));
-
-            _queryTypes = new Lazy<Dictionary<string, QueryInfo>>(() => options.GetQueryTypes().ToDictionary(
-                keySelector: options.GetQueryKey,
-                elementSelector: info => info,
-                comparer: StringComparer.OrdinalIgnoreCase));
+            _commandTypes = new Lazy<Dictionary<string, CommandInfo>>(() =>
+                options.GetCommandTypes()
+                    .SelectMany(x => x.HttpMethods, (ci, method) => new { CommandInfo = ci, HttpMethod = method})
+                    .ToDictionary(
+                        keySelector: (x) => $"{x.HttpMethod} {options.GetCommandPath(x.CommandInfo)}",
+                        elementSelector: x => x.CommandInfo,
+                        comparer: StringComparer.OrdinalIgnoreCase));
         }
 
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
-            if (context.Request.Method == HttpMethod.Post.Method && context.Request.Path.Value.StartsWith(_options.CommandsPath, StringComparison.OrdinalIgnoreCase))
-            {
-                await HandleCommand(context, _options);
-            }
-            else if (context.Request.Path.Value.StartsWith(_options.QueriesPath, StringComparison.OrdinalIgnoreCase))
-            {
-                await HandleQuery(context, _options);
-            }
-            else
-            {
-                await next(context);
-            }
+            await HandleCommand(context, _options);
         }
 
         private static Func<ICqrsFormatter, HttpRequest, ValueTask<T>> CreateDeserializeLambda<T>()
@@ -74,16 +59,17 @@ namespace CoreSharp.Cqrs.AspNetCore
 
         private async Task HandleCommand(HttpContext context, ICqrsOptions options)
         {
-            var path = options.GetCommandPath(context.Request.Path.Value);
+            var path = context.Request.Path;
+            var method = context.Request.Method;
 
-            if (!_commandTypes.Value.ContainsKey(path))
+            if (!_commandTypes.Value.ContainsKey($"{method} {path}"))
             {
-                throw new CommandNotFoundException($"Command '{path}' not found");
+                throw new CommandNotFoundException($"Command '{method} {path}' not found");
             }
 
             dynamic result = null;
 
-            var info = _commandTypes.Value[path];
+            var info = _commandTypes.Value[$"{method} {path}"];
             var exposeAttribute = info.CommandType.GetCustomAttribute<ExposeAttribute>();
             var formatter = _registry.GetFormatter(exposeAttribute.Formatter);
 
@@ -93,10 +79,10 @@ namespace CoreSharp.Cqrs.AspNetCore
                 return mi.Invoke(null, null);
             });
 
-            dynamic command = await deserializeMethod(formatter, context.Request);
+            var command = await deserializeMethod(formatter, context.Request);
 
             dynamic handler = options.GetInstance(info.CommandHandlerType);
-            context.Items[ContextKey] = new CqrsContext(context.Request.Path.Value, path, CqrsType.Command, info.CommandHandlerType);
+            context.Items[IOwinContextExtensions.ContextKey] = new CqrsContext(context.Request.Path.Value, path, CqrsType.Command, info.CommandHandlerType);
 
             if (info.IsGeneric)
             {
@@ -143,62 +129,6 @@ namespace CoreSharp.Cqrs.AspNetCore
             }
         }
 
-        private async Task HandleQuery(HttpContext context, ICqrsOptions options)
-        {
-            var path = options.GetQueryPath(context.Request.Path.Value);
-
-            if (!_queryTypes.Value.ContainsKey(path))
-            {
-                throw new QueryNotFoundException($"Query '{path}' not found");
-            }
-
-            var info = _queryTypes.Value[path];
-            var exposeAttribute = info.QueryType.GetCustomAttribute<ExposeAttribute>();
-            var formatter = _registry.GetFormatter(exposeAttribute.Formatter);
-
-            var deserializeMethod = _deserializeMethods.GetOrAdd(info.QueryType, (t) =>
-            {
-                var mi = CreateDeserializeLambdaMethodInfo.MakeGenericMethod(t);
-                return mi.Invoke(null, null);
-            });
-
-            dynamic query = await deserializeMethod(formatter, context.Request);
-
-            dynamic handler = options.GetInstance(info.QueryHandlerType);
-
-            context.Items[ContextKey] = new CqrsContext(context.Request.Path.Value, path, CqrsType.Command, info.QueryHandlerType);
-
-            dynamic result;
-
-            if (info.IsAsync)
-            {
-                result = await handler.HandleAsync(query, context.RequestAborted);
-            }
-            else
-            {
-                result = handler.Handle(query);
-            }
-
-            string json = null;
-
-            if (result != null)
-            {
-                json = result is string ? result : await formatter.SerializeAsync(result, context.Request);
-            }
-
-            context.Response.ContentType = formatter.ContentType;
-
-            if (json != null)
-            {
-                context.Response.StatusCode = (int)HttpStatusCode.OK;
-                await HttpResponseWritingExtensions.WriteAsync(context.Response, json, context.RequestAborted);
-            }
-            else
-            {
-                context.Response.StatusCode = (int)HttpStatusCode.NoContent;
-            }
-        }
-
         private void CloseSession()
         {
             var session = (global::NHibernate.ISession) _options.GetInstance(typeof(global::NHibernate.ISession));
@@ -210,7 +140,7 @@ namespace CoreSharp.Cqrs.AspNetCore
 
             if (session.GetSessionImplementation().TransactionInProgress)
             {
-                var tx = session.Transaction;
+                var tx = session.GetCurrentTransaction();
                 try
                 {
                     if (tx.IsActive) tx.Commit();
@@ -229,11 +159,11 @@ namespace CoreSharp.Cqrs.AspNetCore
         }
     }
 
-    public static class CqrsMiddlewareExtensions
+    public static class CommandHandlerMiddlewareExtensions
     {
-        public static IApplicationBuilder UseCqrs(this IApplicationBuilder builder)
+        public static IApplicationBuilder UseCommands(this IApplicationBuilder builder)
         {
-            return builder.UseMiddleware<CqrsMiddleware>();
+            return builder.UseMiddleware<CommandHandlerMiddleware>();
         }
     }
 }

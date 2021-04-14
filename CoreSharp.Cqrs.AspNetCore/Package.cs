@@ -9,7 +9,8 @@ namespace CoreSharp.Cqrs.AspNetCore
         {
             container.RegisterSingleton<ICqrsOptions>(() => new SimpleInjectorCqrsOptions(container));
             container.RegisterSingleton<CqrsFormatterRegistry>();
-            container.RegisterSingleton<CqrsMiddleware>();
+            container.RegisterSingleton<CommandHandlerMiddleware>();
+            container.RegisterSingleton<QueryHandlerMiddleware>();
         }
     }
 }
