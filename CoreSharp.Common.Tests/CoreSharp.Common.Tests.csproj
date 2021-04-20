@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <TargetFramework>net5.0</TargetFramework>
         <IsPackable>false</IsPackable>
     </PropertyGroup>
 
@@ -17,6 +17,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\CoreSharp.Common\CoreSharp.Common.csproj" />
+      <ProjectReference Include="..\CoreSharp.Cqrs\CoreSharp.Cqrs.csproj" />
     </ItemGroup>
 
 </Project>

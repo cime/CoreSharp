@@ -61,10 +61,12 @@ namespace CoreSharp.Breeze.Tests
             var persistenceModel = GetPersistenceModel(container, config);
             return Fluently.Configure(config)
                 .Database(
-                    MsSqlConfiguration.MsSql2012.ConnectionString(o => o
+                    PostgreSQLConfiguration.PostgreSQL82.ConnectionString(o => o
                         .Database("coresharp")
-                        .Server("(local)")
-                        .TrustedConnection())
+                        .Host("localhost")
+                        .Username("coresharp")
+                        .Password("coresharp")
+                        .Port(5432))
                 )
                 //.AppendEventListeners<User>(container)
                 .SetDefaultProperties()

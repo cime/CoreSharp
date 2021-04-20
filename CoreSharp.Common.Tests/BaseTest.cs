@@ -1,4 +1,5 @@
-﻿using SimpleInjector;
+﻿using CoreSharp.Cqrs.Events;
+using SimpleInjector;
 using SimpleInjector.Lifestyles;
 using Xunit;
 
@@ -30,7 +31,7 @@ namespace CoreSharp.Common.Tests
 
         protected virtual void SetUp()
         {
-            
+
         }
 
         protected virtual void Cleanup()
@@ -39,6 +40,7 @@ namespace CoreSharp.Common.Tests
 
         private void Configure(Container container)
         {
+            var ep = new EventAggregator(container); // TODO: remove
             container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
             ConfigureContainer(container);
             container.RegisterPackages();
