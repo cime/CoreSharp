@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29509.3
@@ -94,6 +94,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreSharp.Mvc.Formatters", "CoreSharp.Mvc.Formatters\CoreSharp.Mvc.Formatters.csproj", "{A6D76085-63EF-4B2C-A3D6-B096392E98CC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", "build\_build.csproj", "{FBF7815A-2F16-43C1-8D21-EF4E6616446A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreSharp.NHibernate.SourceGenerator", "CoreSharp.NHibernate.SourceGenerator\CoreSharp.NHibernate.SourceGenerator.csproj", "{19881C1A-D1CA-40BD-8579-7543C4315902}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -259,6 +261,10 @@ Global
 		{A6D76085-63EF-4B2C-A3D6-B096392E98CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6D76085-63EF-4B2C-A3D6-B096392E98CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A6D76085-63EF-4B2C-A3D6-B096392E98CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19881C1A-D1CA-40BD-8579-7543C4315902}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19881C1A-D1CA-40BD-8579-7543C4315902}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19881C1A-D1CA-40BD-8579-7543C4315902}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19881C1A-D1CA-40BD-8579-7543C4315902}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

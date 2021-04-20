@@ -1,8 +1,7 @@
+![example workflow](https://github.com/cime/coresharp/actions/workflows/dotnetcore.yml/badge.svg) 
+[![CodeFactor](https://www.codefactor.io/repository/github/cime/coresharp/badge)](https://www.codefactor.io/repository/github/cime/coresharp)
+
 # CoreSharp #
-
-## CoreSharp.Breeze
-
-CoreSharp.Breeze is a customized .NET Standard 2.0 implementation of Breeze server side.
 
 ### Installation
 

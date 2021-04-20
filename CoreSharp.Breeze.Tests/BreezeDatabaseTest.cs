@@ -97,7 +97,7 @@ namespace CoreSharp.Breeze.Tests
                     {
                         CompositeOrder = compositeOrder,
                         Product = products[(i + j) % 10],
-                        Price = i * j,
+                        Price = (int)(i * j),
                         Quantity = i + j
                     });
                 }
