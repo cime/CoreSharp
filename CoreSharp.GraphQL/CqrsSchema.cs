@@ -132,7 +132,7 @@ namespace CoreSharp.GraphQL
 
                 IGraphType resultGqlType = null;
 
-                if (!_typeCache.ContainsKey(queryResultType) && GraphTypeTypeRegistry.Get(resultType) == null)
+                if (!_typeCache.ContainsKey(queryResultType) && !BuiltInTypeMappings.Any(x => x.clrType == resultType) && !TypeMappings.Any(x => x.clrType == resultType))
                 {
                     var resultTypeName = resultType.Name;
                     var returnObjectType = typeof(AutoObjectGraphType<>).MakeGenericType(resultType);
@@ -149,7 +149,7 @@ namespace CoreSharp.GraphQL
                         // resultGqlType.Name = "ListOf" + name;
                     }
 
-                    GraphTypeTypeRegistry.Register(resultType, returnObjectType);
+                    RegisterTypeMapping(resultType, returnObjectType);
                 }
                 else if (_typeCache.ContainsKey(queryResultType))
                 {
@@ -171,17 +171,14 @@ namespace CoreSharp.GraphQL
                 {
                     var type = new FieldType
                     {
-                        Type = resultGqlType == null ? GraphTypeTypeRegistry.Get(resultType) : null,
+                        Type = resultGqlType == null ? BuiltInTypeMappings.Where(x => x.clrType == resultType).Select(x => x.graphType).SingleOrDefault() ?? TypeMappings.Where(x => x.clrType == resultType).Select(x => x.graphType).SingleOrDefault() : null,
                         ResolvedType = resultGqlType,
                         Resolver = new CommandResolver(_container, commandHandlerType, commandType, resultType, GetJsonSerializerSettings()),
                         Name = GetNormalizedFieldName(mutationName),
                         Description = descriptionAttribute?.Description,
-                        Arguments = new QueryArguments(arguments),
-                        Metadata = new Dictionary<string, object>()
-                        {
-                            [GraphQLExtensions.PermissionsKey] = authorizeAttribute?.Permissions?.ToList()
-                        }
+                        Arguments = new QueryArguments(arguments)
                     };
+                    type.Metadata[GraphQLExtensions.PermissionsKey] = authorizeAttribute?.Permissions?.ToList();
 
                     Mutation.AddField(type);
                 }
@@ -250,7 +247,7 @@ namespace CoreSharp.GraphQL
 
                 IGraphType resultGqlType = null;
 
-                if (!_typeCache.ContainsKey(queryResultType) && GraphTypeTypeRegistry.Get(resultType) == null)
+                if (!_typeCache.ContainsKey(queryResultType) && !BuiltInTypeMappings.Any(x => x.clrType == resultType) && !TypeMappings.Any(x => x.clrType == resultType))
                 {
                     var resultTypeName = GetTypeName(resultType);
                     var returnObjectType = typeof(AutoObjectGraphType<>).MakeGenericType(resultType);
@@ -268,7 +265,7 @@ namespace CoreSharp.GraphQL
                         // resultGqlType.Name = "ListOf" + name;
                     }
 
-                    GraphTypeTypeRegistry.Register(resultType, returnObjectType);
+                    RegisterTypeMapping(resultType, returnObjectType);
                     _typeCache.TryAdd(queryResultType, resultGqlType);
                 }
                 else if (_typeCache.ContainsKey(queryResultType))
@@ -291,17 +288,14 @@ namespace CoreSharp.GraphQL
                 {
                     var type = new FieldType
                     {
-                        Type = resultGqlType == null ? GraphTypeTypeRegistry.Get(resultType) : null,
+                        Type = resultGqlType == null ? BuiltInTypeMappings.Where(x => x.clrType == resultType).Select(x => x.graphType).SingleOrDefault() ?? TypeMappings.Where(x => x.clrType == resultType).Select(x => x.graphType).SingleOrDefault() : null,
                         ResolvedType = resultGqlType,
                         Resolver = new QueryResolver(_container, queryHandlerType, queryType, resultType, GetJsonSerializerSettings()),
                         Name = GetNormalizedFieldName(queryName),
                         Description = descriptionAttribute?.Description,
                         Arguments = new QueryArguments(arguments),
-                        Metadata = new Dictionary<string, object>()
-                        {
-                            [GraphQLExtensions.PermissionsKey] = authorizeAttribute?.Permissions?.ToList()
-                        }
                     };
+                    type.Metadata[GraphQLExtensions.PermissionsKey] = authorizeAttribute?.Permissions?.ToList();
 
                     Query.AddField(type);
                 }

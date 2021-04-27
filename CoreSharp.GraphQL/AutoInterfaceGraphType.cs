@@ -14,18 +14,21 @@ namespace CoreSharp.GraphQL
 {
     public class AutoInterfaceGraphType<TSourceType> : InterfaceGraphType<TSourceType>
     {
+        private readonly ISchema _schema;
+
         private readonly IGraphQLConfiguration _configuration;
         //private readonly ITypeConfiguration _typeConfiguration;
 
-        public AutoInterfaceGraphType(IGraphQLConfiguration configuration)
+        public AutoInterfaceGraphType(ISchema schema, IGraphQLConfiguration configuration)
         {
             var interfaceType = typeof(TSourceType);
-            
+
             if (!interfaceType.IsInterface)
             {
                 throw new ArgumentException(nameof(TSourceType));
             }
 
+            _schema = schema;
             _configuration = configuration;
 
             Name = GetTypeName(interfaceType);
@@ -35,7 +38,7 @@ namespace CoreSharp.GraphQL
                 .ToArray();
             implementators = implementators.Where(x => interfaceType.IsAssignableFrom(x))
                 .ToArray();
-            
+
             foreach (var propertyInfo in GetAllPublicProperties())
             {
                 var isNullableProperty = IsNullableProperty(propertyInfo);
@@ -47,7 +50,7 @@ namespace CoreSharp.GraphQL
                     {
                         // throw?
                     }
-                    
+
                     isNullableProperty = implementatorsNullable.Single();
                 }
                 else
@@ -55,7 +58,7 @@ namespace CoreSharp.GraphQL
                     // throw?
                     continue;
                 }
-                
+
                 var field= Field(
                     type: propertyInfo.PropertyType.GetGraphTypeFromType(isNullableProperty),
                     name: GetFieldName(propertyInfo),
@@ -68,14 +71,14 @@ namespace CoreSharp.GraphQL
             }
         }
 
-        private static IEnumerable<PropertyInfo> GetAllPublicProperties()
+        private IEnumerable<PropertyInfo> GetAllPublicProperties()
         {
             var type = typeof(TSourceType);
 
             return (new Type[] { type })
                 .Concat(type.GetInterfaces())
                 .SelectMany(i => i.GetProperties())
-                .Where(x => GraphTypeTypeRegistry.Get(x.PropertyType) != null);
+                .Where(x => _schema.TypeMappings.Any(y => y.clrType == x.PropertyType));
         }
 
         private static bool IsNullableProperty(PropertyInfo propertyInfo)
