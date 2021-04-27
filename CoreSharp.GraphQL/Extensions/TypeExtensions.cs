@@ -15,7 +15,7 @@ namespace CoreSharp.GraphQL
         /// <summary>
         /// Resolves a Type to its equivalent GraphType.
         /// </summary>
-        public static Type ToGraphType(this Type type, bool nullableValueTypes = false)
+        public static Type ToGraphType(this Type type, ISchema schema, bool nullableValueTypes = false)
         {
             try
             {
@@ -30,19 +30,19 @@ namespace CoreSharp.GraphQL
                 // Collection types
                 var enumerableType = type.IsArray ? type.GetElementType() : type.GetEnumerableType();
                 if (enumerableType != null)
-                    return typeof(ListGraphType<>).MakeGenericType(enumerableType.ToGraphType());
+                    return typeof(ListGraphType<>).MakeGenericType(enumerableType.ToGraphType(schema));
 
                 // Nullable value types
                 var nullableType = Nullable.GetUnderlyingType(type);
                 if (nullableType != null)
-                    return GetGraphTypeInternal(nullableType);
+                    return GetGraphTypeInternal(schema, nullableType);
 
                 // Value types
                 if (type.GetTypeInfo().IsValueType && !nullableValueTypes)
-                    return typeof(NonNullGraphType<>).MakeGenericType(GetGraphTypeInternal(type));
+                    return typeof(NonNullGraphType<>).MakeGenericType(GetGraphTypeInternal(schema, type));
 
                 // Everything else
-                return GetAutoGraphTypeInternal(type);
+                return GetAutoGraphTypeInternal(schema, type);
             }
             catch (ArgumentOutOfRangeException exception)
             {
@@ -79,30 +79,32 @@ namespace CoreSharp.GraphQL
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        private static Type GetGraphTypeInternal(Type type)
+        private static Type GetGraphTypeInternal(ISchema schema, Type type)
         {
             // Support enum types
             if (type.GetTypeInfo().IsEnum)
                 return typeof(EnumerationGraphType<>).MakeGenericType(type);
 
-            var graphqlType = GraphTypeTypeRegistry.Get(type);
+            var graphqlType = schema.TypeMappings.Where(x => x.clrType == type).Select(x => x.graphType)
+                .SingleOrDefault();
 
             return graphqlType ?? typeof(InputObjectGraphType<>).MakeGenericType(type);
         }
 
-        private static Type GetAutoGraphTypeInternal(Type type)
+        private static Type GetAutoGraphTypeInternal(ISchema schema, Type type)
         {
             // Support enum types
             if (type.GetTypeInfo().IsEnum)
                 return typeof(EnumerationGraphType<>).MakeGenericType(type);
 
-            var graphqlType = GraphTypeTypeRegistry.Get(type);
+            var graphqlType = schema.TypeMappings.Where(x => x.clrType == type).Select(x => x.graphType)
+                .SingleOrDefault();
 
             if (graphqlType == null)
             {
                 graphqlType = typeof(AutoInputGraphType<>).MakeGenericType(type);
 
-                GraphTypeTypeRegistry.Register(type, graphqlType);
+                schema.RegisterTypeMapping(type, graphqlType);
             }
 
             return graphqlType;

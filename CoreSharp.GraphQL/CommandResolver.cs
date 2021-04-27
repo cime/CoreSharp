@@ -35,7 +35,7 @@ namespace CoreSharp.GraphQL
         public object Resolve(IResolveFieldContext context)
         {
             var commandHandler = _container.GetInstance(_commandHandlerType);
-            var variableValue = context.Arguments?.ContainsKey("command") == true ? JsonConvert.SerializeObject(context.Arguments["command"], _jsonSerializerSettings) : "{}";
+            var variableValue = context.Arguments?.ContainsKey("command") == true ? JsonConvert.SerializeObject(context.Arguments["command"].Value, _jsonSerializerSettings) : "{}";
             var command = JsonConvert.DeserializeObject(variableValue, _commandType, _jsonSerializerSettings);
 
             if (command != null)
