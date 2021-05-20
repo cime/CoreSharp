@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using CoreSharp.Cqrs.Grpc.Common;
+using CoreSharp.Identity.Jwt;
 
 namespace CoreSharp.Cqrs.Grpc.Client
 {
@@ -14,8 +16,19 @@ namespace CoreSharp.Cqrs.Grpc.Client
 
         public bool HandleExceptions { get; set; }
 
+        public bool HandleUnauthenticated { get; set; } = true;
+
         public IEnumerable<string> ContractsAssemblies { get; set; }
 
         public string ClientId { get; set; }
+
+        public EnumChannelAuthorizationType AuthorizationType { get; set; }
+
+        public TokenConfiguration TokenConfiguration { get; set; }
+
+        public GrpcCqrsCallOptions DefaultCallOptions { get; set; } = new GrpcCqrsCallOptions
+        {
+            AddInternalAuthorization = true
+        };
     }
 }

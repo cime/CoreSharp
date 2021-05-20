@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CoreSharp.Cqrs.Command;
+using CoreSharp.Cqrs.Grpc.Common;
 
 namespace CoreSharp.Cqrs.Grpc.Client
 {
@@ -17,37 +16,61 @@ namespace CoreSharp.Cqrs.Grpc.Client
             _clientManager = clientManager;
         }
 
+        public void Dispatch(ICommand command, GrpcCqrsCallOptions options)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TResult Dispatch<TResult>(ICommand<TResult> command, GrpcCqrsCallOptions options)
+        {
+            var rsp = _clientManager.GetClientFor(command).Execute<ICommand<TResult>, TResult>(command, options, default).Result;
+            return rsp.Value;
+        }
+
+        public Task DispatchAsync(IAsyncCommand command, GrpcCqrsCallOptions options, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<TResult> DispatchAsync<TResult>(IAsyncCommand<TResult> command, GrpcCqrsCallOptions options, CancellationToken cancellationToken)
+        {
+            var rsp = await _clientManager.GetClientFor(command).Execute<IAsyncCommand<TResult>, TResult>(command, options, cancellationToken);
+            return rsp.Value;
+        }
+
+        #region ICommandDispatcher
+
         public void Dispatch(ICommand command)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task DispatchAsync(IAsyncCommand command)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task DispatchAsync(IAsyncCommand command, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
+            Dispatch(command, null);
         }
 
         public TResult Dispatch<TResult>(ICommand<TResult> command)
         {
-            var rsp = _clientManager.GetClientFor(command).Execute<ICommand<TResult>, TResult>(command, default).Result;
-            return rsp.Value;
+            return Dispatch(command, null);
+        }
+
+        public async Task DispatchAsync(IAsyncCommand command)
+        {
+            await DispatchAsync(command, null, default);
         }
 
         public async Task<TResult> DispatchAsync<TResult>(IAsyncCommand<TResult> command)
         {
-            var rsp = await _clientManager.GetClientFor(command).Execute<IAsyncCommand<TResult>, TResult>(command, default);
-            return rsp.Value;
+            return await DispatchAsync(command, null, default);
+        }
+
+        public async Task DispatchAsync(IAsyncCommand command, CancellationToken cancellationToken)
+        {
+            await DispatchAsync(command, null, cancellationToken);
         }
 
         public async Task<TResult> DispatchAsync<TResult>(IAsyncCommand<TResult> command, CancellationToken cancellationToken)
         {
-            var rsp = await _clientManager.GetClientFor(command).Execute<IAsyncCommand<TResult>, TResult>(command, cancellationToken);
-            return rsp.Value;
+            return await DispatchAsync(command, null, cancellationToken);
         }
+
+        #endregion
+
     }
 }

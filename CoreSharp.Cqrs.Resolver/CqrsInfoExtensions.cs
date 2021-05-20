@@ -67,5 +67,10 @@ namespace CoreSharp.Cqrs.Resolver
                 }
             }
         }
+
+        public static string GetPath(this CqrsInfo info)
+        {
+            return $"/{info.ServiceName}/{info.MethodName}";
+        }
     }
 }

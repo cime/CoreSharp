@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using CoreSharp.Cqrs.Resolver;
 
 namespace CoreSharp.Cqrs.Grpc.Common
@@ -11,8 +12,8 @@ namespace CoreSharp.Cqrs.Grpc.Common
 
         public Type ChRspEnvType { get; }
 
-        internal CqrsChannelInfo(Type reqType, string serviceName, string methodName, string formatter, bool isQuery, bool isCommand, bool isAsync, Type rspType, Type chReqType, Type chRspType, Type chRspEnvType) 
-            : base(reqType, serviceName, methodName, formatter, isQuery, isCommand, isAsync, rspType)
+        internal CqrsChannelInfo(Type reqType, string serviceName, string methodName, string formatter, bool isQuery, bool isCommand, bool isAsync, bool isAuthorize, Type rspType, Type chReqType, Type chRspType, Type chRspEnvType, IEnumerable<string> permissions) 
+            : base(reqType, serviceName, methodName, formatter, isQuery, isCommand, isAsync, isAuthorize, rspType, permissions)
         {
             ChReqType = chReqType;
             ChRspType = chRspType;

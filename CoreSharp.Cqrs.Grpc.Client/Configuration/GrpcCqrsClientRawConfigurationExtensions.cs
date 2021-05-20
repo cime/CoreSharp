@@ -11,11 +11,15 @@ namespace CoreSharp.Cqrs.Grpc.Client
             {
                 Url = raw.Url,
                 HandleExceptions = raw.HandleExceptions,
+                HandleUnauthenticated = raw.HandleUnauthenticated,
                 Port = raw.Port,
                 TimeoutMs = raw.TimeoutMs,
                 ServiceNamePrefix = raw.ServiceNamePrefix,
                 ContractsAssemblies = raw.ContractsAssemblies.ToAssemblies(),
-                ClientId = raw.ClientId
+                ClientId = raw.ClientId,
+                AuthorizationType = raw.AuthorizationType,
+                TokenConfiguration = raw.TokenConfiguration,
+                DefaultCallOptions = raw.DefaultCallOptions
             };
             return cfg;
         }

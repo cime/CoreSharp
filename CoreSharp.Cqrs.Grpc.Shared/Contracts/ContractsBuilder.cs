@@ -140,7 +140,6 @@ namespace CoreSharp.Cqrs.Grpc.Contracts
                     return;
                 }
 
-                var name = recordType.Name;
                 var recordChType = recordType;
                 if (IsComplexType(recordType))
                 {
@@ -151,6 +150,7 @@ namespace CoreSharp.Cqrs.Grpc.Contracts
                 {
                     recordChType = GetReplaceType(recordType);
                 }             
+
                 var propType = typeof(IEnumerable<>).MakeGenericType(recordChType);
                 var propBuilder = typeBuilder.AddProperty(propType, prop.Name, true, true);
                 propBuilder.AddAttribute(typeof(DataMemberAttribute), null, new Dictionary<string, object> { { "Order", order } });
@@ -169,7 +169,44 @@ namespace CoreSharp.Cqrs.Grpc.Contracts
             // dictionary 
             if (dictionaryInterface != null)
             {
-                // todo: implement
+
+                var keyType = dictionaryInterface.GetGenericArguments().ElementAt(0);
+                var valType = dictionaryInterface.GetGenericArguments().ElementAt(1);
+                if (!IsMappableType(keyType) || !IsMappableType(valType))
+                {
+                    order = order - 1;
+                    return;
+                }
+
+                // key type
+                var chKeyType = keyType;
+                if (IsComplexType(keyType))
+                {
+                    AddType(keyType, recursionBag);
+                    chKeyType = _dic[keyType];
+                }
+                else if (GetReplaceType(keyType) != null)
+                {
+                    chKeyType = GetReplaceType(keyType);
+                }
+
+                // value type
+                var chValueType = valType;
+                if (IsComplexType(valType))
+                {
+                    AddType(valType, recursionBag);
+                    chValueType = _dic[valType];
+                }
+                else if (GetReplaceType(valType) != null)
+                {
+                    chValueType = GetReplaceType(valType);
+                }
+
+                // set property
+                var propType = typeof(IDictionary<,>).MakeGenericType(chKeyType, chValueType);
+                var propBuilder = typeBuilder.AddProperty(propType, prop.Name, true, true);
+                propBuilder.AddAttribute(typeof(DataMemberAttribute), null, new Dictionary<string, object> { { "Order", order } });
+                return;
             }
 
             // no mapping found - revert counter

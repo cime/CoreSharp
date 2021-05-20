@@ -4,12 +4,29 @@ using System.Text.Json;
 using CoreSharp.Cqrs.Grpc.AspNetCore;
 using CoreSharp.Cqrs.Grpc.Contracts;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Logging;
 using SimpleInjector;
 
 namespace Microsoft.AspNetCore.Routing
 {
     public static class GrpcCqrsEndpointRouteBuilderExtensions
     {
+
+        public static GrpcServiceEndpointConventionBuilder MapCqrsGrpcWithAuthorization(this IEndpointRouteBuilder endpoints)
+        {
+
+            // get channel info
+            var cqrsAdapter = (CqrsContractsAdapter)endpoints.ServiceProvider.GetService(typeof(CqrsContractsAdapter));
+            var channelInfo = cqrsAdapter.ToCqrsChannelInfo();
+
+            // get logger for auth
+            ILogger logger = (endpoints.ServiceProvider.GetService(typeof(ILoggerFactory)) as ILoggerFactory)?.CreateLogger("CqrsGrpcServer");
+
+            // map and return
+            var map = endpoints.MapCqrsGrpc();
+            map = map.AddCqrsAuthorization(channelInfo, logger);
+            return map;
+        }
 
         public static GrpcServiceEndpointConventionBuilder MapCqrsGrpc(this IEndpointRouteBuilder endpoints)
         {

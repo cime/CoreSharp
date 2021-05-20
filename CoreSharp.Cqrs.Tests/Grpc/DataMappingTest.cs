@@ -30,7 +30,12 @@ namespace CoreSharp.Cqrs.Tests.Grpc
                 LocationTime = DateTimeOffset.Parse("2021-01-01 20:22:23.232 +01:00"),
                 LastLogin = null,
                 UserCreated = DateTime.Parse("2021-01-01 20:22:23.232"),
-                UserActivated = null
+                UserActivated = null,
+                Applications = new Dictionary<string, Application> {
+                    { "app1", new Application{  Id = "app1", Name ="Application 1"} },
+                    { "app2", new Application{  Id = "app2", Name ="Application 2"} },
+                    { "app3", new Application{  Id = "app3", Name ="Application 3"} }
+                }
             };
 
             // map through channel

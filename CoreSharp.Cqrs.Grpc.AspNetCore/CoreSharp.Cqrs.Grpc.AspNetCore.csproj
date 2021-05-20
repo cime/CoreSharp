@@ -1,8 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFrameworks>net5.0;netcoreapp3.1</TargetFrameworks>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CoreSharp.Cqrs.Grpc.Processors\CoreSharp.Cqrs.Grpc.Processors.csproj" />
+    <ProjectReference Include="..\CoreSharp.Identity.Extensions\CoreSharp.Identity.Extensions.csproj" />
   </ItemGroup>
 
 </Project>

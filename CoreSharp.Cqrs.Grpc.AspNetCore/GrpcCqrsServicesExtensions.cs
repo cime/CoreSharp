@@ -30,6 +30,7 @@ namespace Microsoft.Extensions.DependencyInjection
             // register grpc
             services.AddGrpc();
             services.AddSingleton(svc => container.GetInstance<IServiceMethodProvider<GrpcService>>());
+            services.AddSingleton(svc => container.GetInstance<CqrsContractsAdapter>());
 
             // return
             return services;

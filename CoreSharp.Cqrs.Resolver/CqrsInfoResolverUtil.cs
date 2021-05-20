@@ -19,7 +19,7 @@ namespace CoreSharp.Cqrs.Resolver
                 var serviceName = string.Join("_", x.FullName.Split('.').Take(x.FullName.Split('.').Length - 1));
                 var methodName = x.IsQuery() ? CqrsExposeUtil.GetQueryKey(x) : CqrsExposeUtil.GetCommandKey(x);
                 var formatter = CqrsExposeUtil.GetFormatter(x);
-                return new CqrsInfo(x, serviceName, methodName, formatter, x.IsQuery(), x.IsCommand(), x.IsCqrsAsync(), x.GetResultType());
+                return new CqrsInfo(x, serviceName, methodName, formatter, x.IsQuery(), x.IsCommand(), x.IsCqrsAsync(), x.IsAuthorize(), x.GetResultType(), x.GetPermissions());
             }).ToList();
             return infos;
         }
@@ -59,6 +59,19 @@ namespace CoreSharp.Cqrs.Resolver
         private static bool Implements(this Type type, Type interfaceType)
         {
             return type.GetAllInterfaces().Any(x => (x.IsGenericType && x.GetGenericTypeDefinition() == interfaceType) || x == interfaceType);
+        }
+
+        private static IEnumerable<string> GetPermissions(this Type type)
+        {
+            var permissions = type.GetCustomAttributes<AuthorizeAttribute>()
+                ?.SelectMany(y => y.Permissions ?? new string[0]).Distinct().ToList() ?? new List<string>();
+            return permissions;
+        }
+
+        private static bool IsAuthorize(this Type type)
+        {
+            var count = type.GetCustomAttributes<AuthorizeAttribute>()?.Count() ?? 0;
+            return count > 0;
         }
 
     }
