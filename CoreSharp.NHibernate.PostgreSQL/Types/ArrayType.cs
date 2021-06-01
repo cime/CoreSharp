@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.Common;
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
@@ -50,7 +51,7 @@ namespace CoreSharp.NHibernate.PostgreSQL.Types
                 return false;
             }
 
-            return ((T[]) x).Equals((T[]) y);
+            return ((T[]) x).SequenceEqual((T[]) y);
         }
 
         public int GetHashCode(object x)
@@ -60,7 +61,7 @@ namespace CoreSharp.NHibernate.PostgreSQL.Types
                 return 0;
             }
 
-            return x.GetHashCode();
+            return ((T[]) x).Aggregate(17, (current, element) => current * 31 + element.GetHashCode());
         }
 
         public object NullSafeGet(
