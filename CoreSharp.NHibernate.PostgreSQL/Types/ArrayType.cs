@@ -61,7 +61,14 @@ namespace CoreSharp.NHibernate.PostgreSQL.Types
                 return 0;
             }
 
-            return ((T[]) x).Aggregate(17, (current, element) => current * 31 + element.GetHashCode());
+            var hash = new HashCode();
+            hash.Add(typeof(T).GetHashCode());
+            foreach (var el in (T[]) x)
+            {
+                hash.Add(el);
+            }
+
+            return hash.ToHashCode();
         }
 
         public object NullSafeGet(
