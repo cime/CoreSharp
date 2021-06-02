@@ -30,8 +30,6 @@ namespace CoreSharp.GraphQL.AspNetCore
         private readonly IComplexityConfigurationFactory _complexityConfigurationFactory;
         private readonly IUserContextBuilder _userContextBuilder;
 
-        private readonly PathString _path = "/graphql";
-
         public GraphQLMiddleware(
             Container container,
             ILogger<GraphQLMiddleware<TSchema>> logger,
@@ -47,7 +45,7 @@ namespace CoreSharp.GraphQL.AspNetCore
 
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
-            if (context.WebSockets.IsWebSocketRequest || !context.Request.Path.StartsWithSegments(_path))
+            if (context.WebSockets.IsWebSocketRequest)
             {
                 await next(context);
                 return;
