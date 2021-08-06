@@ -43,10 +43,13 @@ namespace CoreSharp.Cqrs.Grpc.Common
                 x.IsQuery,
                 x.IsCommand,
                 x.IsAsync,
+                x.IsAuthorize,
                 x.RspType,
                 channelContracts[x.ReqType],
                 x.RspType != null ? channelContracts[x.RspType] : null,
-                x.RspType != null ? channelContracts[typeof(GrpcResponseEnvelope<>).MakeGenericType(x.RspType)] : null)).ToList();
+                x.RspType != null ? channelContracts[typeof(GrpcResponseEnvelope<>).MakeGenericType(x.RspType)] : null,
+                x.Permissions
+            )).ToList();
             return channelCqrs;
         }
 

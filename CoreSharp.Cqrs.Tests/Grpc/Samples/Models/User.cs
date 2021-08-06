@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace CoreSharp.Cqrs.Tests.Grpc.Samples.Models
 {
@@ -19,5 +20,7 @@ namespace CoreSharp.Cqrs.Tests.Grpc.Samples.Models
         public DateTime UserCreated { get; set; }
 
         public DateTime? UserActivated { get; set; }
+
+        public IDictionary<string,Application> Applications { get; set; }
     }
 }

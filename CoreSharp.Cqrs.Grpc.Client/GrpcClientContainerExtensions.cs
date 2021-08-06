@@ -25,9 +25,17 @@ namespace SimpleInjector
             // client 
             container.Collection.Register<GrpcCqrsClient>(configurations.Select(x => Lifestyle.Singleton.CreateRegistration(
                 () =>{
+                    var clientAspectList = container.TryGetAllInstances(typeof(IGrpcClientAspect))
+                        ?.Where(a => a is IGrpcClientAspect)
+                        .Select(a => a as IGrpcClientAspect)?.ToList() 
+                        ?? new List<IGrpcClientAspect>();
                     var clientAspect = container.TryGetInstance(typeof(IGrpcClientAspect)) as IGrpcClientAspect;
+                    if(clientAspect != null)
+                    {
+                        clientAspectList.Add(clientAspect);
+                    }
                     var logger = container.TryGetInstance(typeof(ILogger<GrpcCqrsClient>)) as ILogger<GrpcCqrsClient>;
-                    return new GrpcCqrsClient(x, logger, clientAspect);
+                    return new GrpcCqrsClient(x, logger, clientAspectList);
                 }, container
             )).ToArray());
             container.Register<IGrpcClientManager, GrpcClientManager>();
